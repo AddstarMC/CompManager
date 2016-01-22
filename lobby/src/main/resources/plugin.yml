@@ -1,0 +1,7 @@
+name: CompLobbyManager
+author: Schmoller
+version: ${plugin.version}
+
+main: au.com.addstar.comp.lobby.LobbyPlugin
+depend: [ProtocolLib]
+

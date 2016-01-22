@@ -1,0 +1,6 @@
+name: CompManager
+author: Schmoller
+version: ${plugin.version}
+
+main: au.com.addstar.comp.CompPlugin
+depend: [ProtocolLib]
