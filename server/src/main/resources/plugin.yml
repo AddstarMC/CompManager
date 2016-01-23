@@ -1,4 +1,5 @@
 name: CompManager
+description: This plugin is to go on all comp servers to handle running comps
 author: Schmoller
 version: ${plugin.version}
 

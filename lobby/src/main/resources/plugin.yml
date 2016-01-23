@@ -1,4 +1,5 @@
 name: CompLobbyManager
+description: This plugin is to go on the lobby server
 author: Schmoller
 version: ${plugin.version}
 
