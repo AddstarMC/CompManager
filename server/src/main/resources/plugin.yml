@@ -3,4 +3,15 @@ author: Schmoller
 version: ${plugin.version}
 
 main: au.com.addstar.comp.CompPlugin
-depend: [ProtocolLib]
+depend: [ProtocolLib, Monolith]
+
+permissions:
+  comp.admin:
+    default: OP
+  comp.whitelist.admin:
+    default: OP
+
+commands:
+  compadmin:
+    permission: comp.admin
+    usage: /<command> <subcommand> ...
