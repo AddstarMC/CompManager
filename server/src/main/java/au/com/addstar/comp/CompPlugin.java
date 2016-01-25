@@ -14,6 +14,8 @@ public class CompPlugin extends JavaPlugin {
 	private DatabaseManager databaseManager;
 	private WhitelistHandler whitelistHandler;
 	
+	private Competition currentComp;
+	
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
@@ -39,5 +41,22 @@ public class CompPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		databaseManager.shutdown();
+	}
+	
+	/**
+	 * Gets the currently selected competition.
+	 * The comp may or may not be running
+	 * @return A Competition object or null
+	 */
+	public Competition getCurrentComp() {
+		return currentComp;
+	}
+	
+	/**
+	 * Sets the currently selected competition
+	 * @param comp The competition or null
+	 */
+	public void setCurrentComp(Competition comp) {
+		currentComp = comp;
 	}
 }

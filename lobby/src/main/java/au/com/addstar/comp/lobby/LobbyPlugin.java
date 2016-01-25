@@ -36,4 +36,12 @@ public class LobbyPlugin extends JavaPlugin {
 	public void onDisable() {
 		databaseManager.shutdown();
 	}
+	
+	/**
+	 * Gets the competiton manager
+	 * @return The CompManager
+	 */
+	public CompManager getManager() {
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
 }
