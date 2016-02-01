@@ -11,6 +11,8 @@ permissions:
     default: OP
   comp.whitelist.admin:
     default: OP
+  comp.admin.list:
+    default: OP
 
 commands:
   compadmin:

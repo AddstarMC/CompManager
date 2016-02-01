@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.lobby.commands.CompAdminCommand;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
@@ -12,6 +13,7 @@ import au.com.addstar.comp.whitelist.WhitelistHandler;
 public class LobbyPlugin extends JavaPlugin {
 	private DatabaseManager databaseManager;
 	private WhitelistHandler whitelistHandler;
+	private CompManager compManager;
 	
 	@Override
 	public void onEnable() {
@@ -27,9 +29,11 @@ public class LobbyPlugin extends JavaPlugin {
 		
 		// Initialize other modules
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
+		compManager = new CompManager(new CompBackendManager(databaseManager), getLogger());
+		compManager.reload();
 		
 		// Register commands
-		new CompAdminCommand(whitelistHandler).registerAs(getCommand("compadmin"));
+		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
 	}
 	
 	@Override
@@ -42,6 +46,6 @@ public class LobbyPlugin extends JavaPlugin {
 	 * @return The CompManager
 	 */
 	public CompManager getManager() {
-		throw new UnsupportedOperationException("Not yet implemented");
+		return compManager;
 	}
 }
