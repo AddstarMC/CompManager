@@ -26,6 +26,7 @@ public class Competition {
 	
 	public Competition() {
 		criteria = Lists.newArrayList();
+		compId = -1;
 	}
 	
 	public int getCompId() {
@@ -52,7 +53,7 @@ public class Competition {
 		this.theme = theme;
 	}
 	
-	public List<BaseCriterion> getCriterion() {
+	public List<BaseCriterion> getCriteria() {
 		return criteria;
 	}
 	
@@ -94,5 +95,9 @@ public class Competition {
 	
 	public void setParticipationPrize(BasePrize prize) {
 		participationPrize = prize;
+	}
+	
+	public boolean isRunning() {
+		return (state == CompState.Open && System.currentTimeMillis() > startDate && System.currentTimeMillis() < endDate);
 	}
 }

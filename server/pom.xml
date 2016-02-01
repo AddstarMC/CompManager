@@ -7,7 +7,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>CompManager-server</artifactId>
-	
+
 	<repositories>
 		<repository>
 			<id>addstar-repo</id>
@@ -16,8 +16,13 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+
+		<repository>
+			<id>xephi-repo</id>
+			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
+		</repository>
 	</repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -25,22 +30,29 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>au.com.addstar</groupId>
 			<artifactId>Monolith</artifactId>
 			<version>1.2.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.intellectualcrafters</groupId>
+			<artifactId>plotsquared</artifactId>
+			<version>3.2.27-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.4</version>
-				
+
 				<executions>
 					<execution>
 						<phase>package</phase>

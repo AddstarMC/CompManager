@@ -11,6 +11,10 @@ permissions:
     default: OP
   comp.whitelist.admin:
     default: OP
+  comp.enter.bypass:
+    default: OP
+  comp.build.bypass:
+    default: OP
 
 commands:
   compadmin:

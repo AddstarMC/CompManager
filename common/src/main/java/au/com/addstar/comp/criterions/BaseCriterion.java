@@ -61,6 +61,25 @@ public abstract class BaseCriterion {
 	public abstract CriterionStanding getStanding(Player player);
 	
 	/**
+	 * Loads the data into this criterion if it accepts it
+	 * @param data The data string
+	 */
+	public abstract void load(String data);
+	
+	/**
+	 * Creates a new empty criterion from the specified type
+	 * @param type The type string
+	 * @return A new Criterion
+	 */
+	public static BaseCriterion create(String type) {
+		switch (type) {
+		default:
+		case "text":
+			return new TextCriterion();
+		}
+	}
+	
+	/**
 	 * Represents a player standing with this criterion
 	 */
 	public enum CriterionStanding {
