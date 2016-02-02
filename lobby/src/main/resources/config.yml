@@ -4,3 +4,12 @@ database:
   username: username
   password: password
   database: comp
+  
+redis:
+  host: localhost
+  port: 6379
+  password:
+
+# The number of seconds between server pings
+# A server ping checks if a server is online 
+ping-interval: 10 

@@ -5,15 +5,19 @@ import java.util.logging.Level;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.lambdaworks.redis.RedisException;
+
 import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.lobby.commands.CompAdminCommand;
+import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 public class LobbyPlugin extends JavaPlugin {
 	private DatabaseManager databaseManager;
 	private WhitelistHandler whitelistHandler;
 	private CompManager compManager;
+	private RedisManager redisManager;
 	
 	@Override
 	public void onEnable() {
@@ -25,6 +29,15 @@ public class LobbyPlugin extends JavaPlugin {
 			databaseManager.initialize();
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Failed to initialize database connection", e);
+			return;
+		}
+		
+		redisManager = new RedisManager(getConfig().getConfigurationSection("redis"));
+		try {
+			redisManager.initialize();
+		} catch (RedisException e) {
+			getLogger().log(Level.SEVERE, "Failed to initialize redis connection", e);
+			return;
 		}
 		
 		// Initialize other modules
@@ -33,7 +46,7 @@ public class LobbyPlugin extends JavaPlugin {
 		compManager.reload();
 		
 		// Register commands
-		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
+		new CompAdminCommand(whitelistHandler, compManager, redisManager).registerAs(getCommand("compadmin"));
 	}
 	
 	@Override
