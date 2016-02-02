@@ -15,17 +15,20 @@ import org.bukkit.event.player.PlayerLoginEvent;
 
 import com.plotsquared.bukkit.events.PlayerClaimPlotEvent;
 
+import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 public class EventListener implements Listener {
 	private final WhitelistHandler whitelist;
 	private final Logger logger;
 	private final CompManager manager;
+	private final P2Bridge bridge;
 	
-	public EventListener(WhitelistHandler whitelist, Logger logger, CompManager manager) {
+	public EventListener(WhitelistHandler whitelist, Logger logger, CompManager manager, P2Bridge bridge) {
 		this.whitelist = whitelist;
 		this.logger = logger;
 		this.manager = manager;
+		this.bridge = bridge;
 	}
 	
 	// Whitelist check
@@ -65,10 +68,28 @@ public class EventListener implements Listener {
 	// Plot claim limitations
 	@EventHandler
 	public void onPlayerClaim(PlayerClaimPlotEvent event) {
+		// Check comp is running
 		if (!manager.isCompRunning()) {
 			// TODO: Customizable messages
 			event.getPlayer().sendMessage("placeholder: comp not running");
 			event.setCancelled(true);
+			return;
+		}
+		
+		// Check for no other plots
+		if (bridge.getPlot(event.getPlayer().getUniqueId()) != null) {
+			// TODO: Customizable messages
+			event.getPlayer().sendMessage("placeholder: already entered");
+			event.setCancelled(true);
+			return;
+		}
+		
+		// Check the max size
+		if (manager.getCurrentComp().getMaxEntrants() - bridge.getUsedPlotCount() <= 1) {
+			// TODO: Customizable messages
+			event.getPlayer().sendMessage("placeholder: full");
+			event.setCancelled(true);
+			return;
 		}
 	}
 	

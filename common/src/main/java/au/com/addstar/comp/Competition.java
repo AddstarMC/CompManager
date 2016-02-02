@@ -19,6 +19,7 @@ public class Competition {
 	
 	private long startDate;
 	private long endDate;
+	private int maxEntrants;
 	
 	private BasePrize firstPrize;
 	private BasePrize secondPrize;
@@ -71,6 +72,14 @@ public class Competition {
 	
 	public void setEndDate(long endDate) {
 		this.endDate = endDate;
+	}
+	
+	public int getMaxEntrants() {
+		return maxEntrants;
+	}
+	
+	public void setMaxEntrants(int maxEntrants) {
+		this.maxEntrants = maxEntrants;
 	}
 	
 	public BasePrize getFirstPrize() {

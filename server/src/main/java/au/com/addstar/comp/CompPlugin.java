@@ -54,7 +54,7 @@ public class CompPlugin extends JavaPlugin {
 		registerQueryHandlers();
 		
 		// Start listeners
-		Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager), this);
+		Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager, bridge), this);
 		
 		// Load the comp
 		compManager.reloadCurrentComp();

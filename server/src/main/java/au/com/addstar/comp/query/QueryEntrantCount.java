@@ -11,7 +11,6 @@ public class QueryEntrantCount implements RedisQueryHandler {
 	
 	@Override
 	public String onQuery(String command, String[] arguments) {
-		int entrantCount = bridge.getOwners().size();
-		return String.valueOf(entrantCount);
+		return String.valueOf(bridge.getUsedPlotCount());
 	}
 }

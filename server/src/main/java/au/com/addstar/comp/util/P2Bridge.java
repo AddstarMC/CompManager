@@ -47,6 +47,20 @@ public class P2Bridge {
 	}
 	
 	/**
+	 * Gets the number of used plots
+	 * @return Number of owned plots
+	 */
+	public int getUsedPlotCount() {
+		int count = 0;
+		for (Plot plot : plugin.getPlots()) {
+			if (plot.hasOwner()) {
+				++count;
+			}
+		}
+		return count;
+	}
+	
+	/**
 	 * Gets all the players that own a plot
 	 * @return A set of player ids
 	 */
@@ -59,9 +73,5 @@ public class P2Bridge {
 		}
 		
 		return owners;
-	}
-	
-	public int getMaxPlotCount() {
-		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }

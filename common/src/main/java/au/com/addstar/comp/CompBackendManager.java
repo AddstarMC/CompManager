@@ -38,9 +38,9 @@ public class CompBackendManager {
 	private static final StatementKey STATEMENT_SERVER_GETALL;
 	
 	static {
-		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
-		STATEMENT_ADD = new StatementKey("INSERT INTO " + TABLE_COMP + " (Theme, State, StartDate, EndDate, FirstPrize, SecondPrize, DefaultPrize) VALUES (?,?,?,?,?,?,?)", true);
-		STATEMENT_UPDATE = new StatementKey("UPDATE " + TABLE_COMP + " SET Theme=?, State=?, StartDate=?, EndDate=?, FirstPrize=?, SecondPrize=?, DefaultPrize=? WHERE ID=?");
+		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
+		STATEMENT_ADD = new StatementKey("INSERT INTO " + TABLE_COMP + " (Theme, State, StartDate, EndDate, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize) VALUES (?,?,?,?,?,?,?,?)", true);
+		STATEMENT_UPDATE = new StatementKey("UPDATE " + TABLE_COMP + " SET Theme=?, State=?, StartDate=?, EndDate=?, MaxEntrants=?, FirstPrize=?, SecondPrize=?, DefaultPrize=? WHERE ID=?");
 		
 		STATEMENT_CRITERIA_LOAD = new StatementKey("SELECT CriteriaID, Name, Description, Type, Data FROM " + TABLE_CRITERIA + " WHERE CompID=?");
 		STATEMENT_CRITERIA_ADD = new StatementKey("INSERT INTO " + TABLE_CRITERIA + " (CompID, Name, Description, Type, Data) VALUES (?,?,?,?,?)", true);
@@ -90,6 +90,8 @@ public class CompBackendManager {
 				if (end != null) {
 					result.setEndDate(end.getTime());
 				}
+				
+				result.setMaxEntrants(rs.getInt("MaxEntrants"));
 				
 				// TODO: Prizes
 				
