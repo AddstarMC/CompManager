@@ -8,8 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
@@ -29,24 +27,6 @@ public class EventListener implements Listener {
 		this.logger = logger;
 		this.manager = manager;
 		this.bridge = bridge;
-	}
-	
-	// Whitelist check
-	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
-	public void onPlayerPreJoin(AsyncPlayerPreLoginEvent event) {
-		boolean isWhitelisted = false;
-		try {
-			isWhitelisted = whitelist.isWhitelisted(event.getUniqueId());
-			
-		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Failed to check whitelist.", e);
-		}
-		
-		if (!isWhitelisted) {
-			// TODO: Customizable messages
-			event.disallow(Result.KICK_WHITELIST, "placeholder: whitelist kick");
-			logger.info(String.format("%s was denied access. They are not on the whitelist", event.getName()));
-		}
 	}
 	
 	// Handle comp running join checks
@@ -72,6 +52,21 @@ public class EventListener implements Listener {
 		if (!manager.isCompRunning()) {
 			// TODO: Customizable messages
 			event.getPlayer().sendMessage("placeholder: comp not running");
+			event.setCancelled(true);
+			return;
+		}
+		
+		// Check if the player is whitelisted
+		boolean isWhitelisted = false;
+		try {
+			isWhitelisted = whitelist.isWhitelisted(event.getPlayer());
+		} catch (SQLException e) {
+			logger.log(Level.SEVERE, "Failed to check whitelist.", e);
+		}
+		
+		if (!isWhitelisted) {
+			// TODO: Customizable messages
+			event.getPlayer().sendMessage("placeholder: not whitelisted");
 			event.setCancelled(true);
 			return;
 		}
