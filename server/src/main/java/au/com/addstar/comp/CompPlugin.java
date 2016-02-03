@@ -50,7 +50,7 @@ public class CompPlugin extends JavaPlugin {
 		bridge = new P2Bridge(PS.get());
 		
 		// Register commands
-		new CompAdminCommand(whitelistHandler).registerAs(getCommand("compadmin"));
+		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
 		registerQueryHandlers();
 		
 		// Start listeners

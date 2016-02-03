@@ -13,6 +13,8 @@ permissions:
     default: OP
   comp.admin.list:
     default: OP
+  comp.admin.reload:
+    default: OP
 
 commands:
   compadmin:

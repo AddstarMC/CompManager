@@ -6,6 +6,7 @@ version: ${plugin.version}
 main: au.com.addstar.comp.CompPlugin
 depend: [ProtocolLib, Monolith]
 
+# TODO: standardise permissions
 permissions:
   comp.admin:
     default: OP
@@ -14,6 +15,8 @@ permissions:
   comp.enter.bypass:
     default: OP
   comp.build.bypass:
+    default: OP
+  comp.admin.reload:
     default: OP
 
 commands:
