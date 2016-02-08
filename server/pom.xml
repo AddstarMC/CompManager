@@ -10,6 +10,11 @@
 
 	<repositories>
 		<repository>
+			<id>addstar-release-repo</id>
+			<url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
+		</repository>
+	
+		<repository>
 			<id>addstar-repo</id>
 			<url>http://maven.addstar.com.au/artifactory/all-snapshot</url>
 			<snapshots>
@@ -40,8 +45,8 @@
 
 		<dependency>
 			<groupId>com.intellectualcrafters</groupId>
-			<artifactId>plotsquared</artifactId>
-			<version>3.2.27-SNAPSHOT</version>
+			<artifactId>PlotSquared</artifactId>
+			<version>3.2.26</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

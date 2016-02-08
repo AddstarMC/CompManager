@@ -1,21 +1,32 @@
 package au.com.addstar.comp;
 
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Sets;
+import com.intellectualcrafters.plot.object.Plot;
+
+import au.com.addstar.comp.entry.EnterHandler;
+import au.com.addstar.comp.entry.EntryDeniedException;
+import au.com.addstar.comp.entry.EntryDeniedException.Reason;
+import au.com.addstar.comp.util.P2Bridge;
 
 public class CompManager {
 	private final CompBackendManager backend;
+	private final P2Bridge bridge;
 	private final Logger logger;
 	
 	private Competition currentComp;
 	
-	public CompManager(CompBackendManager backend, Logger logger) {
+	public CompManager(CompBackendManager backend, P2Bridge bridge, Logger logger) {
 		this.backend = backend;
+		this.bridge = bridge;
 		this.logger = logger;
 	}
 	
@@ -65,5 +76,75 @@ public class CompManager {
 	 */
 	public void setCurrentComp(Competition comp) {
 		currentComp = comp;
+	}
+	
+	/**
+	 * Checks if a player has entered this comp
+	 * @param player The player to check
+	 * @return True if they have a plot
+	 */
+	public boolean hasEntered(OfflinePlayer player) {
+		return bridge.getPlot(player.getUniqueId()) != null;
+	}
+	
+	// Plots reserved for players entering the comp (but not finished entering)
+	private Set<Plot> reservedPlots = Sets.newHashSet();
+	
+	/**
+	 * Tries to enter a player into the current comp.
+	 * @param player The player to enter
+	 * @return Returns a handler to continue or abort the entry process (for handling rule acceptance, etc.)
+	 * @throws EntryDeniedException Thrown if the player cannot enter the comp
+	 */
+	public EnterHandler enterComp(OfflinePlayer player) throws EntryDeniedException {
+		if (!isCompRunning()) {
+			throw new EntryDeniedException(Reason.NotRunning, "No comp running");
+		}
+		
+		if (hasEntered(player)) {
+			throw new EntryDeniedException(Reason.AlreadyEntered, player.getName() + " is already entered");
+		}
+		
+		if (bridge.getUsedPlotCount() >= currentComp.getMaxEntrants()) {
+			throw new EntryDeniedException(Reason.Full, "Comp is full");
+		}
+		
+		// Find a plot for them
+		Plot target = null;
+		for (Plot plot : bridge.getOrderedPlots(currentComp.getMaxEntrants())) {
+			// Must not have an owner, or be reserved
+			if (!plot.hasOwner() && !reservedPlots.contains(plot)) {
+				target = plot;
+				break;
+			}
+		}
+		
+		// Can happen if there are reserved plots
+		if (target == null) {
+			throw new EntryDeniedException(Reason.Full, "Comp is full");
+		}
+		
+		reservedPlots.add(target);
+		
+		return new EnterHandlerImpl(currentComp, target, player);
+	}
+	
+	private class EnterHandlerImpl extends EnterHandler {
+		public EnterHandlerImpl(Competition comp, Plot plot, OfflinePlayer player) {
+			super(comp, plot, player);
+		}
+
+		@Override
+		public void complete() {
+			// Assign the plot
+			bridge.claim(getPlot(), getPlayer(), true);
+			reservedPlots.remove(getPlot());
+		}
+		
+		@Override
+		public void abort() {
+			reservedPlots.remove(getPlot());
+			// No further action required
+		}
 	}
 }

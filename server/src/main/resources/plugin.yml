@@ -18,8 +18,13 @@ permissions:
     default: OP
   comp.admin.reload:
     default: OP
+  comp.join:
+    default: true
 
 commands:
   compadmin:
     permission: comp.admin
     usage: /<command> <subcommand> ...
+  compjoin:
+    permission: comp.join
+    usage: /<command>

@@ -10,6 +10,7 @@ import com.intellectualcrafters.plot.PS;
 import com.lambdaworks.redis.RedisException;
 
 import au.com.addstar.comp.commands.CompAdminCommand;
+import au.com.addstar.comp.commands.JoinCommand;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.query.*;
 import au.com.addstar.comp.redis.RedisManager;
@@ -46,11 +47,12 @@ public class CompPlugin extends JavaPlugin {
 		
 		// Initialize other modules
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
-		compManager = new CompManager(new CompBackendManager(databaseManager), getLogger());
 		bridge = new P2Bridge(PS.get());
+		compManager = new CompManager(new CompBackendManager(databaseManager), bridge, getLogger());
 		
 		// Register commands
 		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
+		new JoinCommand(compManager).registerAs(getCommand("compjoin"));
 		registerQueryHandlers();
 		
 		// Start listeners
