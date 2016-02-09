@@ -48,6 +48,12 @@
 			<artifactId>PlotSquared</artifactId>
 			<version>3.2.26</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sk89q</groupId>
+					<artifactId>worldedit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

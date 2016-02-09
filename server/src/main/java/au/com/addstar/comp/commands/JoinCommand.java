@@ -1,6 +1,7 @@
 package au.com.addstar.comp.commands;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,14 +11,18 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import au.com.addstar.comp.CompManager;
+import au.com.addstar.comp.confirmations.Confirmation;
+import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.entry.EnterHandler;
 import au.com.addstar.comp.entry.EntryDeniedException;
 
 public class JoinCommand implements TabExecutor {
 	private final CompManager manager;
+	private final ConfirmationManager confirmationManager;
 	
-	public JoinCommand(CompManager manager) {
+	public JoinCommand(CompManager manager, ConfirmationManager confirmationManager) {
 		this.manager = manager;
+		this.confirmationManager = confirmationManager;
 	}
 	
 	public void registerAs(PluginCommand command) {
@@ -34,10 +39,19 @@ public class JoinCommand implements TabExecutor {
 		
 		try {
 			EnterHandler handler = manager.enterComp((Player)sender);
-			// TODO: Add confirmation and rule acceptance
-			handler.complete();
+			sender.sendMessage("Placeholder: We will display comp info here as well as the rules");
+			sender.sendMessage("Please use '/agree " + manager.getCurrentComp().getTheme() + "' to join the comp");
+			
 			// TODO: Customize messages
-			sender.sendMessage("Placeholder: You have joined the comp");
+			Confirmation<EnterHandler> confirmation = Confirmation.builder(handler)
+					.expiresIn(20, TimeUnit.SECONDS)
+					.withAcceptMessage("Placeholder: You have joined the comp")
+					.withExpireMessage("Placeholder: You did not accept quick enough")
+					.withRequiredToken(manager.getCurrentComp().getTheme())
+					.withTokenFailMessage("Placeholder: You did not enter the correct phase")
+					.build();
+			
+			confirmationManager.addConfirmation((Player)sender, confirmation);
 		} catch (EntryDeniedException e) {
 			// TODO: Customize messages
 			sender.sendMessage("Placeholder: denied " + e.getReason());

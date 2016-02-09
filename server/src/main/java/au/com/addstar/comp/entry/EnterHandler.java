@@ -5,8 +5,9 @@ import org.bukkit.OfflinePlayer;
 import com.intellectualcrafters.plot.object.Plot;
 
 import au.com.addstar.comp.Competition;
+import au.com.addstar.comp.confirmations.Confirmable;
 
-public abstract class EnterHandler {
+public abstract class EnterHandler implements Confirmable {
 	private final Competition comp;
 	private final Plot plot;
 	private final OfflinePlayer player;
@@ -39,6 +40,11 @@ public abstract class EnterHandler {
 	 */
 	public OfflinePlayer getPlayer() {
 		return player;
+	}
+	
+	@Override
+	public void confirm() {
+		complete();
 	}
 	
 	/**

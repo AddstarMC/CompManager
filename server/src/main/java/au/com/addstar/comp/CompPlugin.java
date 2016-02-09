@@ -9,8 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.intellectualcrafters.plot.PS;
 import com.lambdaworks.redis.RedisException;
 
+import au.com.addstar.comp.commands.AgreeCommand;
 import au.com.addstar.comp.commands.CompAdminCommand;
 import au.com.addstar.comp.commands.JoinCommand;
+import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.query.*;
 import au.com.addstar.comp.redis.RedisManager;
@@ -23,6 +25,7 @@ public class CompPlugin extends JavaPlugin {
 	private CompManager compManager;
 	private RedisManager redisManager;
 	private P2Bridge bridge;
+	private ConfirmationManager confirmationManager;
 	
 	@Override
 	public void onEnable() {
@@ -49,14 +52,22 @@ public class CompPlugin extends JavaPlugin {
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		bridge = new P2Bridge(PS.get());
 		compManager = new CompManager(new CompBackendManager(databaseManager), bridge, getLogger());
+		confirmationManager = new ConfirmationManager();
 		
 		// Register commands
 		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
-		new JoinCommand(compManager).registerAs(getCommand("compjoin"));
+		new JoinCommand(compManager, confirmationManager).registerAs(getCommand("compjoin"));
+		new AgreeCommand(confirmationManager).registerAs(getCommand("compagree"));
 		registerQueryHandlers();
 		
 		// Start listeners
 		Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager, bridge), this);
+		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+			@Override
+			public void run() {
+				confirmationManager.expireConfirmations();
+			}
+		}, 20, 20);
 		
 		// Load the comp
 		compManager.reloadCurrentComp();

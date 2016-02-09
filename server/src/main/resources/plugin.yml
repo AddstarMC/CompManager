@@ -28,3 +28,7 @@ commands:
   compjoin:
     permission: comp.join
     usage: /<command>
+  compagree:
+    aliases: [agree]
+    usage: /<command>
+  
