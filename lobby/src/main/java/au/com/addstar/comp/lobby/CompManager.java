@@ -1,29 +1,49 @@
 package au.com.addstar.comp.lobby;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 
 import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.Competition;
+import au.com.addstar.comp.redis.RedisManager;
 
 public class CompManager {
 	private final CompBackendManager backend;
+	private final RedisManager redis;
 	private final Logger logger;
 	
-	private Map<String, Competition> competitions;
+	private Map<String, CompServer> servers;
 	
-	public CompManager(CompBackendManager backend, Logger logger) {
+	public CompManager(CompBackendManager backend, RedisManager redis, Logger logger) {
 		this.backend = backend;
+		this.redis = redis;
 		this.logger = logger;
 		
-		competitions = Maps.newHashMap();
+		servers = Maps.newHashMap();
+	}
+	
+	/**
+	 * Removes all key-pairs where the key is not in the provided set 
+	 * @param map The existing map
+	 * @param keys The new set of keys
+	 */
+	private void retainAll(Map<String, ?> map, Set<String> keys) {
+		Iterator<String> keyIterator = map.keySet().iterator();
+		while (keyIterator.hasNext()) {
+			String key = keyIterator.next();
+			if (!keys.contains(key)) {
+				keyIterator.remove();
+			}
+		}
 	}
 	
 	/**
@@ -31,14 +51,24 @@ public class CompManager {
 	 */
 	public void reload() {
 		try {
-			Map<String, Integer> map = backend.getServerComps();
-			competitions.clear();
+			Map<String, Optional<Integer>> map = backend.getServerComps();
+			retainAll(servers, map.keySet());
 			
-			for (Entry<String, Integer> entry : map.entrySet()) {
-				Competition comp = backend.load(entry.getValue());
-				if (comp != null) {
-					competitions.put(entry.getKey().toLowerCase(), comp);
-					logger.info("Competition on " + entry.getKey());
+			for (String serverId : map.keySet()) {
+				CompServer server = servers.get(serverId);
+				if (server == null) {
+					server = new CompServer(serverId, redis, backend);
+					servers.put(serverId, server);
+				}
+				
+				// Load in the competition object
+				Optional<Integer> compId = map.get(serverId);
+				server.currentComp = null;
+				if (compId.isPresent()) {
+					Competition comp = backend.load(compId.get());
+					if (comp != null) {
+						server.currentComp = comp;
+					}
 				}
 			}
 		} catch (SQLException e) {
@@ -47,30 +77,12 @@ public class CompManager {
 	}
 	
 	/**
-	 * Gets the currently selected competition for a server.
-	 * The competition may or may not be currently running
-	 * @param serverId The id of the server
-	 * @return A Competition object or null
-	 */
-	public Competition getCurrentComp(String serverId) {
-		return competitions.get(serverId.toLowerCase());
-	}
-	
-	/**
-	 * Gets all currently selected competitions on all servers
-	 * @return A map of server id, to comp. 
-	 */
-	public Map<String, Competition> getCurrentComps() {
-		return Collections.unmodifiableMap(competitions);
-	}
-	
-	/**
 	 * Gets all known comp server ids. The servers must have checked in for them to be
 	 * present in this set. 
 	 * @return An unmodifiable set of server ids.
 	 */
 	public Set<String> getServerIds() {
-		return Collections.unmodifiableSet(competitions.keySet());
+		return Collections.unmodifiableSet(servers.keySet());
 	}
 	
 	/**
@@ -80,15 +92,15 @@ public class CompManager {
 	 * @return The server or null
 	 */
 	public CompServer getServer(String id) {
-		throw new UnsupportedOperationException("Not yet implemented");
+		return servers.get(id);
 	}
 	
 	/**
 	 * Gets all known servers. The servers must have checked in for them to be
 	 * present in this set. 
-	 * @return An unmodifiable set of servers
+	 * @return An unmodifiable collection of servers
 	 */
-	public Set<CompServer> getAllServers() {
-		throw new UnsupportedOperationException("Not yet implemented");
+	public Collection<CompServer> getServers() {
+		return Collections.unmodifiableCollection(servers.values());
 	}
 }

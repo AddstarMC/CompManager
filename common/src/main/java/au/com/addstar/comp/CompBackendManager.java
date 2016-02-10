@@ -195,19 +195,21 @@ public class CompBackendManager {
 	 * @return A map of serverID to compID
 	 * @throws SQLException Thrown if an SQLException occurs in the database
 	 */
-	public Map<String, Integer> getServerComps() throws SQLException {
+	public Map<String, Optional<Integer>> getServerComps() throws SQLException {
 		ConnectionHandler handler = null;
 		try {
 			handler = manager.getPool().getConnection();
 			
-			Map<String, Integer> results = Maps.newHashMap();
+			Map<String, Optional<Integer>> results = Maps.newHashMap();
 			
 			ResultSet rs = handler.executeQuery(STATEMENT_SERVER_GETALL);
 			while (rs.next()) {
 				String serverId = rs.getString("ServerID");
 				int compId = rs.getInt("CompID");
 				if (!rs.wasNull()) {
-					results.put(serverId, compId);
+					results.put(serverId, Optional.of(compId));
+				} else {
+					results.put(serverId, Optional.<Integer>absent());
 				}
 			}
 			

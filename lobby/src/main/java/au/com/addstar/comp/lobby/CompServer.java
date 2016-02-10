@@ -1,22 +1,42 @@
 package au.com.addstar.comp.lobby;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
 
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.Competition;
+import au.com.addstar.comp.redis.RedisManager;
 
 /**
  * Provides access to query data from a
  * competition server.
  */
 public class CompServer {
+	private final RedisManager redis;
+	private final CompBackendManager backend;
+	
+	private final String serverId;
+	Competition currentComp;
+	
+	CompServer(String serverId, RedisManager redis, CompBackendManager backend) {
+		this.redis = redis;
+		this.backend = backend;
+		this.serverId = serverId;
+	}
+	
 	/**
 	 * Gets the id of this server
 	 * @return The id
 	 */
 	public String getId() {
-		throw new UnsupportedOperationException("Not yet implemented");
+		return serverId;
 	}
 	
 	/**
@@ -25,24 +45,70 @@ public class CompServer {
 	 * @return The current comp
 	 */
 	public Competition getCurrentComp() {
-		throw new UnsupportedOperationException("Not yet implemented");
+		return currentComp;
+	}
+	
+	/**
+	 * Reloads this servers comp info
+	 * @throws SQLException Thrown if an error occurs in the backend
+	 */
+	public void reload() throws SQLException {
+		currentComp = null;
+		
+		Optional<Integer> compId = backend.getCompID(serverId);
+		if (compId.isPresent()) {
+			Competition comp = backend.load(compId.get());
+			if (comp != null) {
+				currentComp = comp;
+			}
+		}
 	}
 	
 	/**
 	 * Checks if a player is entered into this servers active comp
 	 * @param playerId The uuid of the player to check
-	 * @return True if they are entered
+	 * @return A future that returns true if they are entered
 	 */
-	public boolean isEntrant(UUID playerId) {
-		throw new UnsupportedOperationException("Not yet implemented");
+	public ListenableFuture<Boolean> isEntrant(UUID playerId) {
+		ListenableFuture<String> future = redis.query(serverId, "is_entrant", playerId.toString());
+		
+		return Futures.transform(future, new Function<String, Boolean>() {
+			@Override
+			public Boolean apply(String input) {
+				return Boolean.valueOf(input);
+			}
+		});
 	}
 	
 	/**
 	 * Checks if a player is entered into this servers active comp
 	 * @param player The player to check
-	 * @return True if they are entered
+	 * @return A future that returns true if they are entered
 	 */
-	public boolean isEntrant(OfflinePlayer player) {
+	public ListenableFuture<Boolean> isEntrant(OfflinePlayer player) {
 		return isEntrant(player.getUniqueId());
+	}
+	
+	/**
+	 * Gets the number of entrants in this comp
+	 * @return A future that returns the number of entrants
+	 */
+	public ListenableFuture<Integer> getEntrantCount() {
+		ListenableFuture<String> future = redis.query(serverId, "entrant_count");
+		
+		return Futures.transform(future, new Function<String, Integer>() {
+			@Override
+			public Integer apply(String input) {
+				return Integer.valueOf(input);
+			}
+		});
+	}
+	
+	/**
+	 * Pings the server to see if it is online
+	 * @return A Future
+	 */
+	public ListenableFuture<?> ping() {
+		return redis.query(serverId, "ping");
 	}
 }

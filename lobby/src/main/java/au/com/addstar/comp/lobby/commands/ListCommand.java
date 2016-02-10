@@ -1,5 +1,6 @@
 package au.com.addstar.comp.lobby.commands;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +8,11 @@ import java.util.Map.Entry;
 
 import org.bukkit.command.CommandSender;
 
+import com.google.common.collect.Maps;
+
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.lobby.CompManager;
+import au.com.addstar.comp.lobby.CompServer;
 import au.com.addstar.monolith.command.BadArgumentException;
 import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
@@ -53,7 +57,14 @@ public class ListCommand implements ICommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String parent, String label, String[] args) throws BadArgumentException {
-		Map<String, Competition> comps = manager.getCurrentComps();
+		Collection<CompServer> servers = manager.getServers();
+		
+		Map<String, Competition> comps = Maps.newHashMap();
+		for (CompServer server : servers) {
+			if (server.getCurrentComp() != null) {
+				comps.put(server.getId(), server.getCurrentComp());
+			}
+		}
 		
 		sender.sendMessage(ChatColor.GOLD + "Competitions:");
 		if (comps.isEmpty()) {
