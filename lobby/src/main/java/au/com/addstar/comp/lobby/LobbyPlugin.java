@@ -48,7 +48,7 @@ public class LobbyPlugin extends JavaPlugin {
 		
 		// Initialize other modules
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
-		compManager = new CompManager(new CompBackendManager(databaseManager), redisManager, getLogger());
+		compManager = new CompManager(new CompBackendManager(databaseManager), redisManager, this);
 		compManager.reload();
 		signManager = new SignManager(new File(getDataFolder(), "signs.yml"), compManager);
 		try {
@@ -67,6 +67,8 @@ public class LobbyPlugin extends JavaPlugin {
 		// Register tasks
 		// TODO: Make refresh interval configurable
 		Bukkit.getScheduler().runTaskTimer(this, new SignRefresher(signManager), 0, 200);
+		
+		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
 	
 	@Override

@@ -7,7 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
@@ -19,14 +20,14 @@ import au.com.addstar.comp.redis.RedisManager;
 public class CompManager {
 	private final CompBackendManager backend;
 	private final RedisManager redis;
-	private final Logger logger;
+	private final Plugin plugin;
 	
 	private Map<String, CompServer> servers;
 	
-	public CompManager(CompBackendManager backend, RedisManager redis, Logger logger) {
+	public CompManager(CompBackendManager backend, RedisManager redis, Plugin plugin) {
 		this.backend = backend;
 		this.redis = redis;
-		this.logger = logger;
+		this.plugin = plugin;
 		
 		servers = Maps.newHashMap();
 	}
@@ -57,7 +58,7 @@ public class CompManager {
 			for (String serverId : map.keySet()) {
 				CompServer server = servers.get(serverId);
 				if (server == null) {
-					server = new CompServer(serverId, redis, backend);
+					server = new CompServer(serverId, plugin, redis, backend);
 					servers.put(serverId, server);
 				}
 				
@@ -72,7 +73,7 @@ public class CompManager {
 				}
 			}
 		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Unable to load competitions", e);
+			plugin.getLogger().log(Level.SEVERE, "Unable to load competitions", e);
 		}
 	}
 	

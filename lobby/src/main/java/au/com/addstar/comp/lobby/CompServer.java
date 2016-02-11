@@ -4,9 +4,13 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -19,13 +23,15 @@ import au.com.addstar.comp.redis.RedisManager;
  * competition server.
  */
 public class CompServer {
+	private final Plugin plugin;
 	private final RedisManager redis;
 	private final CompBackendManager backend;
 	
 	private final String serverId;
 	Competition currentComp;
 	
-	CompServer(String serverId, RedisManager redis, CompBackendManager backend) {
+	CompServer(String serverId, Plugin plugin, RedisManager redis, CompBackendManager backend) {
+		this.plugin = plugin;
 		this.redis = redis;
 		this.backend = backend;
 		this.serverId = serverId;
@@ -110,5 +116,17 @@ public class CompServer {
 	 */
 	public ListenableFuture<?> ping() {
 		return redis.query(serverId, "ping");
+	}
+	
+	/**
+	 * Sends a player to this server (if able)
+	 * @param player The player to send
+	 */
+	public void send(Player player) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("Connect");
+		out.writeUTF(serverId);
+		
+		player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
 	}
 }

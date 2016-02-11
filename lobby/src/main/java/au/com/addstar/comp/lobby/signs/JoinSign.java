@@ -27,8 +27,20 @@ public class JoinSign extends BaseSign {
 	
 	@Override
 	public void onRightClick(Player player) {
-		player.sendMessage("TODO: Send to comp world");
-		// TODO Send player to comp
+		final CompServer server = manager.getServer(getServerId());
+		if (server == null || server.getCurrentComp() == null) {
+			// TODO: Customize messages
+			player.sendMessage("Placeholder: Comp is closed");
+			return;
+		}
+		
+		if (server.getCurrentComp().getState() == CompState.Closed) {
+			// TODO: Customize messages
+			player.sendMessage("Placeholder: Comp is closed");
+			return;
+		}
+		
+		server.send(player);
 	}
 
 	@Override
