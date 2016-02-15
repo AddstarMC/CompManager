@@ -17,6 +17,8 @@ permissions:
     default: OP
   comp.admin.sign:
     default: OP
+  comp.admin.info:
+    default: OP
 
 commands:
   compadmin:

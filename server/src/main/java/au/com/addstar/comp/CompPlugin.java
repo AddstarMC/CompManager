@@ -11,6 +11,7 @@ import com.lambdaworks.redis.RedisException;
 
 import au.com.addstar.comp.commands.AgreeCommand;
 import au.com.addstar.comp.commands.CompAdminCommand;
+import au.com.addstar.comp.commands.CompInfoCommand;
 import au.com.addstar.comp.commands.JoinCommand;
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
@@ -58,6 +59,7 @@ public class CompPlugin extends JavaPlugin {
 		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
 		new JoinCommand(compManager, confirmationManager).registerAs(getCommand("compjoin"));
 		new AgreeCommand(confirmationManager).registerAs(getCommand("compagree"));
+		new CompInfoCommand(compManager).registerAs(getCommand("compinfo"));
 		registerQueryHandlers();
 		
 		// Start listeners

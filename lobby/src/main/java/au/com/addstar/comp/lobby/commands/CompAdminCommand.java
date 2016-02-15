@@ -16,5 +16,6 @@ public final class CompAdminCommand extends RootCommandDispatcher {
 		registerCommand(new ReloadCommand(manager));
 		registerCommand(new CompDebugCommand(redis));
 		registerCommand(new SignCommand(signManager, manager));
+		registerCommand(new InfoCommand(manager));
 	}
 }

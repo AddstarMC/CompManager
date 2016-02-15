@@ -31,4 +31,5 @@ commands:
   compagree:
     aliases: [agree]
     usage: /<command>
-  
+  compinfo:
+    usage: /<command>
