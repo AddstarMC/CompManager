@@ -75,11 +75,16 @@ public class CompBackendManager {
 				result.setCompId(id);
 				result.setTheme(rs.getString("Theme"));
 				
-				CompState state = CompState.valueOf(rs.getString("State"));
-				if (state == null) {
-					state = CompState.Closed;
+				String stateString = rs.getString("State");
+				if (stateString.equalsIgnoreCase("auto")) {
+					result.setAutoState();
+				} else {
+					CompState state = CompState.valueOf(rs.getString("State"));
+					if (state == null) {
+						state = CompState.Closed;
+					}
+					result.setState(state);
 				}
-				result.setState(state);
 				
 				Timestamp start = rs.getTimestamp("StartDate");
 				if (start != null) {

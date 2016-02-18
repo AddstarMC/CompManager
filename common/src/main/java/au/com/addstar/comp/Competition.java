@@ -38,12 +38,47 @@ public class Competition {
 		compId = id;
 	}
 	
+	/**
+	 * Gets the current state of this competition
+	 * @return One of CompState
+	 */
 	public CompState getState() {
-		return state;
+		if (state != null) {
+			return state;
+		}
+		
+		if (System.currentTimeMillis() >= startDate && System.currentTimeMillis() < endDate) {
+			return CompState.Open;
+		} else {
+			// TODO: Voting state
+			return CompState.Closed;
+		}
 	}
 	
+	/**
+	 * Checks if this comp is running automatically
+	 * @return True if state will change based on time
+	 */
+	public boolean isAutomatic() {
+		return state == null;
+	}
+	
+	/**
+	 * Overrides the state of this comp.
+	 * When set, this comp will not automatically update the state
+	 * @param state The overriding state
+	 * @see #setAutoState()
+	 */
 	public void setState(CompState state) {
 		this.state = state;
+	}
+	
+	/**
+	 * Sets the state to be automatically determined based on time
+	 * @see #setState(CompState)
+	 */
+	public void setAutoState() {
+		this.state = null;
 	}
 	
 	public String getTheme() {
@@ -107,6 +142,6 @@ public class Competition {
 	}
 	
 	public boolean isRunning() {
-		return (state == CompState.Open && System.currentTimeMillis() > startDate && System.currentTimeMillis() < endDate);
+		return getState() == CompState.Open;
 	}
 }

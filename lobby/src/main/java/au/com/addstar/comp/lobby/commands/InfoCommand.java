@@ -98,7 +98,7 @@ public class InfoCommand implements ICommand {
 		sender.sendMessage(ChatColor.BOLD + comp.getTheme() + " " + stateString);
 		
 		// Display the end time
-		if (timeEnd != -1) {
+		if (comp.isAutomatic() && timeEnd != -1) {
 			String timeEndString = endFormat.format(timeEnd);
 			long remaining = timeEnd - System.currentTimeMillis();
 			
