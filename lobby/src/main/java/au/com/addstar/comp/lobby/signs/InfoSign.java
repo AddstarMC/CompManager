@@ -144,8 +144,9 @@ public class InfoSign extends BaseSign {
 			time = comp.getEndDate();
 			break;
 		case Voting:
-			// TODO: Need to have access to voting end time
-			return;
+			setLine(1, "Voting Closes");
+			time = comp.getVoteEndDate();
+			break;
 		}
 		
 		setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + endFormat.format(time));
@@ -168,7 +169,8 @@ public class InfoSign extends BaseSign {
 			time = comp.getEndDate();
 			break;
 		case Voting:
-			// TODO: Need to have access to voting end time
+			setLine(1, "Time Left");
+			time = comp.getVoteEndDate();
 			return;
 		}
 		
@@ -198,7 +200,9 @@ public class InfoSign extends BaseSign {
 			time = comp.getEndDate();
 			break;
 		case Voting:
-			// TODO: Need to have access to voting end time
+			setLine(0, "Voting Closes");
+			setLine(1, "Time Left");
+			time = comp.getVoteEndDate();
 			return;
 		}
 		

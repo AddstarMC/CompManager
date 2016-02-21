@@ -47,7 +47,7 @@ public class CompInfoCommand implements CommandExecutor {
 			break;
 		case Voting:
 			stateString = ChatColor.AQUA.toString() + ChatColor.BOLD + "VOTING";
-			timeEnd = -1; // TODO: Voting end time
+			timeEnd = comp.getVoteEndDate();
 			break;
 		default:
 		case Closed:

@@ -19,6 +19,7 @@ public class Competition {
 	
 	private long startDate;
 	private long endDate;
+	private long voteEndDate;
 	private int maxEntrants;
 	
 	private BasePrize firstPrize;
@@ -49,8 +50,9 @@ public class Competition {
 		
 		if (System.currentTimeMillis() >= startDate && System.currentTimeMillis() < endDate) {
 			return CompState.Open;
+		} else if (System.currentTimeMillis() >= endDate && System.currentTimeMillis() < voteEndDate) {
+			return CompState.Voting;
 		} else {
-			// TODO: Voting state
 			return CompState.Closed;
 		}
 	}
@@ -107,6 +109,14 @@ public class Competition {
 	
 	public void setEndDate(long endDate) {
 		this.endDate = endDate;
+	}
+	
+	public long getVoteEndDate() {
+		return voteEndDate;
+	}
+	
+	public void setVoteEndDate(long endDate) {
+		voteEndDate = endDate;
 	}
 	
 	public int getMaxEntrants() {
