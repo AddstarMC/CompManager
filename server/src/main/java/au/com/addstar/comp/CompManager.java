@@ -7,8 +7,11 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
 import com.intellectualcrafters.plot.object.Plot;
 
@@ -18,6 +21,15 @@ import au.com.addstar.comp.entry.EntryDeniedException.Reason;
 import au.com.addstar.comp.util.P2Bridge;
 
 public class CompManager {
+	/**
+	 * A predicate you can use to check if a player has entered the comp
+	 */
+	public final Predicate<Player> Entrant;
+	/**
+	 * A predicate you can use to check if a player has not entered the comp 
+	 */
+	public final Predicate<Player> NonEntrant;
+	
 	private final CompBackendManager backend;
 	private final P2Bridge bridge;
 	private final Logger logger;
@@ -28,6 +40,19 @@ public class CompManager {
 		this.backend = backend;
 		this.bridge = bridge;
 		this.logger = logger;
+		
+		Entrant = new Predicate<Player>() {
+			@Override
+			public boolean apply(Player player) {
+				if (currentComp != null && currentComp.getState() != CompState.Closed) {
+					return CompManager.this.bridge.getPlot(player.getUniqueId()) != null;
+				} else {
+					return false;
+				}
+			}
+		};
+		
+		NonEntrant = Predicates.not(Entrant);
 	}
 	
 	/**

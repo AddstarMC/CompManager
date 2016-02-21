@@ -48,9 +48,11 @@ public class Competition {
 			return state;
 		}
 		
-		if (System.currentTimeMillis() >= startDate && System.currentTimeMillis() < endDate) {
+		if (System.currentTimeMillis() < startDate) {
+			return CompState.Closed;
+		} else if (System.currentTimeMillis() < endDate) {
 			return CompState.Open;
-		} else if (System.currentTimeMillis() >= endDate && System.currentTimeMillis() < voteEndDate) {
+		} else if (System.currentTimeMillis() < voteEndDate) {
 			return CompState.Voting;
 		} else {
 			return CompState.Closed;

@@ -15,6 +15,7 @@ import au.com.addstar.comp.commands.CompInfoCommand;
 import au.com.addstar.comp.commands.JoinCommand;
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
+import au.com.addstar.comp.notifications.NotificationManager;
 import au.com.addstar.comp.query.*;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.P2Bridge;
@@ -27,6 +28,7 @@ public class CompPlugin extends JavaPlugin {
 	private RedisManager redisManager;
 	private P2Bridge bridge;
 	private ConfirmationManager confirmationManager;
+	private NotificationManager notificationManager;
 	
 	@Override
 	public void onEnable() {
@@ -54,6 +56,7 @@ public class CompPlugin extends JavaPlugin {
 		bridge = new P2Bridge(PS.get());
 		compManager = new CompManager(new CompBackendManager(databaseManager), bridge, getLogger());
 		confirmationManager = new ConfirmationManager();
+		notificationManager = new NotificationManager();
 		
 		// Register commands
 		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
@@ -70,6 +73,7 @@ public class CompPlugin extends JavaPlugin {
 				confirmationManager.expireConfirmations();
 			}
 		}, 20, 20);
+		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 60, 60);
 		
 		// Load the comp
 		compManager.reloadCurrentComp();
