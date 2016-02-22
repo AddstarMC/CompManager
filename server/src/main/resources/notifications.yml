@@ -1,0 +1,45 @@
+broadcast-settings:
+  interval: 15m
+  in-sequence: true
+  # The location to display notifications at.
+  # Values: action, chat, system, title, subtitle
+  location: action
+  # This is the time notifications are shown for
+  # This only applies to action, title, and subtitle locations
+  display-time: 5s
+
+# All the broadcasts to show to players
+# Each broadcast entry should be formatted like so:
+# <id>:                             required
+#   message: <message-to-display>   required
+#   if-state: <OPEN|VOTING>         optional
+#   if-entrant: <true|false>        optional
+#   if-full: <true|false>           optional
+#
+# The message can contain colour codes prefixed with &
+#   You may also use tokens which are replaced when displayed
+# The if-<condition> options can be added to add conditions 
+#   for displaying the message. If a condition is not supplied
+#   no restriction will be applied.
+# Conditions:
+#   if-state: Only displays the message if the state matches
+#   if-entrant: true or false, checks if the player has entered the comp
+#   if-full: true or false, checks if the comp is full 
+broadcasts:
+  1:
+    message: Time remaining ${time-left}
+    if-state: OPEN
+  2:
+    message: Voting closes in ${time-left}
+    if-state: VOTING
+  3:
+    message: Use /compinfo to view theme, criteria, and time remaining
+    if-state: OPEN
+  4:
+    message: Use /comp or /spawn to return to the lobby
+  5:
+    message: This comp is ${theme}
+  6:
+    message: Use /compvote to vote for plots
+    if-state: VOTING
+  

@@ -112,6 +112,30 @@ public class CompManager {
 		return bridge.getPlot(player.getUniqueId()) != null;
 	}
 	
+	/**
+	 * Checks if the current comp is full
+	 * @return True if its full
+	 */
+	public boolean isFull() {
+		if (currentComp == null) {
+			return false;
+		}
+		
+		if (bridge.getUsedPlotCount() >= currentComp.getMaxEntrants()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public CompState getState() {
+		if (currentComp != null) {
+			return currentComp.getState();
+		} else {
+			return CompState.Closed;
+		}
+	}
+	
 	// Plots reserved for players entering the comp (but not finished entering)
 	private Set<Plot> reservedPlots = Sets.newHashSet();
 	

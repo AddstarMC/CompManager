@@ -1,5 +1,6 @@
 package au.com.addstar.comp;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -56,10 +57,21 @@ public class CompPlugin extends JavaPlugin {
 		bridge = new P2Bridge(PS.get());
 		compManager = new CompManager(new CompBackendManager(databaseManager), bridge, getLogger());
 		confirmationManager = new ConfirmationManager();
-		notificationManager = new NotificationManager();
+		
+		File notificationsFile = new File(getDataFolder(), "notifications.yml");
+		if (!notificationsFile.exists()) {
+			saveResource("notifications.yml", false);
+		}
+		notificationManager = new NotificationManager(notificationsFile, compManager);
+		try {
+			notificationManager.reload();
+		} catch (IOException e) {
+			getLogger().log(Level.WARNING, "Failed to load notifications", e);
+			// Not a critical failure, just continue
+		}
 		
 		// Register commands
-		new CompAdminCommand(whitelistHandler, compManager).registerAs(getCommand("compadmin"));
+		new CompAdminCommand(whitelistHandler, compManager, notificationManager).registerAs(getCommand("compadmin"));
 		new JoinCommand(compManager, confirmationManager).registerAs(getCommand("compjoin"));
 		new AgreeCommand(confirmationManager).registerAs(getCommand("compagree"));
 		new CompInfoCommand(compManager).registerAs(getCommand("compinfo"));
@@ -73,7 +85,7 @@ public class CompPlugin extends JavaPlugin {
 				confirmationManager.expireConfirmations();
 			}
 		}, 20, 20);
-		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 60, 60);
+		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 10, 10);
 		
 		// Load the comp
 		compManager.reloadCurrentComp();
