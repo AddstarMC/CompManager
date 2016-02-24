@@ -93,7 +93,9 @@ public class RedisManager {
 		
 		// Send it
 		WaitFuture future = new WaitFuture(queryId);
-		waitingFutures.put(serverId, future);
+		synchronized (waitingFutures) {
+			waitingFutures.put(serverId, future);
+		}
 		send(serverId, data);
 		
 		return future;
