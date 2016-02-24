@@ -19,6 +19,7 @@ import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.notifications.NotificationManager;
 import au.com.addstar.comp.query.*;
 import au.com.addstar.comp.redis.RedisManager;
+import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
@@ -30,6 +31,7 @@ public class CompPlugin extends JavaPlugin {
 	private P2Bridge bridge;
 	private ConfirmationManager confirmationManager;
 	private NotificationManager notificationManager;
+	private Messages messages;
 	
 	@Override
 	public void onEnable() {
@@ -53,6 +55,14 @@ public class CompPlugin extends JavaPlugin {
 		}
 		
 		// Initialize other modules
+		messages = new Messages(new File(getDataFolder(), "messages.lang"), getResource("messages.lang"));
+		try {
+			messages.reload();
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Failed to load messages", e);
+			return;
+		}
+		
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		bridge = new P2Bridge(PS.get());
 		compManager = new CompManager(new CompBackendManager(databaseManager), bridge, getLogger());
@@ -72,13 +82,13 @@ public class CompPlugin extends JavaPlugin {
 		
 		// Register commands
 		new CompAdminCommand(whitelistHandler, compManager, notificationManager).registerAs(getCommand("compadmin"));
-		new JoinCommand(compManager, confirmationManager).registerAs(getCommand("compjoin"));
-		new AgreeCommand(confirmationManager).registerAs(getCommand("compagree"));
-		new CompInfoCommand(compManager).registerAs(getCommand("compinfo"));
+		new JoinCommand(compManager, confirmationManager, messages).registerAs(getCommand("compjoin"));
+		new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
+		new CompInfoCommand(compManager, messages).registerAs(getCommand("compinfo"));
 		registerQueryHandlers();
 		
 		// Start listeners
-		Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager, bridge), this);
+		Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager, bridge, messages), this);
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
 			@Override
 			public void run() {

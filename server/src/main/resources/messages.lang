@@ -1,0 +1,48 @@
+command.require.player=&cOnly players can use this
+
+# Messages for /compjoin
+join.none=&cThere is no current competition
+join.prompt.header=You have selected to join the &9{theme}&r comp.\n\
+Before you join, please take a look at the criteria of this comp:
+join.prompt.prize=&7First Prize &e&l{prize1}\n\
+&7Second Prize &e&l{prize2}
+join.prompt.theme=&7The theme is &e&l{theme}
+join.prompt.ends=&7Closes &e&l{time} &7(in &e&l{timeleft}&7)
+join.prompt.criteria.header=&eCriteria:
+join.prompt.criteria.format=\u25C9 &e{name}\n\
+&7&o  {description}
+join.prompt.footer=&eComp plots may only be used for participating in this comp.\n\
+&rUsing them for other purposes may incur an official warning and prevent you from\
+participating in further comps. Please adhere to the theme and criteria.\n\
+To complete the join process please use &9/agree {theme}&r.
+join.done=You have joined the comp. Good luck.
+join.denied.timeout=You did not accept in time.
+join.denied.full=Sorry, this comp is full.
+join.denied.not-running=Sorry, there isn't a comp running.
+join.denied.already-entered=You are already joined.
+join.denied.token=You did not enter the correct phrase.
+join.denied.whitelist=Sorry, you aren't whitelisted for this comp.
+
+# Kick messages
+kick.not-running=Sorry, there isn't a comp running.
+kick.closed=The comp is now closed.
+
+# Confirmation messages
+confirm.none=You have nothing to confirm
+
+# Info command
+info.none=&7There is no current competition
+info.header=&l{theme} {state}
+info.ends.open=&7Ends &e&l{time} &7(in &e&l{timeleft}&7)
+info.ends.voting=&7Closes &e&l{time} &7(in &e&l{timeleft}&7)
+info.prize=&7First &e&l{prize1}\n\
+&7Second prize &e&l{prize2}\n\
+&7Participation prize &e&l{prize3}
+info.criteria.header=&6Criteria:
+info.criteria.format=\u25C9 &e{name}\n\
+&7&o  {description}
+
+# Comp state
+state.open=&a&lOPEN
+state.voting=&3&lVOTING
+state.closed=&c&lCLOSED

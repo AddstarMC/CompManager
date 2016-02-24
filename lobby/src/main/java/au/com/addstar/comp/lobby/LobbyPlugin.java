@@ -16,6 +16,7 @@ import au.com.addstar.comp.lobby.signs.SignListener;
 import au.com.addstar.comp.lobby.signs.SignManager;
 import au.com.addstar.comp.lobby.signs.SignRefresher;
 import au.com.addstar.comp.redis.RedisManager;
+import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 public class LobbyPlugin extends JavaPlugin {
@@ -24,6 +25,7 @@ public class LobbyPlugin extends JavaPlugin {
 	private CompManager compManager;
 	private RedisManager redisManager;
 	private SignManager signManager;
+	private Messages messages;
 	
 	@Override
 	public void onEnable() {
@@ -47,10 +49,18 @@ public class LobbyPlugin extends JavaPlugin {
 		}
 		
 		// Initialize other modules
+		messages = new Messages(new File(getDataFolder(), "messages.lang"), getResource("messages.lang"));
+		try {
+			messages.reload();
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Failed to load messages", e);
+			return;
+		}
+		
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		compManager = new CompManager(new CompBackendManager(databaseManager), redisManager, this);
 		compManager.reload();
-		signManager = new SignManager(new File(getDataFolder(), "signs.yml"), compManager);
+		signManager = new SignManager(new File(getDataFolder(), "signs.yml"), compManager, messages);
 		try {
 			signManager.load();
 		} catch (IOException e) {

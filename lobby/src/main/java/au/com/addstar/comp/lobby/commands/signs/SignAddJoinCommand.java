@@ -9,9 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.base.Function;
 
-import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.signs.BaseSign;
-import au.com.addstar.comp.lobby.signs.JoinSign;
 import au.com.addstar.comp.lobby.signs.SignManager;
 import au.com.addstar.monolith.command.BadArgumentException;
 import au.com.addstar.monolith.command.CommandSenderType;
@@ -20,11 +18,9 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SignAddJoinCommand implements ICommand {
 	private final SignManager manager;
-	private final CompManager compManager;
 	
-	public SignAddJoinCommand(SignManager manager, CompManager compManager) {
+	public SignAddJoinCommand(SignManager manager) {
 		this.manager = manager;
-		this.compManager = compManager;
 	}
 	
 	@Override
@@ -75,7 +71,7 @@ public class SignAddJoinCommand implements ICommand {
 		return new Function<Block, BaseSign>() {
 			@Override
 			public BaseSign apply(Block block) {
-				return new JoinSign(serverId, block, compManager);
+				return manager.makeJoinSign(serverId, block);
 			}
 		};
 	}

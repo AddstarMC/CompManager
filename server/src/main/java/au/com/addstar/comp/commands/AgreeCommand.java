@@ -11,12 +11,15 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import au.com.addstar.comp.confirmations.ConfirmationManager;
+import au.com.addstar.comp.util.Messages;
 
 public class AgreeCommand implements TabExecutor {
 	private final ConfirmationManager confirmationManager;
+	private final Messages messages;
 	
-	public AgreeCommand(ConfirmationManager confirmationManager) {
+	public AgreeCommand(ConfirmationManager confirmationManager, Messages messages) {
 		this.confirmationManager = confirmationManager;
+		this.messages = messages;
 	}
 	
 	public void registerAs(PluginCommand command) {
@@ -36,8 +39,7 @@ public class AgreeCommand implements TabExecutor {
 		if (confirmationManager.hasPendingConfirmations(player)) {
 			confirmationManager.tryConfirm(player, StringUtils.join(args, ' '));
 		} else {
-			// TODO: Customizable messages
-			sender.sendMessage("Placeholder: nothing to confirm");
+			sender.sendMessage(messages.get("confirm.none"));
 		}
 		
 		return true;

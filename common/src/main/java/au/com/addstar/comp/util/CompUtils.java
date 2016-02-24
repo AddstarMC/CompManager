@@ -1,8 +1,11 @@
 package au.com.addstar.comp.util;
 
+import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.time.DurationFormatUtils;
 
 import com.google.common.base.Preconditions;
 
@@ -61,5 +64,33 @@ public final class CompUtils {
 		}
 		
 		throw new IllegalArgumentException("Invalid format");
+	}
+	
+	private static final SimpleDateFormat endFormat = new SimpleDateFormat("d MMM h:ma");
+	private static final String TIME_LEFT_FORMAT_LONG = "d'd 'H'h'";
+	private static final String TIME_LEFT_FORMAT_SHORT = "'H'h 'm'm'";
+	
+	/**
+	 * Formats a time in ms as 'd MMM h:ma'
+	 * @param date The unix time in ms
+	 * @return The formatted string
+	 */
+	public static String formatDate(long date) {
+		// TODO: Make all use this method
+		return endFormat.format(date);
+	}
+	
+	/**
+	 * Formats the time remaining like either '2d 3h' or '1h 10m'
+	 * @param remaining The number of ms remaining
+	 * @return The formatted string
+	 */
+	public static String formatTimeRemaining(long remaining) {
+		// TODO: Make all use this method
+		if (remaining < TimeUnit.DAYS.toMillis(1)) {
+			return DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_SHORT);
+		} else {
+			return DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_LONG);
+		}
 	}
 }

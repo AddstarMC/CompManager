@@ -16,8 +16,8 @@ public class SignCommand extends CommandDispatcher implements ICommand {
 	public SignCommand(SignManager manager, CompManager compManager) {
 		super("Provides access to sign commands");
 		
-		registerCommand(new SignAddInfoCommand(manager, compManager));
-		registerCommand(new SignAddJoinCommand(manager, compManager));
+		registerCommand(new SignAddInfoCommand(manager));
+		registerCommand(new SignAddJoinCommand(manager));
 	}
 	
 	@Override

@@ -11,9 +11,7 @@ import org.bukkit.entity.Player;
 import com.google.common.base.Function;
 
 import au.com.addstar.comp.lobby.signs.InfoSign.InfoType;
-import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.signs.BaseSign;
-import au.com.addstar.comp.lobby.signs.InfoSign;
 import au.com.addstar.comp.lobby.signs.SignManager;
 import au.com.addstar.monolith.Monolith;
 import au.com.addstar.monolith.command.BadArgumentException;
@@ -23,11 +21,9 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SignAddInfoCommand implements ICommand {
 	private final SignManager manager;
-	private final CompManager compManager;
 	
-	public SignAddInfoCommand(SignManager manager, CompManager compManager) {
+	public SignAddInfoCommand(SignManager manager) {
 		this.manager = manager;
-		this.compManager = compManager;
 	}
 	
 	@Override
@@ -103,7 +99,7 @@ public class SignAddInfoCommand implements ICommand {
 		return new Function<Block, BaseSign>() {
 			@Override
 			public BaseSign apply(Block block) {
-				return new InfoSign(serverId, type, block, compManager);
+				return manager.makeInfoSign(serverId, type, block);
 			}
 		};
 	}

@@ -13,30 +13,31 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.CompServer;
+import au.com.addstar.comp.util.Messages;
 import net.md_5.bungee.api.ChatColor;
 
 public class JoinSign extends BaseSign {
 	private static final String BREAK_PERMISSION = "comp.signs.join.break";
 	
 	private final CompManager manager;
+	private final Messages messages;
 	
-	public JoinSign(String serverId, Block block, CompManager manager) {
+	public JoinSign(String serverId, Block block, CompManager manager, Messages messages) {
 		super(serverId, block, BREAK_PERMISSION);
 		this.manager = manager;
+		this.messages = messages;
 	}
 	
 	@Override
 	public void onRightClick(Player player) {
 		final CompServer server = manager.getServer(getServerId());
 		if (server == null || server.getCurrentComp() == null) {
-			// TODO: Customize messages
-			player.sendMessage("Placeholder: Comp is closed");
+			player.sendMessage(messages.get("join.denied.not-running"));
 			return;
 		}
 		
 		if (server.getCurrentComp().getState() == CompState.Closed) {
-			// TODO: Customize messages
-			player.sendMessage("Placeholder: Comp is closed");
+			player.sendMessage(messages.get("join.denied.not-running"));
 			return;
 		}
 		

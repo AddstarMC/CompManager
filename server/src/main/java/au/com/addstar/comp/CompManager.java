@@ -158,6 +158,8 @@ public class CompManager {
 			throw new EntryDeniedException(Reason.Full, "Comp is full");
 		}
 		
+		// TODO: Add whitelist check
+		
 		// Find a plot for them
 		Plot target = null;
 		for (Plot plot : bridge.getOrderedPlots(currentComp.getMaxEntrants())) {
