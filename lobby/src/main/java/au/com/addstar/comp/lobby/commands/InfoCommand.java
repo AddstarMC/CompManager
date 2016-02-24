@@ -115,7 +115,8 @@ public class InfoCommand implements ICommand {
 				sender.sendMessage(messages.get("info.criteria.format", "name", criterion.getName(), "description", criterion.getDescription()));
 			}
 		}
-		return false;
+		
+		return true;
 	}
 
 	@Override

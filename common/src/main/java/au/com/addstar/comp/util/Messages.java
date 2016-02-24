@@ -113,9 +113,9 @@ public class Messages {
 				
 				Object replacement = arguments.get(token);
 				if (replacement != null) {
-					matcher.appendReplacement(buffer, String.valueOf(replacement));
+					matcher.appendReplacement(buffer, Matcher.quoteReplacement(String.valueOf(replacement)));
 				} else {
-					matcher.appendReplacement(buffer, matcher.group(0));
+					matcher.appendReplacement(buffer, Matcher.quoteReplacement(matcher.group(0)));
 				}
 			}
 			

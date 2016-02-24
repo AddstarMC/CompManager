@@ -12,3 +12,8 @@ info.prize=&7First &e&l{prize1}\n\
 info.criteria.header=&6Criteria:
 info.criteria.format=\u25C9 &e{name}\n\
 &7&o  {description}
+
+# Comp state
+state.open=&a&lOPEN
+state.voting=&3&lVOTING
+state.closed=&c&lCLOSED
