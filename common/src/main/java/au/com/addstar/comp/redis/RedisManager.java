@@ -146,7 +146,7 @@ public class RedisManager {
 			while (it.hasNext()) {
 				WaitFuture future = it.next();
 				if (future.isOld()) {
-					future.setException(new QueryException("Timeout"));
+					future.setException(new QueryTimeoutException("Timeout"));
 					it.remove();
 				}
 			}
@@ -248,7 +248,6 @@ public class RedisManager {
 		
 		@Override
 		public boolean setException(Throwable throwable) {
-			// TODO Auto-generated method stub
 			return super.setException(throwable);
 		}
 	}

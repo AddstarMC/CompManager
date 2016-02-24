@@ -10,6 +10,7 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.CompServer;
+import au.com.addstar.comp.redis.QueryTimeoutException;
 import au.com.addstar.comp.util.CompUtils;
 import net.md_5.bungee.api.ChatColor;
 
@@ -46,13 +47,17 @@ public class InfoSign extends BaseSign {
 		this.type = type;
 	}
 	
+	private void setOfflineText() {
+		setLine(1, "Please Check");
+		setLine(2, "Back Later");
+	}
+	
 	@Override
 	public void refresh() {
 		CompServer server = manager.getServer(getServerId());
 		if (server == null || server.getCurrentComp() == null || server.getCurrentComp().getState() == CompState.Closed) {
 			clear();
-			setLine(1, "Please Check");
-			setLine(2, "Back Later");
+			setOfflineText();
 			update();
 			return;
 		}
@@ -97,9 +102,13 @@ public class InfoSign extends BaseSign {
 			@Override
 			public void onFailure(Throwable error) {
 				clear();
-				setLine(1, "Error");
+				if (error instanceof QueryTimeoutException) {
+					setOfflineText();
+				} else {
+					setLine(1, "Error");
+					error.printStackTrace();
+				}
 				update();
-				error.printStackTrace();
 			}
 		});
 	}
@@ -119,8 +128,12 @@ public class InfoSign extends BaseSign {
 			@Override
 			public void onFailure(Throwable error) {
 				clear();
-				setLine(1, "Error");
-				error.printStackTrace();
+				if (error instanceof QueryTimeoutException) {
+					setOfflineText();
+				} else {
+					setLine(1, "Error");
+					error.printStackTrace();
+				}
 				update();
 			}
 		});
