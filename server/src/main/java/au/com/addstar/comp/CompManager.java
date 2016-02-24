@@ -19,6 +19,7 @@ import au.com.addstar.comp.entry.EnterHandler;
 import au.com.addstar.comp.entry.EntryDeniedException;
 import au.com.addstar.comp.entry.EntryDeniedException.Reason;
 import au.com.addstar.comp.util.P2Bridge;
+import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 public class CompManager {
 	/**
@@ -33,11 +34,13 @@ public class CompManager {
 	private final CompBackendManager backend;
 	private final P2Bridge bridge;
 	private final Logger logger;
+	private final WhitelistHandler whitelist;
 	
 	private Competition currentComp;
 	
-	public CompManager(CompBackendManager backend, P2Bridge bridge, Logger logger) {
+	public CompManager(CompBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, Logger logger) {
 		this.backend = backend;
+		this.whitelist = whitelist;
 		this.bridge = bridge;
 		this.logger = logger;
 		
@@ -154,11 +157,19 @@ public class CompManager {
 			throw new EntryDeniedException(Reason.AlreadyEntered, player.getName() + " is already entered");
 		}
 		
+		try {
+			if (!whitelist.isWhitelisted(player)) {
+				throw new EntryDeniedException(Reason.Whitelist, player.getName() + " is not whitelisted");
+			}
+		} catch (SQLException e) {
+			// Reject for safety just incase they arent actually whitelisted
+			logger.log(Level.SEVERE, "Unable to check whitelist status for " + player.getName(), e);
+			throw new EntryDeniedException(Reason.Whitelist, "Whitelist error");
+		}
+		
 		if (bridge.getUsedPlotCount() >= currentComp.getMaxEntrants()) {
 			throw new EntryDeniedException(Reason.Full, "Comp is full");
 		}
-		
-		// TODO: Add whitelist check
 		
 		// Find a plot for them
 		Plot target = null;

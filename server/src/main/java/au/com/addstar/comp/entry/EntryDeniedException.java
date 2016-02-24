@@ -21,6 +21,7 @@ public class EntryDeniedException extends Exception {
 	public enum Reason {
 		NotRunning,
 		Full,
-		AlreadyEntered
+		AlreadyEntered,
+		Whitelist
 	}
 }
