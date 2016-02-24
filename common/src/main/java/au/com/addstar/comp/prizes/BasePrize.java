@@ -41,6 +41,10 @@ public abstract class BasePrize {
 	 * @throws IllegalArgumentException Thrown if the input string is invalid
 	 */
 	public static BasePrize parsePrize(String input) throws IllegalArgumentException {
-		throw new UnsupportedOperationException("Not yet implemented");
+		if (input.startsWith("$")) {
+			return new MoneyPrize(input);
+		} else {
+			throw new IllegalArgumentException("Unknown prize type");
+		}
 	}
 }

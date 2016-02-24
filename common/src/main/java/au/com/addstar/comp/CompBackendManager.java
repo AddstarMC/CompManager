@@ -13,6 +13,7 @@ import au.com.addstar.comp.criterions.BaseCriterion;
 import au.com.addstar.comp.database.ConnectionHandler;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.database.StatementKey;
+import au.com.addstar.comp.prizes.BasePrize;
 
 /**
  * Handles loading and saving comp data to and from the database
@@ -56,6 +57,19 @@ public class CompBackendManager {
 	
 	public CompBackendManager(DatabaseManager manager) {
 		this.manager = manager;
+	}
+	
+	private BasePrize loadPrize(String input) {
+		if (input == null) {
+			return null;
+		}
+		
+		try {
+			return BasePrize.parsePrize(input);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**
@@ -103,7 +117,9 @@ public class CompBackendManager {
 				
 				result.setMaxEntrants(rs.getInt("MaxEntrants"));
 				
-				// TODO: Prizes
+				result.setFirstPrize(loadPrize(rs.getString("FirstPrize")));
+				result.setSecondPrize(loadPrize(rs.getString("SecondPrize")));
+				result.setParticipationPrize(loadPrize(rs.getString("DefaultPrize")));
 				
 				// Load criteria
 				ResultSet criteria = handler.executeQuery(STATEMENT_CRITERIA_LOAD, id);
