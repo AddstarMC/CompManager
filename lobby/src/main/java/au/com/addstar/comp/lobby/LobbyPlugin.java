@@ -69,7 +69,7 @@ public class LobbyPlugin extends JavaPlugin {
 		}
 		
 		// Register commands
-		new CompAdminCommand(whitelistHandler, compManager, redisManager, signManager).registerAs(getCommand("compadmin"));
+		new CompAdminCommand(whitelistHandler, compManager, redisManager, signManager, messages).registerAs(getCommand("compadmin"));
 
 		// Register listeners
 		Bukkit.getPluginManager().registerEvents(new SignListener(signManager), this);

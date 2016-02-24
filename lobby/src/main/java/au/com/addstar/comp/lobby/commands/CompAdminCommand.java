@@ -4,11 +4,12 @@ import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.commands.signs.SignCommand;
 import au.com.addstar.comp.lobby.signs.SignManager;
 import au.com.addstar.comp.redis.RedisManager;
+import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 import au.com.addstar.monolith.command.RootCommandDispatcher;
 
 public final class CompAdminCommand extends RootCommandDispatcher {
-	public CompAdminCommand(WhitelistHandler whitelist, CompManager manager, RedisManager redis, SignManager signManager) {
+	public CompAdminCommand(WhitelistHandler whitelist, CompManager manager, RedisManager redis, SignManager signManager, Messages messages) {
 		super("Gives access to all comp administration commands");
 		
 		registerCommand(new WhitelistCommand(whitelist));
@@ -16,6 +17,6 @@ public final class CompAdminCommand extends RootCommandDispatcher {
 		registerCommand(new ReloadCommand(manager));
 		registerCommand(new CompDebugCommand(redis));
 		registerCommand(new SignCommand(signManager, manager));
-		registerCommand(new InfoCommand(manager));
+		registerCommand(new InfoCommand(manager, messages));
 	}
 }

@@ -76,7 +76,6 @@ public final class CompUtils {
 	 * @return The formatted string
 	 */
 	public static String formatDate(long date) {
-		// TODO: Make all use this method
 		return endFormat.format(date);
 	}
 	
@@ -86,7 +85,6 @@ public final class CompUtils {
 	 * @return The formatted string
 	 */
 	public static String formatTimeRemaining(long remaining) {
-		// TODO: Make all use this method
 		if (remaining < TimeUnit.DAYS.toMillis(1)) {
 			return DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_SHORT);
 		} else {

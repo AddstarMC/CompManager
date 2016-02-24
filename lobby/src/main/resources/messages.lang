@@ -1,1 +1,14 @@
 join.denied.not-running=Sorry, there isn't a comp running.
+
+# Info command
+info.unknown-server=&cUnknown server, or no comp assigned
+info.none=&7There is no current competition
+info.header=&l{theme} {state}
+info.ends.open=&7Ends &e&l{time} &7(in &e&l{timeleft}&7)
+info.ends.voting=&7Closes &e&l{time} &7(in &e&l{timeleft}&7)
+info.prize=&7First &e&l{prize1}\n\
+&7Second prize &e&l{prize2}\n\
+&7Participation prize &e&l{prize3}
+info.criteria.header=&6Criteria:
+info.criteria.format=\u25C9 &e{name}\n\
+&7&o  {description}

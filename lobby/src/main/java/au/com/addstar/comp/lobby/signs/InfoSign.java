@@ -1,9 +1,5 @@
 package au.com.addstar.comp.lobby.signs;
 
-import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -14,6 +10,7 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.CompServer;
+import au.com.addstar.comp.util.CompUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class InfoSign extends BaseSign {
@@ -129,8 +126,6 @@ public class InfoSign extends BaseSign {
 		});
 	}
 	
-	private final SimpleDateFormat endFormat = new SimpleDateFormat("d MMM h:ma");
-	
 	private void displayTimeEnd(CompServer server) {
 		Competition comp = server.getCurrentComp();
 		clear();
@@ -149,12 +144,9 @@ public class InfoSign extends BaseSign {
 			break;
 		}
 		
-		setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + endFormat.format(time));
+		setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + CompUtils.formatDate(time));
 		update();
 	}
-	
-	private static final String TIME_LEFT_FORMAT_LONG = "d'd 'H'h'";
-	private static final String TIME_LEFT_FORMAT_SHORT = "'H'h 'm'm'";
 	
 	private void displayTimeLeft(CompServer server) {
 		Competition comp = server.getCurrentComp();
@@ -176,12 +168,7 @@ public class InfoSign extends BaseSign {
 		
 		// Time remaining
 		time -= System.currentTimeMillis();
-		
-		if (time < TimeUnit.DAYS.toMillis(1)) {
-			setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + DurationFormatUtils.formatDuration(time, TIME_LEFT_FORMAT_SHORT));
-		} else {
-			setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + DurationFormatUtils.formatDuration(time, TIME_LEFT_FORMAT_LONG));
-		}
+		setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + CompUtils.formatTimeRemaining(time));
 		
 		update();
 	}
@@ -206,15 +193,10 @@ public class InfoSign extends BaseSign {
 			return;
 		}
 		
-		setLine(1, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + endFormat.format(time));
+		setLine(1, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + CompUtils.formatDate(time));
 		
 		long remaining = time - System.currentTimeMillis();
-		
-		if (remaining < TimeUnit.DAYS.toMillis(1)) {
-			setLine(3, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_SHORT));
-		} else {
-			setLine(3, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_LONG));
-		}
+		setLine(3, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + CompUtils.formatTimeRemaining(remaining));
 		
 		update();
 	}
