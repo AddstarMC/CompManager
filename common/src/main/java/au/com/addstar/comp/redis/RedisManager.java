@@ -37,6 +37,8 @@ public class RedisManager {
 	private RedisPubSubCommands<String, String> publishConnection;
 	private RedisHandler handler;
 	
+	private CommandReceiver commandReceiver;
+	
 	private long nextQueryID;
 	private final ListMultimap<String, WaitFuture> waitingFutures;
 	
@@ -66,6 +68,33 @@ public class RedisManager {
 		// Create the connection for publishing
 		connection = client.connectPubSub();
 		publishConnection = connection.sync();
+	}
+	
+	/**
+	 * Sets the command receiver to receive inter-server commands sent
+	 * through {@link #sendCommand(String, String)}
+	 * @param receiver The receiver object
+	 */
+	public void setCommandReceiver(CommandReceiver receiver) {
+		this.commandReceiver = receiver;
+	}
+	
+	/**
+	 * Sends a command to the target server
+	 * @param serverId The id of the server to receive it
+	 * @param command The command to send
+	 */
+	public void sendCommand(String serverId, String command) {
+		send(serverId, "c\01" + command);
+	}
+	
+	/**
+	 * Sends a command to the target server
+	 * @param serverId The id of the server to receive it
+	 * @param command The command to send
+	 */
+	public void broadcastCommand(String command) {
+		broadcast("c\01" + command);
 	}
 	
 	/**
@@ -103,6 +132,10 @@ public class RedisManager {
 	
 	private void send(String targetId, String data) {
 		publishConnection.publish(String.format("%s.%s>%s", RedisKey, Bukkit.getServerName(), targetId), data);
+	}
+	
+	private void broadcast(String data) {
+		publishConnection.publish(String.format("%s.%s", RedisBcastKey, Bukkit.getServerName()), data);
 	}
 	
 	private void handleQuery(String serverId, long queryId, String command, String[] args) {
@@ -155,6 +188,12 @@ public class RedisManager {
 		}
 	}
 	
+	private void handleCommand(String sourceId, String command) {
+		if (commandReceiver != null) {
+			commandReceiver.onReceive(sourceId, command);
+		}
+	}
+	
 	/**
 	 * A Pub-Sub handler
 	 */
@@ -164,15 +203,17 @@ public class RedisManager {
 			// Get the source server
 			String sourceId;
 			
-			if (pattern.startsWith(RedisManager.RedisKey)) {
+			if (pattern.startsWith(RedisBcastKey)) {
+				// Broadcast
+				int pos = pattern.indexOf('*');
+				sourceId = channel.substring(pos);
+			} else if (pattern.startsWith(RedisManager.RedisKey)) {
 				// Server to server communication
 				int start = channel.lastIndexOf('.') + 1;
 				int end = channel.indexOf('>');
 				sourceId = channel.substring(start, end);
 			} else {
-				// Broadcast
-				int pos = pattern.indexOf('*');
-				sourceId = channel.substring(pos);
+				return;
 			}
 			
 			// Make sure we arent listening to ourselves
@@ -183,21 +224,27 @@ public class RedisManager {
 			// Extract the parameters
 			String[] dataParts = message.split("\01");
 			String type = dataParts[0];
-			long queryId = Long.parseLong(dataParts[1]);
+			long queryId;
 			
 			switch (type) {
 			case "q": // query
 				String command = dataParts[2];
 				String[] args = Arrays.copyOfRange(dataParts, 3, dataParts.length);
+				queryId = Long.parseLong(dataParts[1]);
 				handleQuery(sourceId, queryId, command, args);
 				break;
 			case "r": // reply
+				queryId = Long.parseLong(dataParts[1]);
 				String retVal = dataParts[2];
 				handleReply(sourceId, queryId, retVal, null);
 				break;
 			case "e": // error
+				queryId = Long.parseLong(dataParts[1]);
 				String error = dataParts[2];
 				handleReply(sourceId, queryId, null, error);
+				break;
+			case "c": // command
+				handleCommand(sourceId, StringUtils.join(dataParts, '\01', 1, dataParts.length));
 				break;
 			}
 		}

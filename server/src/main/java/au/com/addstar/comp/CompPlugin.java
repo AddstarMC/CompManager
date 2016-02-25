@@ -65,7 +65,7 @@ public class CompPlugin extends JavaPlugin {
 		
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		bridge = new P2Bridge(PS.get());
-		compManager = new CompManager(new CompBackendManager(databaseManager), whitelistHandler, bridge, getLogger());
+		compManager = new CompManager(new CompBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
 		confirmationManager = new ConfirmationManager();
 		
 		File notificationsFile = new File(getDataFolder(), "notifications.yml");
@@ -96,6 +96,7 @@ public class CompPlugin extends JavaPlugin {
 			}
 		}, 20, 20);
 		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 10, 10);
+		redisManager.setCommandReceiver(new CommandHandler(compManager));
 		
 		// Load the comp
 		compManager.reloadCurrentComp();

@@ -73,6 +73,7 @@ public class LobbyPlugin extends JavaPlugin {
 
 		// Register listeners
 		Bukkit.getPluginManager().registerEvents(new SignListener(signManager), this);
+		redisManager.setCommandReceiver(new CommandHandler(compManager));
 		
 		// Register tasks
 		// TODO: Make refresh interval configurable

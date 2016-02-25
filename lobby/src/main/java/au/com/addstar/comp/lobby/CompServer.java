@@ -65,7 +65,7 @@ public class CompServer {
 		
 		try {
 			backend.update(currentComp);
-			// TODO: Notify server
+			redis.sendCommand(serverId, "reload");
 		} catch (SQLException e) {
 			plugin.getLogger().log(Level.SEVERE, "Failed to update comp for " + serverId, e);
 		}
@@ -75,15 +75,19 @@ public class CompServer {
 	 * Reloads this servers comp info
 	 * @throws SQLException Thrown if an error occurs in the backend
 	 */
-	public void reload() throws SQLException {
-		currentComp = null;
-		
-		Optional<Integer> compId = backend.getCompID(serverId);
-		if (compId.isPresent()) {
-			Competition comp = backend.load(compId.get());
-			if (comp != null) {
-				currentComp = comp;
+	public void reload() {
+		try {
+			currentComp = null;
+			
+			Optional<Integer> compId = backend.getCompID(serverId);
+			if (compId.isPresent()) {
+				Competition comp = backend.load(compId.get());
+				if (comp != null) {
+					currentComp = comp;
+				}
 			}
+		} catch (SQLException e) {
+			plugin.getLogger().log(Level.SEVERE, "Failed to load comp info for server " + serverId, e);
 		}
 	}
 	

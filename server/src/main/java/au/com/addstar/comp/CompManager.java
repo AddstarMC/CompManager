@@ -18,6 +18,7 @@ import com.intellectualcrafters.plot.object.Plot;
 import au.com.addstar.comp.entry.EnterHandler;
 import au.com.addstar.comp.entry.EntryDeniedException;
 import au.com.addstar.comp.entry.EntryDeniedException.Reason;
+import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
@@ -35,14 +36,16 @@ public class CompManager {
 	private final P2Bridge bridge;
 	private final Logger logger;
 	private final WhitelistHandler whitelist;
+	private final RedisManager redis;
 	
 	private Competition currentComp;
 	
-	public CompManager(CompBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, Logger logger) {
+	public CompManager(CompBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, RedisManager redis, Logger logger) {
 		this.backend = backend;
 		this.whitelist = whitelist;
 		this.bridge = bridge;
 		this.logger = logger;
+		this.redis = redis;
 		
 		Entrant = new Predicate<Player>() {
 			@Override
@@ -87,7 +90,7 @@ public class CompManager {
 		
 		try {
 			backend.update(currentComp);
-			// TODO: Notify lobby
+			redis.broadcastCommand("reloadsender");
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Failed to update current comp", e);
 		}
