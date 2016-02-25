@@ -30,12 +30,15 @@ public class CompServer {
 	
 	private final String serverId;
 	Competition currentComp;
+	private boolean isOnline;
 	
 	CompServer(String serverId, Plugin plugin, RedisManager redis, CompBackendManager backend) {
 		this.plugin = plugin;
 		this.redis = redis;
 		this.backend = backend;
 		this.serverId = serverId;
+		
+		isOnline = false;
 	}
 	
 	/**
@@ -44,6 +47,22 @@ public class CompServer {
 	 */
 	public String getId() {
 		return serverId;
+	}
+	
+	/**
+	 * Checks the online state of this server.
+	 * @return True if the server is online
+	 */
+	public boolean isOnline() {
+		return isOnline;
+	}
+	
+	/**
+	 * Sets the online state of this server. false by default
+	 * @param isOnline True if the server is online
+	 */
+	public void setOnline(boolean isOnline) {
+		this.isOnline = isOnline;
 	}
 	
 	/**

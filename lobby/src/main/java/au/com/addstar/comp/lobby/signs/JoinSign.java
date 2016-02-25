@@ -31,7 +31,7 @@ public class JoinSign extends BaseSign {
 	@Override
 	public void onRightClick(Player player) {
 		final CompServer server = manager.getServer(getServerId());
-		if (server == null || server.getCurrentComp() == null) {
+		if (server == null || server.getCurrentComp() == null || !server.isOnline()) {
 			player.sendMessage(messages.get("join.denied.not-running"));
 			return;
 		}
@@ -50,6 +50,13 @@ public class JoinSign extends BaseSign {
 		if (server == null || server.getCurrentComp() == null) {
 			clear();
 			setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "CLOSED");
+			update();
+			return;
+		}
+		
+		if (!server.isOnline()) {
+			clear();
+			setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Offline");
 			update();
 			return;
 		}

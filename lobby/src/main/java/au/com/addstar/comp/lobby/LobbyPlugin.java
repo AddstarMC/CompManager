@@ -16,6 +16,7 @@ import au.com.addstar.comp.lobby.signs.SignListener;
 import au.com.addstar.comp.lobby.signs.SignManager;
 import au.com.addstar.comp.lobby.signs.SignRefresher;
 import au.com.addstar.comp.redis.RedisManager;
+import au.com.addstar.comp.redis.RedisQueryTimeoutTask;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
@@ -78,7 +79,8 @@ public class LobbyPlugin extends JavaPlugin {
 		// Register tasks
 		// TODO: Make refresh interval configurable
 		Bukkit.getScheduler().runTaskTimer(this, new SignRefresher(signManager), 0, 200);
-		
+		Bukkit.getScheduler().runTaskTimer(this, new ServerStatusUpdater(compManager), 200, 200);
+		Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
 	

@@ -55,7 +55,7 @@ public class InfoSign extends BaseSign {
 	@Override
 	public void refresh() {
 		CompServer server = manager.getServer(getServerId());
-		if (server == null || server.getCurrentComp() == null || server.getCurrentComp().getState() == CompState.Closed) {
+		if (server == null || server.getCurrentComp() == null || !server.isOnline() || server.getCurrentComp().getState() == CompState.Closed) {
 			clear();
 			setOfflineText();
 			update();

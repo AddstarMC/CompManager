@@ -19,6 +19,7 @@ import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.notifications.NotificationManager;
 import au.com.addstar.comp.query.*;
 import au.com.addstar.comp.redis.RedisManager;
+import au.com.addstar.comp.redis.RedisQueryTimeoutTask;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
@@ -96,6 +97,7 @@ public class CompPlugin extends JavaPlugin {
 			}
 		}, 20, 20);
 		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 10, 10);
+		Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
 		redisManager.setCommandReceiver(new CommandHandler(compManager));
 		
 		// Load the comp

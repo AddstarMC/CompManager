@@ -177,6 +177,15 @@ public class RedisManager {
 			}
 			
 			// Remove expired futures
+			timeoutOldQueries();
+		}
+	}
+	
+	/**
+	 * Times out all old queries
+	 */
+	public void timeoutOldQueries() {
+		synchronized (waitingFutures) {
 			Iterator<WaitFuture> it = waitingFutures.values().iterator();
 			while (it.hasNext()) {
 				WaitFuture future = it.next();
