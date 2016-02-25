@@ -78,6 +78,22 @@ public class CompManager {
 	}
 	
 	/**
+	 * Pushes all changes to the backend and notifies the lobby
+	 */
+	public void updateCurrentComp() {
+		if (currentComp == null) {
+			return;
+		}
+		
+		try {
+			backend.update(currentComp);
+			// TODO: Notify lobby
+		} catch (SQLException e) {
+			logger.log(Level.SEVERE, "Failed to update current comp", e);
+		}
+	}
+	
+	/**
 	 * Gets the currently selected competition.
 	 * The comp may or may not be running
 	 * @return A Competition object or null

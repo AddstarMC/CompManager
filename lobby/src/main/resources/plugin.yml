@@ -19,6 +19,8 @@ permissions:
     default: OP
   comp.admin.info:
     default: OP
+  comp.admin.state:
+    default: OP
 
 commands:
   compadmin:

@@ -11,5 +11,6 @@ public final class CompAdminCommand extends RootCommandDispatcher {
 		
 		registerCommand(new WhitelistCommand(whitelist));
 		registerCommand(new ReloadCommand(manager, notificationManager));
+		registerCommand(new StateCommand(manager));
 	}
 }

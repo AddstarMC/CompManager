@@ -20,6 +20,8 @@ permissions:
     default: OP
   comp.join:
     default: true
+  comp.admin.state:
+    default: OP
 
 commands:
   compadmin:

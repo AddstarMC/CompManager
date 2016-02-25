@@ -2,6 +2,7 @@ package au.com.addstar.comp.lobby;
 
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -52,6 +53,22 @@ public class CompServer {
 	 */
 	public Competition getCurrentComp() {
 		return currentComp;
+	}
+	
+	/**
+	 * Updates the comp settings and notifies the server
+	 */
+	public void updateComp() {
+		if (currentComp == null) {
+			return;
+		}
+		
+		try {
+			backend.update(currentComp);
+			// TODO: Notify server
+		} catch (SQLException e) {
+			plugin.getLogger().log(Level.SEVERE, "Failed to update comp for " + serverId, e);
+		}
 	}
 	
 	/**

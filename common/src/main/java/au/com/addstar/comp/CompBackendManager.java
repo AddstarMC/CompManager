@@ -162,7 +162,28 @@ public class CompBackendManager {
 	 * @throws SQLException Thrown if an SQLException occurs in the database
 	 */
 	public void update(Competition competition) throws SQLException {
-		throw new UnsupportedOperationException("Not yet implemented");
+		Preconditions.checkArgument(competition.getCompId() >= 0);
+		
+		ConnectionHandler handler = null;
+		try {
+			handler = manager.getPool().getConnection();
+			handler.executeUpdate(STATEMENT_UPDATE,
+					competition.getTheme(),
+					(competition.isAutomatic() ? "Auto" : competition.getState().name()),
+					new Timestamp(competition.getStartDate()),
+					new Timestamp(competition.getEndDate()),
+					new Timestamp(competition.getVoteEndDate()),
+					competition.getMaxEntrants(),
+					(competition.getFirstPrize() != null ? competition.getFirstPrize().toDatabase() : null),
+					(competition.getSecondPrize() != null ? competition.getSecondPrize().toDatabase() : null),
+					(competition.getParticipationPrize() != null ? competition.getParticipationPrize().toDatabase() : null),
+					competition.getCompId()
+					);
+		} finally {
+			if (handler != null) {
+				handler.release();
+			}
+		}
 	}
 	
 	/**
