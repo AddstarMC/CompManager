@@ -22,9 +22,7 @@ public class CompTimer implements Runnable {
 		}
 		
 		Competition comp = compManager.getCurrentComp();
-		if (comp.isAutomatic()) {
-			doStateNotifications(comp);
-		}
+		doStateNotifications(comp);
 		
 		notifications.doBroadcasts();
 	}

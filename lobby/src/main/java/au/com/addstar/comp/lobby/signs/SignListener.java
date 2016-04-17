@@ -1,5 +1,7 @@
 package au.com.addstar.comp.lobby.signs;
 
+import java.io.IOException;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -46,6 +48,13 @@ public class SignListener implements Listener {
 				// Check if they can break it
 				if (!event.getPlayer().hasPermission(sign.getBreakPermission())) {
 					event.setCancelled(true);
+				} else {
+					manager.removeSign(sign);
+					try {
+						manager.save();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			} else {
 				sign.onLeftClick(event.getPlayer());

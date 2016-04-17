@@ -100,6 +100,18 @@ public class SignManager {
 	}
 	
 	/**
+	 * Removes a sign
+	 * @param sign The sign to remove
+	 */
+	public void removeSign(BaseSign sign) {
+		BaseSign existing = getSign(sign.getBlock());
+		if (existing == sign) {
+			signs.remove(sign.getBlock());
+			serverSigns.remove(sign.getServerId(), sign);
+		}
+	}
+	
+	/**
 	 * Removes all signs for a server
 	 * @param serverId The id of the server to remove signs for
 	 */
