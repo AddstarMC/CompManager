@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
@@ -16,9 +17,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellectualcrafters.plot.PS;
 import com.intellectualcrafters.plot.object.Plot;
+import com.intellectualcrafters.plot.object.PlotArea;
 import com.intellectualcrafters.plot.object.PlotId;
 import com.intellectualcrafters.plot.object.PlotPlayer;
-import com.intellectualcrafters.plot.util.MainUtil;
 
 public class P2Bridge {
 	private final PS plugin;
@@ -97,15 +98,15 @@ public class P2Bridge {
 		Preconditions.checkArgument(!plot.hasOwner());
 		Preconditions.checkState(Bukkit.isPrimaryThread(), "This must be done on the server thread");
 		
-		MainUtil.createPlot(player.getUniqueId(), plot);
-		MainUtil.setSign(player.getName(), plot);
+		plot.create(player.getUniqueId(), false);
+		plot.setSign(player.getName());
 		
 		if (player.isOnline() && teleport) {
 			PlotPlayer wrappedPlayer = PlotPlayer.wrap(player.getPlayer());
-			MainUtil.teleportPlayer(wrappedPlayer, wrappedPlayer.getLocation(), plot);
+			plot.teleportPlayer(wrappedPlayer);
 		}
 		
-		plugin.getPlotManager(plot.getWorld().worldname).claimPlot(plot.getWorld(), plot);
+		plugin.getPlotManager(plot).claimPlot(plot.getArea(), plot);
 	}
 	
 	/**
@@ -114,18 +115,29 @@ public class P2Bridge {
 	 * @return An {@code Iterable<Plot>}
 	 */
 	public Iterable<Plot> getOrderedPlots(final int maxPlots) {
-		final String plotWorld = Iterables.getFirst(plugin.getPlotWorlds(), null);
+		PlotArea targetArea = null;
 		
-		if (plotWorld == null) {
-			return Collections.emptySet();
-		} else {
-			return new Iterable<Plot>() {
-				@Override
-				public Iterator<Plot> iterator() {
-					return new PlotIterator(plotWorld, maxPlots);
-				}
-			};
+		for (World world : Bukkit.getWorlds()) {
+			Set<PlotArea> areas = plugin.getPlotAreas(world.getName());
+			
+			targetArea = Iterables.getFirst(areas, null);
+			if (targetArea != null) {
+				break;
+			}
 		}
+		
+		if (targetArea == null) {
+			System.err.println("There are no PlotAreas available to assign players!");
+			return Collections.emptySet();
+		}
+		
+		final PlotArea fTargetArea = targetArea;
+		return new Iterable<Plot>() {
+			@Override
+			public Iterator<Plot> iterator() {
+				return new PlotIterator(fTargetArea, maxPlots);
+			}
+		};
 	}
 	
 	private static class PlotIterator implements Iterator<Plot> {
@@ -137,7 +149,7 @@ public class P2Bridge {
 		// Final Order: Right -> Down -> Left -> Up
 		private static final int[] NEXT = {DOWN, UP, RIGHT, LEFT};
 		
-		private final String plotWorld;
+		private final PlotArea area;
 		
 		private final int maxCount;
 		private int plotCount;
@@ -151,8 +163,8 @@ public class P2Bridge {
 		
 		private int direction;
 		
-		public PlotIterator(String plotWorld, int maxCount) {
-			this.plotWorld = plotWorld;
+		public PlotIterator(PlotArea area, int maxCount) {
+			this.area = area;
 			this.maxCount = maxCount;
 			
 			plotCount = 0;
@@ -213,7 +225,7 @@ public class P2Bridge {
 			++plotCount;
 			
 			PlotId id = new PlotId(x, z);
-			Plot plot = MainUtil.getPlot(plotWorld, id);
+			Plot plot = area.getPlotAbs(id);
 			
 			// Move to next
 			nextLocation();
