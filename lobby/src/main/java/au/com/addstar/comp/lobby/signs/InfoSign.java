@@ -48,8 +48,10 @@ public class InfoSign extends BaseSign {
 	}
 	
 	private void setOfflineText() {
-		setLine(1, "Please Check");
-		setLine(2, "Back Later");
+		setLine(0, "");
+		setLine(1, "");
+		setLine(2, "");
+		setLine(3, "");
 	}
 	
 	@Override
