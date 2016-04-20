@@ -95,7 +95,7 @@ public class JoinCommand implements TabExecutor {
 				sender.sendMessage(messages.get("join.denied.full"));
 				break;
 			case Whitelist:
-				sender.sendMessage(messages.get("join.denined.whitelist"));
+				sender.sendMessage(messages.get("join.denied.whitelist"));
 				break;
 			}
 		}
