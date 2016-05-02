@@ -1,4 +1,5 @@
 join.denied.not-running=Sorry, there isn't a comp running.
+visit.denied.closed=Sorry, this comp is currently closed.
 
 # Info command
 info.unknown-server=&cUnknown server, or no comp assigned
@@ -17,3 +18,9 @@ info.criteria.format=\u25C9 &e{name}\n\
 state.open=&a&lOPEN
 state.voting=&3&lVOTING
 state.closed=&c&lCLOSED
+state.offline=&4&lOFFLINE
+state.full=&4&lFULL
+
+# Sign text
+sign.click-to-join=&e&lClick to &nJoin
+sign.click-to-visit=&1&lClick to Visit

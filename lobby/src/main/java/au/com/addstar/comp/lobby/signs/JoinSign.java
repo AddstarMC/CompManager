@@ -14,7 +14,6 @@ import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.CompServer;
 import au.com.addstar.comp.util.Messages;
-import net.md_5.bungee.api.ChatColor;
 
 public class JoinSign extends BaseSign {
 	private static final String BREAK_PERMISSION = "comp.signs.join.break";
@@ -36,11 +35,12 @@ public class JoinSign extends BaseSign {
 			return;
 		}
 		
-		if (server.getCurrentComp().getState() == CompState.Closed) {
+		if (server.getCurrentComp().getState() != CompState.Open) {
 			player.sendMessage(messages.get("join.denied.not-running"));
 			return;
 		}
-		
+
+		// TODO: Remote join via Redis
 		server.send(player);
 	}
 
@@ -49,14 +49,14 @@ public class JoinSign extends BaseSign {
 		final CompServer server = manager.getServer(getServerId());
 		if (server == null || server.getCurrentComp() == null) {
 			clear();
-			setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "CLOSED");
+			setLine(2, messages.get("state.closed"));
 			update();
 			return;
 		}
 		
 		if (!server.isOnline()) {
 			clear();
-			setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Offline");
+			setLine(2, messages.get("state.offline"));
 			update();
 			return;
 		}
@@ -88,20 +88,20 @@ public class JoinSign extends BaseSign {
 				// Display status
 				switch (comp.getState()) {
 				case Closed:
-					setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "CLOSED");
+					setLine(2, messages.get("state.closed"));
 					break;
 				case Open:
 					if (!isFull) {
-						setLine(2, ChatColor.BLUE.toString() + ChatColor.BOLD + "OPEN");
-						setLine(3, ChatColor.DARK_BLUE.toString() + ChatColor.ITALIC + "Click to Join");
+						setLine(2, messages.get("state.open"));
+						setLine(3, messages.get("sign.click-to-join"));
 					} else {
-						setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "FULL");
-						setLine(3, ChatColor.DARK_BLUE.toString() + ChatColor.ITALIC + "Click to Visit");
+						setLine(2, messages.get("state.full"));
+						setLine(3, "");
 					}
 					break;
 				case Voting:
-					setLine(2, ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "VOTING");
-					setLine(3, ChatColor.DARK_BLUE.toString() + ChatColor.ITALIC + "Click to Join");
+					setLine(2, messages.get("state.voting"));
+					setLine(3, "");
 					break;
 				}
 				
@@ -110,7 +110,7 @@ public class JoinSign extends BaseSign {
 			
 			@Override
 			public void onFailure(Throwable error) {
-				setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Offline");
+				setLine(2, messages.get("state.offline"));
 				
 				update();
 			}
