@@ -10,7 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.lambdaworks.redis.RedisException;
 
 import au.com.addstar.comp.CompBackendManager;
+import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
+import au.com.addstar.comp.lobby.commands.AgreeCommand;
 import au.com.addstar.comp.lobby.commands.CompAdminCommand;
 import au.com.addstar.comp.lobby.signs.SignListener;
 import au.com.addstar.comp.lobby.signs.SignManager;
@@ -26,6 +28,7 @@ public class LobbyPlugin extends JavaPlugin {
 	private CompManager compManager;
 	private RedisManager redisManager;
 	private SignManager signManager;
+	private ConfirmationManager confirmationManager;
 	private Messages messages;
 	
 	@Override
@@ -61,7 +64,8 @@ public class LobbyPlugin extends JavaPlugin {
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		compManager = new CompManager(new CompBackendManager(databaseManager), redisManager, this);
 		compManager.reload();
-		signManager = new SignManager(new File(getDataFolder(), "signs.yml"), compManager, messages);
+		confirmationManager = new ConfirmationManager();
+		signManager = new SignManager(new File(getDataFolder(), "signs.yml"), compManager, messages, confirmationManager);
 		try {
 			signManager.load();
 		} catch (IOException e) {
@@ -71,10 +75,17 @@ public class LobbyPlugin extends JavaPlugin {
 		
 		// Register commands
 		new CompAdminCommand(whitelistHandler, compManager, redisManager, signManager, messages).registerAs(getCommand("compadmin"));
+		new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
 
 		// Register listeners
 		Bukkit.getPluginManager().registerEvents(new SignListener(signManager), this);
 		redisManager.setCommandReceiver(new CommandHandler(compManager));
+		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+			@Override
+			public void run() {
+				confirmationManager.expireConfirmations();
+			}
+		}, 20, 20);
 		
 		// Register tasks
 		// TODO: Make refresh interval configurable

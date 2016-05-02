@@ -2,6 +2,7 @@ package au.com.addstar.comp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ public class CompPlugin extends JavaPlugin {
 	private ConfirmationManager confirmationManager;
 	private NotificationManager notificationManager;
 	private Messages messages;
+	private RemoteJoinManager remoteJoinManager;
 	
 	@Override
 	public void onEnable() {
@@ -80,6 +82,7 @@ public class CompPlugin extends JavaPlugin {
 			getLogger().log(Level.WARNING, "Failed to load notifications", e);
 			// Not a critical failure, just continue
 		}
+		remoteJoinManager = new RemoteJoinManager(compManager, TimeUnit.SECONDS.toMillis(30)); // TODO: Configurable timeout
 		
 		// Register commands
 		new CompAdminCommand(whitelistHandler, compManager, notificationManager).registerAs(getCommand("compadmin"));
@@ -94,6 +97,7 @@ public class CompPlugin extends JavaPlugin {
 			@Override
 			public void run() {
 				confirmationManager.expireConfirmations();
+				remoteJoinManager.expireHandlers();
 			}
 		}, 20, 20);
 		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 10, 10);
@@ -108,6 +112,7 @@ public class CompPlugin extends JavaPlugin {
 		redisManager.registerQueryHandler(new QueryEntrantCount(bridge), "entrant_count");
 		redisManager.registerQueryHandler(new QueryIsEntrant(bridge), "is_entrant");
 		redisManager.registerQueryHandler(new QueryPing(), "ping");
+		redisManager.registerQueryHandler(remoteJoinManager, "join_begin", "join_confirm", "join_abort");
 	}
 	
 	@Override

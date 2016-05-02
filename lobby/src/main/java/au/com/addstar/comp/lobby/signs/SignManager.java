@@ -20,6 +20,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
+import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.util.Messages;
 
@@ -27,16 +28,18 @@ public class SignManager {
 	private final File storageFile;
 	private final CompManager compManager;
 	private final Messages messages;
+	private final ConfirmationManager confirmationManager;
 	
 	private final Map<Block, BaseSign> signs;
 	private final ListMultimap<String, BaseSign> serverSigns;
 	
 	private final Map<Player, Function<Block, BaseSign>> pendingSigns;
 	
-	public SignManager(File storageFile, CompManager compManager, Messages messages) {
+	public SignManager(File storageFile, CompManager compManager, Messages messages, ConfirmationManager confirmationManager) {
 		this.storageFile = storageFile;
 		this.compManager = compManager;
 		this.messages = messages;
+		this.confirmationManager = confirmationManager;
 		
 		signs = Maps.newHashMap();
 		serverSigns = ArrayListMultimap.create();
@@ -180,7 +183,7 @@ public class SignManager {
 					sign = new InfoSign(serverId, block, compManager);
 					break;
 				case "join":
-					sign = new JoinSign(serverId, block, compManager, messages);
+					sign = new JoinSign(serverId, block, compManager, messages, confirmationManager);
 					break;
 				case "visit":
 					sign = new VisitSign(serverId, block, compManager, messages);
@@ -239,7 +242,7 @@ public class SignManager {
 	}
 	
 	public JoinSign makeJoinSign(String serverId, Block block) {
-		return new JoinSign(serverId, block, compManager, messages);
+		return new JoinSign(serverId, block, compManager, messages, confirmationManager);
 	}
 	
 	public VisitSign makeVisitSign(String serverId, Block block) {

@@ -1,5 +1,34 @@
-join.denied.not-running=Sorry, there isn't a comp running.
 visit.denied.closed=Sorry, this comp is currently closed.
+
+# Messages for join sign
+join.none=&cThere is no current competition
+join.prompt.header=&d----------------------------------------------------\n\
+&aYou have selected to join a building competition.\n\
+Before you join, please look at the criteria of this comp:
+join.prompt.prize=&7First Prize &e&l{prize1}\n\
+&7Second Prize &e&l{prize2}
+join.prompt.theme=&7The theme is &e&l{theme}
+join.prompt.ends=&7Closes &e&l{time} &7(in &e&l{timeleft}&7)
+join.prompt.criteria.header=&dRequired Criteria:
+join.prompt.criteria.format=\u25C9 &e{name}\n\
+&7&o  {description}
+join.prompt.footer=&cComp plots are &oonly&c to be used for participating in this comp.\n\
+&aUsing a plot for any other purpose may result in an official\n\
+&awarning and prevent you from participating in further comps.\n\
+&ePlease adhere to the theme and criteria!\n\
+&6If you agree to these rules type: &b/agree {theme}&r\n\
+&d----------------------------------------------------
+join.done=You have joined the comp. Good luck.
+join.denied.timeout=&cYou did not accept in time.
+join.denied.full=&cSorry, this comp is full.
+join.denied.not-running=&cSorry, there isn't a comp running.
+join.denied.already-entered=&aYou have already joined this comp.
+join.denied.token=&cYou did not enter the correct phrase.
+join.denied.whitelist=&cSorry, you aren't whitelisted for this comp.
+
+# Confirmation messages
+confirm.none=&cYou have nothing to confirm
+
 
 # Info command
 info.unknown-server=&cUnknown server, or no comp assigned

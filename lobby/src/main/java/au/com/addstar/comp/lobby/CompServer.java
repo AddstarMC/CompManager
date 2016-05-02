@@ -17,7 +17,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.Competition;
+import au.com.addstar.comp.confirmations.Confirmable;
+import au.com.addstar.comp.entry.EntryDeniedException;
+import au.com.addstar.comp.lobby.entry.RemoteEnterFuture;
+import au.com.addstar.comp.redis.QueryException;
 import au.com.addstar.comp.redis.RedisManager;
+import au.com.addstar.comp.util.Messages;
 
 /**
  * Provides access to query data from a
@@ -168,5 +173,22 @@ public class CompServer {
 		out.writeUTF(serverId);
 		
 		player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+	}
+	
+	/**
+	 * Attempts to join a player into a comp
+	 * @param player The player to join into the comp
+	 * @param messages The messages object for displaying status to the player
+	 * @return A Future to get the confirmation thing, or the error
+	 * @throws EntryDeniedException Thrown through the Future. Thrown if the player is unable to join the comp
+	 * @throws QueryException Thrown through the Future. Thrown if there is a redis error
+	 */
+	public ListenableFuture<Confirmable> joinComp(OfflinePlayer player, Messages messages) {
+		ListenableFuture<String> rawFuture = redis.query(serverId, "join_begin", player.getUniqueId().toString());
+		
+		RemoteEnterFuture future = new RemoteEnterFuture(this, player.getUniqueId(), redis, messages);
+		Futures.addCallback(rawFuture, future);
+		
+		return future;
 	}
 }

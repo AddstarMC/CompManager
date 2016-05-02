@@ -26,3 +26,6 @@ commands:
   compadmin:
     permission: comp.admin
     usage: /<command> <subcommand> ...
+  compagree:
+    aliases: [agree]
+    usage: /<command>
