@@ -3,27 +3,29 @@ package au.com.addstar.comp.lobby.commands.signs;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import au.com.addstar.comp.lobby.CompManager;
+import com.google.common.base.Function;
+
+import au.com.addstar.comp.lobby.signs.BaseSign;
 import au.com.addstar.comp.lobby.signs.SignManager;
 import au.com.addstar.monolith.command.BadArgumentException;
-import au.com.addstar.monolith.command.CommandDispatcher;
 import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
+import net.md_5.bungee.api.ChatColor;
 
-public class SignCommand extends CommandDispatcher implements ICommand {
-	public SignCommand(SignManager manager, CompManager compManager) {
-		super("Provides access to sign commands");
-		
-		registerCommand(new SignAddInfoCommand(manager));
-		registerCommand(new SignAddJoinCommand(manager));
-		registerCommand(new SignAddVisitCommand(manager));
+public class SignAddVisitCommand implements ICommand {
+	private final SignManager manager;
+	
+	public SignAddVisitCommand(SignManager manager) {
+		this.manager = manager;
 	}
 	
 	@Override
 	public String getName() {
-		return "sign";
+		return "addvisit";
 	}
 
 	@Override
@@ -33,17 +35,17 @@ public class SignCommand extends CommandDispatcher implements ICommand {
 
 	@Override
 	public String getPermission() {
-		return "comp.admin.sign";
+		return null;
 	}
 
 	@Override
 	public String getUsageString(String label, CommandSender sender) {
-		return label + " <command> ...";
+		return label + " <serverId>";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Provides access to sign commands";
+		return "Adds a visit sign for the specified server.";
 	}
 
 	@Override
@@ -53,11 +55,29 @@ public class SignCommand extends CommandDispatcher implements ICommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String parent, String label, String[] args) throws BadArgumentException {
-		return dispatchCommand(sender, parent, label, args);
+		if (args.length != 1) {
+			return false;
+		}
+		
+		String serverId = args[0];
+		
+		manager.addPendingSign((Player)sender, makeCreationFunction(serverId));
+		sender.sendMessage(ChatColor.GRAY + "Left click the sign you want to use");
+		
+		return true;
+	}
+	
+	private Function<Block, BaseSign> makeCreationFunction(final String serverId) {
+		return new Function<Block, BaseSign>() {
+			@Override
+			public BaseSign apply(Block block) {
+				return manager.makeVisitSign(serverId, block);
+			}
+		};
 	}
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, String parent, String label, String[] args) {
-		return tabComplete(sender, parent, label, args);
+		return null;
 	}
 }

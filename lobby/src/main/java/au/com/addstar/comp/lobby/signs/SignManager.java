@@ -182,6 +182,9 @@ public class SignManager {
 				case "join":
 					sign = new JoinSign(serverId, block, compManager, messages);
 					break;
+				case "visit":
+					sign = new VisitSign(serverId, block, compManager, messages);
+					break;
 				default:
 					// Ignore the sign
 					continue;
@@ -211,6 +214,8 @@ public class SignManager {
 				signData.set("type", "info");
 			} else if (sign instanceof JoinSign) {
 				signData.set("type", "join");
+			} else if (sign instanceof VisitSign) {
+				signData.set("type", "visit");
 			} else {
 				// Ignore it
 				continue;
@@ -237,6 +242,10 @@ public class SignManager {
 		return new JoinSign(serverId, block, compManager, messages);
 	}
 	
+	public VisitSign makeVisitSign(String serverId, Block block) {
+		return new VisitSign(serverId, block, compManager, messages);
+	}
+
 	public InfoSign makeInfoSign(String serverId, InfoSign.InfoType type, Block block) {
 		return new InfoSign(serverId, type, block, compManager);
 	}
