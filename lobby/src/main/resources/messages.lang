@@ -18,7 +18,8 @@ join.prompt.footer=&cComp plots are &oonly&c to be used for participating in thi
 &ePlease adhere to the theme and criteria!\n\
 &6If you agree to these rules type: &b/agree {theme}&r\n\
 &d----------------------------------------------------
-join.done=You have joined the comp. Good luck.
+join.done=&aYou have joined the comp: &b{theme}\n\
+&eGood luck and remember to follow the rules!
 join.denied.timeout=&cYou did not accept in time.
 join.denied.full=&cSorry, this comp is full.
 join.denied.not-running=&cSorry, there isn't a comp running.
@@ -28,7 +29,6 @@ join.denied.whitelist=&cSorry, you aren't whitelisted for this comp.
 
 # Confirmation messages
 confirm.none=&cYou have nothing to confirm
-
 
 # Info command
 info.unknown-server=&cUnknown server, or no comp assigned
@@ -46,7 +46,7 @@ info.criteria.format=\u25C9 &e{name}\n\
 # Comp state
 state.open=&a&lOPEN
 state.voting=&3&lVOTING
-state.closed=&c&lCLOSED
+state.closed=&4&lCLOSED
 state.offline=&4&lOFFLINE
 state.full=&4&lFULL
 
