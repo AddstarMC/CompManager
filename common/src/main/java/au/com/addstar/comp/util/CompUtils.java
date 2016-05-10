@@ -68,7 +68,7 @@ public final class CompUtils {
 	
 	private static final SimpleDateFormat endFormat = new SimpleDateFormat("d MMM h:ma");
 	private static final String TIME_LEFT_FORMAT_LONG = "d'd 'H'h'";
-	private static final String TIME_LEFT_FORMAT_SHORT = "'H'h 'm'm'";
+	private static final String TIME_LEFT_FORMAT_SHORT = "H'h 'm'm'";
 	
 	/**
 	 * Formats a time in ms as 'd MMM h:ma'
