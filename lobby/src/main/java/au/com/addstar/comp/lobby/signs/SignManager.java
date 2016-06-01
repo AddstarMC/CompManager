@@ -156,6 +156,10 @@ public class SignManager {
 	 * @throws IOException Thrown if an IOException occurs while loading
 	 */
 	public void load() throws IOException {
+		if (!storageFile.exists()) {
+			return;
+		}
+		
 		YamlConfiguration storage = new YamlConfiguration();
 		try {
 			storage.load(storageFile);

@@ -4,13 +4,18 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
+import com.intellectualcrafters.plot.object.Location;
+import com.intellectualcrafters.plot.object.Plot;
 import com.plotsquared.bukkit.events.PlayerClaimPlotEvent;
 
 import au.com.addstar.comp.util.Messages;
@@ -45,6 +50,41 @@ public class EventListener implements Listener {
 		}
 		
 		event.disallow(PlayerLoginEvent.Result.KICK_OTHER, messages.get("join.denied.not-running"));
+	}
+	
+	// Take players to their plot on join
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+		// Comp must not be closed
+		if (manager.getCurrentComp() == null || manager.getCurrentComp().getState() == CompState.Closed) {
+			return;
+		}
+		
+		Plot plot = bridge.getPlot(event.getPlayer().getUniqueId());
+		// Only do this if entered
+		if (plot == null) {
+			return;
+		}
+		
+		Location destination = plot.getHome();
+		
+		World world = Bukkit.getWorld(destination.getWorld());
+		if (world == null) {
+			logger.warning("Failed to teleport " + event.getPlayer().getName() + " to their plot. Invalid world " + destination.getWorld());
+			return;
+		}
+		
+		// Make it so they go to their plot
+		event.setSpawnLocation(
+			new org.bukkit.Location(
+				world, 
+				destination.getX() + 0.5, 
+				destination.getY(), 
+				destination.getZ() + 0.5, 
+				destination.getYaw(), 
+				destination.getPitch()
+			)
+		);
 	}
 	
 	// Plot claim limitations
