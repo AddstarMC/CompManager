@@ -15,6 +15,7 @@ import au.com.addstar.comp.commands.AgreeCommand;
 import au.com.addstar.comp.commands.CompAdminCommand;
 import au.com.addstar.comp.commands.CompInfoCommand;
 import au.com.addstar.comp.commands.JoinCommand;
+import au.com.addstar.comp.commands.VoteCommand;
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.notifications.NotificationManager;
@@ -89,6 +90,7 @@ public class CompPlugin extends JavaPlugin {
 		new JoinCommand(compManager, confirmationManager, messages).registerAs(getCommand("compjoin"));
 		new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
 		new CompInfoCommand(compManager, messages).registerAs(getCommand("compinfo"));
+		new VoteCommand(compManager, bridge, messages).registerAs(getCommand("compvote"));
 		registerQueryHandlers();
 		
 		// Start listeners

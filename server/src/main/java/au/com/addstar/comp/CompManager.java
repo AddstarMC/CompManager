@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Sets;
@@ -20,6 +21,9 @@ import au.com.addstar.comp.entry.EntryDeniedException;
 import au.com.addstar.comp.entry.EntryDeniedException.Reason;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.P2Bridge;
+import au.com.addstar.comp.voting.Vote;
+import au.com.addstar.comp.voting.VoteStorage;
+import au.com.addstar.comp.voting.likedislike.LikeDislikeStrategy;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 public class CompManager {
@@ -39,6 +43,7 @@ public class CompManager {
 	private final RedisManager redis;
 	
 	private Competition currentComp;
+	private VoteStorage<? extends Vote> voteStorage;
 	
 	public CompManager(CompBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, RedisManager redis, Logger logger) {
 		this.backend = backend;
@@ -59,6 +64,9 @@ public class CompManager {
 		};
 		
 		NonEntrant = Predicates.not(Entrant);
+		
+		// TODO: Allow customising strategy
+		voteStorage = new VoteStorage<>(new LikeDislikeStrategy());
 	}
 	
 	/**
@@ -78,6 +86,8 @@ public class CompManager {
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Failed to load the current competition for this server", e);
 		}
+		
+		// TODO: Load votes and strategy
 	}
 	
 	/**
@@ -156,6 +166,18 @@ public class CompManager {
 		} else {
 			return CompState.Closed;
 		}
+	}
+	
+	/**
+	 * Gets the vote storage for registering votes.
+	 * This may only be used if a comp is loaded
+	 * @return The vote storage
+	 * @throws IllegalStateException Thrown if a comp is not loaded
+	 */
+	public VoteStorage<? extends Vote> getVoteStorage() throws IllegalStateException {
+		Preconditions.checkState(currentComp != null);
+		
+		return voteStorage;
 	}
 	
 	// Plots reserved for players entering the comp (but not finished entering)

@@ -50,3 +50,10 @@ info.criteria.format=\u25C9 &e{name}\n\
 state.open=&a&lOPEN
 state.voting=&3&lVOTING
 state.closed=&4&lCLOSED
+
+# Voting messages
+vote.denied.state = &cSorry, this competition is not open to voting yet
+vote.denied.no-plot = &cSorry, you need to stand on a comp plot to vote
+vote.denied.no-owner = &cSorry, this plot is not owned. Please choose another plot
+vote.denied.revote = &cSorry, revoting is not permitted in this comp
+vote.done = &aYour vote has been accepted, thank you

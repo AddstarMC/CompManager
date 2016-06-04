@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
@@ -41,6 +42,21 @@ public class P2Bridge {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Gets any plot at the given location
+	 * @param location The location to look at
+	 * @return The plot or null
+	 */
+	public Plot getPlotAt(Location location) {
+		com.intellectualcrafters.plot.object.Location wrappedLocation = new com.intellectualcrafters.plot.object.Location(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+		PlotArea area = plugin.getApplicablePlotArea(wrappedLocation);
+		if (area == null) {
+			return null;
+		}
+		
+		return area.getPlot(wrappedLocation);
 	}
 	
 	/**
