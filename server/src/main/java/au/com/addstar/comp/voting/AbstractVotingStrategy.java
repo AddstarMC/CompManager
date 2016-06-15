@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Multimap;
 import com.intellectualcrafters.plot.object.Plot;
+import com.intellectualcrafters.plot.object.PlotId;
 
 /**
  * Represents a way of producing and counting votes
@@ -21,7 +22,7 @@ public abstract class AbstractVotingStrategy<T extends Vote> {
 	 * @param votes The votes to count, grouped by plot
 	 * @return An unmodifiable ordered list where the first element is first place
 	 */
-	public abstract List<Placement> countVotes(Multimap<Plot, T> votes);
+	public abstract List<Placement> countVotes(Multimap<PlotId, T> votes);
 	
 	/**
 	 * Creates the vote provider for this strategy

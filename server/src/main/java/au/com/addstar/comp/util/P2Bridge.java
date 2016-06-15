@@ -58,6 +58,17 @@ public class P2Bridge {
 		
 		return area.getPlot(wrappedLocation);
 	}
+
+	public Plot getPlot(PlotId plotId) {
+		Set<PlotArea> areas = plugin.getPlotAreas(Bukkit.getWorlds().get(0).getName());
+
+		for (PlotArea area : areas) {
+			if (area.getPlotCount() > 0) {
+				return area.getPlot(plotId);
+			}
+		}
+		throw new IllegalStateException("No plot area for some reason");
+	}
 	
 	/**
 	 * Gets all plots that are owned

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Map;
 
+import au.com.addstar.comp.database.ConnectionPool;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -37,6 +38,8 @@ public class CompBackendManager {
 	private static final StatementKey STATEMENT_SERVER_GET;
 	private static final StatementKey STATEMENT_SERVER_SET;
 	private static final StatementKey STATEMENT_SERVER_GETALL;
+
+
 	
 	static {
 		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, VoteEnd, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
@@ -57,6 +60,10 @@ public class CompBackendManager {
 	
 	public CompBackendManager(DatabaseManager manager) {
 		this.manager = manager;
+	}
+
+	protected ConnectionPool getPool() {
+		return manager.getPool();
 	}
 	
 	private BasePrize loadPrize(String input) {

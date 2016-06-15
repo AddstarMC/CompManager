@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class CompManager {
 	 */
 	public final Predicate<Player> NonEntrant;
 	
-	private final CompBackendManager backend;
+	private final CompServerBackendManager backend;
 	private final P2Bridge bridge;
 	private final Logger logger;
 	private final WhitelistHandler whitelist;
@@ -50,7 +51,7 @@ public class CompManager {
 	private Competition currentComp;
 	private VoteStorage<? extends Vote> voteStorage;
 	
-	public CompManager(CompBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, RedisManager redis, Logger logger) {
+	public CompManager(CompServerBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, RedisManager redis, Logger logger) {
 		this.backend = backend;
 		this.whitelist = whitelist;
 		this.bridge = bridge;
@@ -71,7 +72,7 @@ public class CompManager {
 		NonEntrant = Predicates.not(Entrant);
 		
 		// TODO: Allow customising strategy
-		voteStorage = new VoteStorage<>(new LikeDislikeStrategy());
+		voteStorage = new VoteStorage<>(new LikeDislikeStrategy(), this);
 	}
 	
 	/**
@@ -92,7 +93,12 @@ public class CompManager {
 			logger.log(Level.SEVERE, "Failed to load the current competition for this server", e);
 		}
 		
-		// TODO: Load votes and strategy
+		// TODO: Load strategy type
+		try {
+			voteStorage.loadVotes();
+		} catch (SQLException e) {
+			logger.log(Level.SEVERE, "Failed to load votes for the current competition", e);
+		}
 	}
 	
 	/**
@@ -206,6 +212,10 @@ public class CompManager {
 		
 		return voteStorage;
 	}
+
+	public CompServerBackendManager getBackend() {
+		return backend;
+	}
 	
 	/**
 	 * Completes a competition by tallying votes, awarding winners, and performing any and all post
@@ -217,7 +227,7 @@ public class CompManager {
 		
 		// Determine the winning plots
 		final int maxPlacements = 2;// TODO: Do we allow customisable placements?
-		List<Plot> placements = determineWinners(maxPlacements); 
+		List<PlotId> placements = determineWinners(maxPlacements);
 		if (placements.isEmpty()) {
 			logger.warning("[Results] No votes have been recorded for the competition. No winner will be declared");
 			// TODO: Declare no winner.
@@ -232,8 +242,9 @@ public class CompManager {
 		logger.info("[Results] There were " + bridge.getUsedPlotCount() + " entrants");
 		logger.info("[Results] The results were:");
 		int index = 1;
-		for (Plot plot : placements) {
+		for (PlotId plotId : placements) {
 			StringBuilder ownerNames = new StringBuilder();
+			Plot plot = bridge.getPlot(plotId);
 			for (UUID owner : plot.getOwners()) {
 				if (ownerNames.length() != 0) {
 					ownerNames.append(", ");
@@ -241,7 +252,7 @@ public class CompManager {
 				ownerNames.append(Bukkit.getOfflinePlayer(owner));
 			}
 			
-			logger.info("[Results] Place " + index + ": " + ownerNames + " with plot " + plot);
+			logger.info("[Results] Place " + index + ": " + ownerNames + " with plot " + plotId);
 			++index;
 		}
 		
@@ -249,9 +260,9 @@ public class CompManager {
 		updateCurrentComp();
 	}
 	
-	private List<Plot> determineWinners(int maxPlacements) {
+	private List<PlotId> determineWinners(int maxPlacements) {
 		List<Placement> placements = voteStorage.countVotes();
-		List<Plot> finalPlacements = Lists.newArrayListWithCapacity(maxPlacements);
+		List<PlotId> finalPlacements = Lists.newArrayListWithCapacity(maxPlacements);
 		// Resolve any ties
 		for (Placement place : placements) {
 			if (finalPlacements.size() >= maxPlacements) {
@@ -261,11 +272,11 @@ public class CompManager {
 			if (place.isDefinitive()) {
 				finalPlacements.add(place.getPlot());
 			} else {
-				List<Plot> contenders = Lists.newArrayList(place.getContenders());
+				List<PlotId> contenders = Lists.newArrayList(place.getContenders());
 				Collections.shuffle(contenders);
 				logger.warning("[Voting] A tie was detected between the following plots: " + contenders);
 				
-				for (Plot contender : contenders) {
+				for (PlotId contender : contenders) {
 					if (finalPlacements.size() >= maxPlacements) {
 						break;
 					}

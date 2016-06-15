@@ -69,7 +69,7 @@ public class CompPlugin extends JavaPlugin {
 		
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		bridge = new P2Bridge(PS.get());
-		compManager = new CompManager(new CompBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
+		compManager = new CompManager(new CompServerBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
 		confirmationManager = new ConfirmationManager();
 		
 		File notificationsFile = new File(getDataFolder(), "notifications.yml");

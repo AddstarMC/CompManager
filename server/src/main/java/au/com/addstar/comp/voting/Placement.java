@@ -5,12 +5,12 @@ import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
-import com.intellectualcrafters.plot.object.Plot;
+import com.intellectualcrafters.plot.object.PlotId;
 
 public class Placement {
-	private final Set<Plot> plots;
+	private final Set<PlotId> plots;
 	
-	public Placement(Set<Plot> plots) {
+	public Placement(Set<PlotId> plots) {
 		this.plots = plots;
 	}
 	
@@ -28,9 +28,9 @@ public class Placement {
 	 * is definitive
 	 * @return The plot in this placement
 	 * @throws IllegalStateException Thrown if this placement is not definitive
-	 * @see isDefinitive()
+	 * @see #isDefinitive()
 	 */
-	public Plot getPlot() throws IllegalStateException {
+	public PlotId getPlot() throws IllegalStateException {
 		Preconditions.checkState(isDefinitive());
 		
 		return Iterables.getOnlyElement(plots);
@@ -40,7 +40,7 @@ public class Placement {
 	 * Gets the contenders for this placement
 	 * @return The contenders
 	 */
-	public Set<Plot> getContenders() {
+	public Set<PlotId> getContenders() {
 		return Collections.unmodifiableSet(plots);
 	}
 }

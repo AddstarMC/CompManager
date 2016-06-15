@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Predicate;
@@ -33,11 +34,11 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 	}
 	
 	@Override
-	public List<Placement> countVotes(Multimap<Plot, LDVote> votes) {
-		TreeMultimap<Integer, Plot> rankedPlots;
+	public List<Placement> countVotes(Multimap<PlotId, LDVote> votes) {
+		TreeMultimap<Integer, PlotId> rankedPlots;
 		rankedPlots = TreeMultimap.create(Ordering.natural().reversed(), Ordering.arbitrary());
 		
-		for (Plot plot : votes.keySet()) {
+		for (PlotId plot : votes.keySet()) {
 			int score = 0;
 			// Tally all votes for this plot
 			for (LDVote vote : votes.get(plot)) {
@@ -60,7 +61,7 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		// Extract the ordered plots
 		List<Placement> places = Lists.newArrayList();
 		for (Integer key : rankedPlots.keySet()) {
-			Set<Plot> plots = rankedPlots.get(key);
+			Set<PlotId> plots = rankedPlots.get(key);
 			places.add(new Placement(plots));
 		}
 		
@@ -78,7 +79,7 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		} 
 		
 		@Override
-		public LDVote onVoteCommand(Player voter, Plot plot, String[] args) throws IllegalArgumentException {
+		public LDVote onVoteCommand(Player voter, PlotId plot, String[] args) throws IllegalArgumentException {
 			if (args.length < 1) {
 				throw new IllegalArgumentException("You must specify either 'like', 'dislike', or 'skip' for your vote");
 			}
@@ -121,6 +122,11 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		@Override
 		public String getVoteCommandArguments() {
 			return "{like|dislike|skip}";
+		}
+
+		@Override
+		public LDVote loadVote(PlotId plotId, int value) {
+			return LDVote.fromValue(plotId, value);
 		}
 	}
 }

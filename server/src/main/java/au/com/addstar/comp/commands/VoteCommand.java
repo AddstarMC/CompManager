@@ -62,7 +62,7 @@ public class VoteCommand implements TabExecutor {
 		VoteStorage<Vote> storage = (VoteStorage<Vote>)manager.getVoteStorage();
 		Vote vote;
 		try {
-			vote = storage.getProvider().onVoteCommand(player, plot, args);
+			vote = storage.getProvider().onVoteCommand(player, plot.getId(), args);
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 			return true;

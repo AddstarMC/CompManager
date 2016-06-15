@@ -1,5 +1,6 @@
 package au.com.addstar.comp.voting;
 
+import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.entity.Player;
 
 import com.intellectualcrafters.plot.object.Plot;
@@ -31,7 +32,7 @@ public abstract class AbstractVoteProvider<T extends Vote> {
 	 * @throws IllegalArgumentException Throws an exception if the provided arguments arent valid for this strategy
 	 * @throws IllegalStateException Thrown if the vote command cannot be used
 	 */
-	public T onVoteCommand(Player voter, Plot plot, String[] arguments) throws IllegalArgumentException {
+	public T onVoteCommand(Player voter, PlotId plot, String[] arguments) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 	
@@ -52,4 +53,13 @@ public abstract class AbstractVoteProvider<T extends Vote> {
 	public String getVoteCommandArguments() {
 		return "";
 	}
+
+	/**
+	 * Loads a vote from its value and plot
+	 * @param plotId The plot the vote is for
+	 * @param value The value of the vote
+	 * @return The loaded vote
+	 * @throws IllegalArgumentException Thrown if the value is not valid for the vote type
+	 */
+	public abstract T loadVote(PlotId plotId, int value) throws IllegalArgumentException;
 }
