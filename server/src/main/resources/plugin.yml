@@ -22,6 +22,8 @@ permissions:
     default: true
   comp.admin.state:
     default: OP
+  comp.admin.tallyvotes:
+    default: OP
 
 commands:
   compadmin:

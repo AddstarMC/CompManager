@@ -4,15 +4,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
 
 public class ConfirmationManager {
-	private Map<Player, Confirmation<?>> confirmations;
-	private TreeMultimap<Long, Player> orderedConfirmations;
+	private Map<CommandSender, Confirmation<?>> confirmations;
+	private TreeMultimap<Long, CommandSender> orderedConfirmations;
 	
 	public ConfirmationManager() {
 		confirmations = Maps.newHashMap();
@@ -25,7 +25,7 @@ public class ConfirmationManager {
 	 * @param player The player that owns the confirmation
 	 * @param confirmation The confirmation
 	 */
-	public <T extends Confirmable> void addConfirmation(Player player, Confirmation<T> confirmation) {
+	public <T extends Confirmable> void addConfirmation(CommandSender player, Confirmation<T> confirmation) {
 		synchronized (confirmations) {
 			Confirmation<?> existing = confirmations.put(player, confirmation);
 			
@@ -43,7 +43,7 @@ public class ConfirmationManager {
 	 * @param player The player to check
 	 * @return True if there are any
 	 */
-	public boolean hasPendingConfirmations(Player player) {
+	public boolean hasPendingConfirmations(CommandSender player) {
 		synchronized (confirmations) {
 			return confirmations.containsKey(player);
 		}
@@ -55,7 +55,7 @@ public class ConfirmationManager {
 	 * @param input The input string, player provided, to match the token (if any)
 	 * @return True if a confirmation was handled (either success or fail)
 	 */
-	public boolean tryConfirm(Player player, String input) {
+	public boolean tryConfirm(CommandSender player, String input) {
 		synchronized (confirmations) {
 			Confirmation<?> confirmation = confirmations.get(player);
 			
@@ -99,7 +99,7 @@ public class ConfirmationManager {
 	 * @param player The player
 	 * @return True if a confirmation was handled (either success or fail)
 	 */
-	public boolean tryAbort(Player player) {
+	public boolean tryAbort(CommandSender player) {
 		synchronized (confirmations) {
 			Confirmation<?> confirmation = confirmations.get(player);
 			
@@ -119,7 +119,7 @@ public class ConfirmationManager {
 		}
 	}
 	
-	private void removeConfirmation(Player player, Confirmation<?> confirmation) {
+	private void removeConfirmation(CommandSender player, Confirmation<?> confirmation) {
 		synchronized (confirmations) {
 			confirmations.remove(player);
 			orderedConfirmations.remove(confirmation.getExpireMessage(), player);
@@ -137,10 +137,10 @@ public class ConfirmationManager {
 				
 				if (System.currentTimeMillis() >= time) {
 					// They have expired
-					Set<Player> players = orderedConfirmations.get(time);
+					Set<CommandSender> players = orderedConfirmations.get(time);
 					timeIterator.remove();
 					
-					for (Player player : players) {
+					for (CommandSender player : players) {
 						confirmations.remove(player);
 					}
 				} else {

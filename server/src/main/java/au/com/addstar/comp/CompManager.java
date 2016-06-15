@@ -1,7 +1,10 @@
 package au.com.addstar.comp;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,6 +16,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellectualcrafters.plot.object.Plot;
 
@@ -21,6 +25,7 @@ import au.com.addstar.comp.entry.EntryDeniedException;
 import au.com.addstar.comp.entry.EntryDeniedException.Reason;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.P2Bridge;
+import au.com.addstar.comp.voting.Placement;
 import au.com.addstar.comp.voting.Vote;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.likedislike.LikeDislikeStrategy;
@@ -169,6 +174,28 @@ public class CompManager {
 	}
 	
 	/**
+	 * Notifies the manager that the state has changed automatically.
+	 * @param previousState The last state the comp was in
+	 */
+	public void notifyStateChange(CompState previousState) {
+		if (currentComp == null) {
+			return;
+		}
+		
+		// Must be automatic to do this
+		if (!currentComp.isAutomatic()) {
+			return;
+		}
+		
+		if (previousState == CompState.Voting) {
+			if (currentComp.getState() == CompState.Closed) {
+				// TODO: Check that the comp has not already finished
+				finishCompetition();
+			}
+		}
+	}
+	
+	/**
 	 * Gets the vote storage for registering votes.
 	 * This may only be used if a comp is loaded
 	 * @return The vote storage
@@ -178,6 +205,78 @@ public class CompManager {
 		Preconditions.checkState(currentComp != null);
 		
 		return voteStorage;
+	}
+	
+	/**
+	 * Completes a competition by tallying votes, awarding winners, and performing any and all post
+	 * comp actions
+	 * @throws IllegalStateException Thrown if the comp is not able to be finished
+	 */
+	public void finishCompetition() throws IllegalStateException {
+		Preconditions.checkState(currentComp != null);
+		
+		// Determine the winning plots
+		final int maxPlacements = 2;// TODO: Do we allow customisable placements?
+		List<Plot> placements = determineWinners(maxPlacements); 
+		if (placements.isEmpty()) {
+			logger.warning("[Results] No votes have been recorded for the competition. No winner will be declared");
+			// TODO: Declare no winner.
+			return;
+		}
+		
+		if (placements.size() < maxPlacements) {
+			logger.warning("[Results] Not enough plots were voted on to determine enough winners. Only " + placements.size() + " ranks were filled out of " + maxPlacements);
+		}
+		
+		logger.info("[Results] " + currentComp.getTheme() + " has been completed");
+		logger.info("[Results] There were " + bridge.getUsedPlotCount() + " entrants");
+		logger.info("[Results] The results were:");
+		int index = 1;
+		for (Plot plot : placements) {
+			StringBuilder ownerNames = new StringBuilder();
+			for (UUID owner : plot.getOwners()) {
+				if (ownerNames.length() != 0) {
+					ownerNames.append(", ");
+				}
+				ownerNames.append(Bukkit.getOfflinePlayer(owner));
+			}
+			
+			logger.info("[Results] Place " + index + ": " + ownerNames + " with plot " + plot);
+			++index;
+		}
+		
+		currentComp.setState(CompState.Closed);
+		updateCurrentComp();
+	}
+	
+	private List<Plot> determineWinners(int maxPlacements) {
+		List<Placement> placements = voteStorage.countVotes();
+		List<Plot> finalPlacements = Lists.newArrayListWithCapacity(maxPlacements);
+		// Resolve any ties
+		for (Placement place : placements) {
+			if (finalPlacements.size() >= maxPlacements) {
+				break;
+			}
+			
+			if (place.isDefinitive()) {
+				finalPlacements.add(place.getPlot());
+			} else {
+				List<Plot> contenders = Lists.newArrayList(place.getContenders());
+				Collections.shuffle(contenders);
+				logger.warning("[Voting] A tie was detected between the following plots: " + contenders);
+				
+				for (Plot contender : contenders) {
+					if (finalPlacements.size() >= maxPlacements) {
+						break;
+					}
+					
+					logger.warning("[Voting] " + contender + " was chosen randomly");
+					finalPlacements.add(contender);
+				}
+			}
+		}
+		
+		return finalPlacements;
 	}
 	
 	// Plots reserved for players entering the comp (but not finished entering)

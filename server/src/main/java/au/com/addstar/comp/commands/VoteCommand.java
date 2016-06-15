@@ -60,15 +60,20 @@ public class VoteCommand implements TabExecutor {
 		}
 		
 		VoteStorage<Vote> storage = (VoteStorage<Vote>)manager.getVoteStorage();
-		
 		Vote vote;
 		try {
-			vote = storage.getStrategy().createVote(plot, args);
+			vote = storage.getProvider().onVoteCommand(player, plot, args);
 		} catch (IllegalArgumentException e) {
 			sender.sendMessage(e.getMessage());
 			return true;
 		}
 		
+		// It will be handled elsewhere
+		if (vote == null) {
+			return true;
+		}
+		
+		// We will need to handle it
 		try {
 			storage.recordVote(player, vote);
 			sender.sendMessage(messages.get("vote.done"));
@@ -89,7 +94,7 @@ public class VoteCommand implements TabExecutor {
 			return null;
 		}
 		
-		Iterable<String> results = manager.getVoteStorage().getStrategy().tabCompleteVote(args);
+		Iterable<String> results = manager.getVoteStorage().getProvider().onVoteTabComplete(args);
 		if (results == null) {
 			return null;
 		} else {

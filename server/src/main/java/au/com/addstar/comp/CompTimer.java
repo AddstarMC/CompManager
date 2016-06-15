@@ -43,6 +43,7 @@ public class CompTimer implements Runnable {
 				notifications.broadcast("Placeholder: Comp has finished. Voting is now open", DisplayTarget.Subtitle, 5000);
 				break;
 			}
+			compManager.notifyStateChange(lastState);
 			lastState = state;
 		}
 	}

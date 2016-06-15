@@ -86,7 +86,7 @@ public class CompPlugin extends JavaPlugin {
 		remoteJoinManager = new RemoteJoinManager(compManager, TimeUnit.SECONDS.toMillis(30)); // TODO: Configurable timeout
 		
 		// Register commands
-		new CompAdminCommand(whitelistHandler, compManager, notificationManager).registerAs(getCommand("compadmin"));
+		new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager).registerAs(getCommand("compadmin"));
 		new JoinCommand(compManager, confirmationManager, messages).registerAs(getCommand("compjoin"));
 		new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
 		new CompInfoCommand(compManager, messages).registerAs(getCommand("compinfo"));
