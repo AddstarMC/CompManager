@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.com.addstar.comp.prizes.BasePrize;
+import au.com.addstar.comp.voting.*;
 import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -27,9 +28,6 @@ import au.com.addstar.comp.entry.EntryDeniedException;
 import au.com.addstar.comp.entry.EntryDeniedException.Reason;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.P2Bridge;
-import au.com.addstar.comp.voting.Placement;
-import au.com.addstar.comp.voting.Vote;
-import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.likedislike.LikeDislikeStrategy;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
@@ -72,8 +70,7 @@ public class CompManager {
 		
 		NonEntrant = Predicates.not(Entrant);
 		
-		// TODO: Allow customising strategy
-		voteStorage = new VoteStorage<>(new LikeDislikeStrategy(), this);
+		voteStorage = new VoteStorage<>(VotingStrategies.getDefault(), this);
 	}
 	
 	/**
@@ -93,12 +90,22 @@ public class CompManager {
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Failed to load the current competition for this server", e);
 		}
-		
-		// TODO: Load strategy type
-		try {
-			voteStorage.loadVotes();
-		} catch (SQLException e) {
-			logger.log(Level.SEVERE, "Failed to load votes for the current competition", e);
+
+		if (currentComp != null) {
+			AbstractVotingStrategy<?> strategy = VotingStrategies.getStrategy(currentComp.getVotingStrategy());
+			if (strategy == null) {
+				if (currentComp.getVotingStrategy() != null) {
+					logger.warning("Failed to find voting strategy " + currentComp.getVotingStrategy() + ". Falling back to default strategy");
+				}
+				strategy = VotingStrategies.getDefault();
+			}
+
+			voteStorage = new VoteStorage<>(strategy, this);
+			try {
+				voteStorage.loadVotes();
+			} catch (SQLException e) {
+				logger.log(Level.SEVERE, "Failed to load votes for the current competition", e);
+			}
 		}
 	}
 	

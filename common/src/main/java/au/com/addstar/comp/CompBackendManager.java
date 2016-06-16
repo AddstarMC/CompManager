@@ -53,9 +53,9 @@ public class CompBackendManager {
 
 	
 	static {
-		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, VoteEnd, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
-		STATEMENT_ADD = new StatementKey("INSERT INTO " + TABLE_COMP + " (Theme, State, StartDate, EndDate, VoteEnd, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize) VALUES (?,?,?,?,?,?,?,?)", true);
-		STATEMENT_UPDATE = new StatementKey("UPDATE " + TABLE_COMP + " SET Theme=?, State=?, StartDate=?, EndDate=?, VoteEnd=?, MaxEntrants=?, FirstPrize=?, SecondPrize=?, DefaultPrize=? WHERE ID=?");
+		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
+		STATEMENT_ADD = new StatementKey("INSERT INTO " + TABLE_COMP + " (Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize) VALUES (?,?,?,?,?,?,?,?)", true);
+		STATEMENT_UPDATE = new StatementKey("UPDATE " + TABLE_COMP + " SET Theme=?, State=?, StartDate=?, EndDate=?, VoteEnd=?, VoteType=?, MaxEntrants=?, FirstPrize=?, SecondPrize=?, DefaultPrize=? WHERE ID=?");
 		
 		STATEMENT_CRITERIA_LOAD = new StatementKey("SELECT CriteriaID, Name, Description, Type, Data FROM " + TABLE_CRITERIA + " WHERE CompID=?");
 		STATEMENT_CRITERIA_ADD = new StatementKey("INSERT INTO " + TABLE_CRITERIA + " (CompID, Name, Description, Type, Data) VALUES (?,?,?,?,?)", true);
@@ -138,6 +138,8 @@ public class CompBackendManager {
 				if (voteEnd != null) {
 					result.setVoteEndDate(voteEnd.getTime());
 				}
+
+				result.setVotingStrategy(rs.getString("VoteType"));
 				
 				result.setMaxEntrants(rs.getInt("MaxEntrants"));
 				
@@ -197,6 +199,7 @@ public class CompBackendManager {
 					new Timestamp(competition.getStartDate()),
 					new Timestamp(competition.getEndDate()),
 					new Timestamp(competition.getVoteEndDate()),
+					competition.getVotingStrategy(),
 					competition.getMaxEntrants(),
 					(competition.getFirstPrize() != null ? competition.getFirstPrize().toDatabase() : null),
 					(competition.getSecondPrize() != null ? competition.getSecondPrize().toDatabase() : null),

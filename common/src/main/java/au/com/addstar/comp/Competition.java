@@ -25,6 +25,8 @@ public class Competition {
 	private BasePrize firstPrize;
 	private BasePrize secondPrize;
 	private BasePrize participationPrize;
+
+	private String votingStrategy;
 	
 	public Competition() {
 		criteria = Lists.newArrayList();
@@ -155,5 +157,13 @@ public class Competition {
 	
 	public boolean isRunning() {
 		return getState() == CompState.Open;
+	}
+
+	public String getVotingStrategy() {
+		return votingStrategy;
+	}
+
+	public void setVotingStrategy(String strategy) {
+		this.votingStrategy = strategy;
 	}
 }
