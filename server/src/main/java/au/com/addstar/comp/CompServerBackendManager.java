@@ -50,7 +50,7 @@ public class CompServerBackendManager extends CompBackendManager {
 		try {
 			handler = getPool().getConnection();
 
-			ResultSet rs = handler.executeQuery(STATEMENT_VOTE_GETALL_PLAYER, comp.getCompId(), player.toString().replace("-",""));
+			ResultSet rs = handler.executeQuery(STATEMENT_VOTE_GETALL_PLAYER, comp.getCompId(), player.toString());
 
 			List<T> votes = Lists.newArrayList();
 			while (rs.next()) {
@@ -105,7 +105,7 @@ public class CompServerBackendManager extends CompBackendManager {
 
 					UUID id;
 					try {
-						id = UUID.fromString(rawUUID.substring(0, 8) + "-" + rawUUID.substring(8, 12) + "-" + rawUUID.substring(12, 16) + "-" + rawUUID.substring(16, 20) + "-" + rawUUID.substring(20));
+						id = UUID.fromString(rawUUID);
 					} catch (IllegalArgumentException e) {
 						// Drop invalid votes
 						continue;
@@ -152,7 +152,7 @@ public class CompServerBackendManager extends CompBackendManager {
 		try {
 			handler = getPool().getConnection();
 
-			handler.executeUpdate(STATEMENT_VOTE_ADD, comp.getCompId(), voter.toString().replace("-", ""), vote.getPlot().toString(), vote.toNumber());
+			handler.executeUpdate(STATEMENT_VOTE_ADD, comp.getCompId(), voter.toString(), vote.getPlot().toString(), vote.toNumber());
 		} finally {
 			if (handler != null) {
 				handler.release();
@@ -172,7 +172,7 @@ public class CompServerBackendManager extends CompBackendManager {
 		try {
 			handler = getPool().getConnection();
 
-			handler.executeUpdate(STATEMENT_VOTE_REMOVE, comp.getCompId(), voter.toString().replace("-", ""), plot.toString());
+			handler.executeUpdate(STATEMENT_VOTE_REMOVE, comp.getCompId(), voter.toString(), plot.toString());
 		} finally {
 			if (handler != null) {
 				handler.release();
