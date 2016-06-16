@@ -3,11 +3,15 @@ package au.com.addstar.comp;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import au.com.addstar.comp.database.ConnectionPool;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import au.com.addstar.comp.criterions.BaseCriterion;
@@ -39,6 +43,13 @@ public class CompBackendManager {
 	private static final StatementKey STATEMENT_SERVER_SET;
 	private static final StatementKey STATEMENT_SERVER_GETALL;
 
+	// Entrants table
+	private static final String TABLE_RESULTS = "results";
+	private static final StatementKey STATEMENT_RESULT_ADD;
+	private static final StatementKey STATEMENT_RESULT_UPDATE_CLAIMED;
+	private static final StatementKey STATEMENT_RESULT_GETALL_COMP;
+	private static final StatementKey STATEMENT_RESULT_GETALL_WINNERS;
+	private static final StatementKey STATEMENT_RESULT_GET;
 
 	
 	static {
@@ -54,6 +65,12 @@ public class CompBackendManager {
 		STATEMENT_SERVER_GET = new StatementKey("SELECT CompID FROM " + TABLE_SERVER + " WHERE ServerID=?");
 		STATEMENT_SERVER_GETALL = new StatementKey("SELECT ServerID, CompID FROM " + TABLE_SERVER + " WHERE CompID IS NOT NULL");
 		STATEMENT_SERVER_SET = new StatementKey("REPLACE INTO CompID (ServerID, CompID) VALUES (?,?)");
+
+		STATEMENT_RESULT_ADD = new StatementKey("INSERT INTO " + TABLE_RESULTS + " (CompID, UUID, Name, Rank, PlotID, Prize, Claimed) VALUES (?, ?, ?, ?, ?, ?, 0)");
+		STATEMENT_RESULT_UPDATE_CLAIMED = new StatementKey("UPDATE " + TABLE_RESULTS + " SET Claimed=? WHERE CompID=? AND UUID=?");
+		STATEMENT_RESULT_GETALL_COMP = new StatementKey("SELECT UUID, Name, Rank, PlotID, Prize, Claimed FROM " + TABLE_RESULTS + " WHERE CompID=?");
+		STATEMENT_RESULT_GETALL_WINNERS = new StatementKey("SELECT UUID, Name, Rank, PlotID, Prize, Claimed FROM " + TABLE_RESULTS + " WHERE CompID=? AND Rank IS NOT NULL");
+		STATEMENT_RESULT_GET = new StatementKey("SELECT Name, Rank, PlotID, Prize, Claimed FROM " + TABLE_RESULTS + "WHERE CompID=? AND UUID=?");
 	}
 	
 	private final DatabaseManager manager;
@@ -268,6 +285,146 @@ public class CompBackendManager {
 			}
 			
 			return results;
+		} finally {
+			if (handler != null) {
+				handler.release();
+			}
+		}
+	}
+
+	public Collection<EntrantResult> loadResults(Competition comp, boolean winnersOnly) throws SQLException {
+		ConnectionHandler handler = null;
+		try {
+			handler = getPool().getConnection();
+
+			List<EntrantResult> results = Lists.newArrayList();
+			ResultSet rs = handler.executeQuery(winnersOnly ? STATEMENT_RESULT_GETALL_WINNERS : STATEMENT_RESULT_GETALL_COMP, comp.getCompId());
+			try {
+				while (rs.next()) {
+					try {
+						UUID playerId = UUID.fromString(rs.getString("UUID"));
+						String playerName = rs.getString("Name");
+						String plotId = rs.getString("PlotID");
+
+						int rawRank = rs.getInt("Rank");
+						Optional<Integer> rank;
+						if (rs.wasNull()) {
+							rank = Optional.absent();
+						} else {
+							rank = Optional.of(rawRank);
+						}
+
+						String rawPrize = rs.getString("Prize");
+						Optional<BasePrize> prize;
+						if (rawPrize == null) {
+							prize = Optional.absent();
+						} else {
+							prize = Optional.of(BasePrize.parsePrize(rawPrize));
+						}
+
+						boolean claimed = rs.getBoolean("Claimed");
+
+						EntrantResult result = new EntrantResult(playerId, playerName, plotId, rank, prize, claimed);
+						results.add(result);
+					} catch (IllegalArgumentException e) {
+						// Skip the entry
+					}
+				}
+			} finally {
+				rs.close();
+			}
+
+			return results;
+		} finally {
+			if (handler != null) {
+				handler.release();
+			}
+		}
+	}
+
+	public EntrantResult getResult(Competition comp, UUID playerId) throws SQLException {
+		ConnectionHandler handler = null;
+		try {
+			handler = getPool().getConnection();
+
+			ResultSet rs = handler.executeQuery(STATEMENT_RESULT_GET, comp.getCompId(), playerId.toString());
+			try {
+				if (rs.next()) {
+					try {
+						String playerName = rs.getString("Name");
+						String plotId = rs.getString("PlotID");
+
+						int rawRank = rs.getInt("Rank");
+						Optional<Integer> rank;
+						if (rs.wasNull()) {
+							rank = Optional.absent();
+						} else {
+							rank = Optional.of(rawRank);
+						}
+
+						String rawPrize = rs.getString("Prize");
+						Optional<BasePrize> prize;
+						if (rawPrize == null) {
+							prize = Optional.absent();
+						} else {
+							prize = Optional.of(BasePrize.parsePrize(rawPrize));
+						}
+
+						boolean claimed = rs.getBoolean("Claimed");
+
+						EntrantResult result = new EntrantResult(playerId, playerName, plotId, rank, prize, claimed);
+						return result;
+					} catch (IllegalArgumentException e) {
+						// Skip the entry
+					}
+				}
+			} finally {
+				rs.close();
+			}
+
+			return null;
+		} finally {
+			if (handler != null) {
+				handler.release();
+			}
+		}
+	}
+
+	public void addResult(Competition comp, EntrantResult result) throws SQLException {
+		ConnectionHandler handler = null;
+		try {
+			handler = getPool().getConnection();
+			String prize;
+			if (result.getPrize().isPresent()) {
+				prize = result.getPrize().get().toDatabase();
+			} else {
+				prize = null;
+			}
+
+			handler.executeUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orNull(), result.getPlotId(), prize);
+		} finally {
+			if (handler != null) {
+				handler.release();
+			}
+		}
+	}
+
+	public void addResults(Competition comp, Iterable<EntrantResult> results) throws SQLException {
+		ConnectionHandler handler = null;
+		try {
+			handler = getPool().getConnection();
+			for (EntrantResult result : results) {
+				String prize;
+				if (result.getPrize().isPresent()) {
+					prize = result.getPrize().get().toDatabase();
+				} else {
+					prize = null;
+				}
+
+				handler.batchUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orNull(), result.getPlotId(), prize);
+			}
+
+			handler.executeBatch(STATEMENT_RESULT_ADD);
 		} finally {
 			if (handler != null) {
 				handler.release();

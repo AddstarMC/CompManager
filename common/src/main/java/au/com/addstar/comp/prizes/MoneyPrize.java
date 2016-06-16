@@ -1,8 +1,12 @@
 package au.com.addstar.comp.prizes;
 
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Preconditions;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 /**
  * Represents a cash prize awarded through an economy plugin
@@ -22,8 +26,14 @@ public class MoneyPrize extends BasePrize {
 	
 	@Override
 	public boolean award(Player player) {
-		// TODO: Award money prize
-		throw new UnsupportedOperationException("Not yet implemented");
+		RegisteredServiceProvider<Economy> provider = Bukkit.getServicesManager().getRegistration(Economy.class);
+		Economy econ = provider.getProvider();
+		if (econ == null) {
+			return false;
+		}
+
+		EconomyResponse response = econ.depositPlayer(player, amount);
+		return response.transactionSuccess();
 	}
 
 	@Override

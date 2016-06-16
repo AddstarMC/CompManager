@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import au.com.addstar.comp.prizes.BasePrize;
 import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -228,34 +229,76 @@ public class CompManager {
 		// Determine the winning plots
 		final int maxPlacements = 2;// TODO: Do we allow customisable placements?
 		List<PlotId> placements = determineWinners(maxPlacements);
+		List<EntrantResult> fullResults = Lists.newArrayList();
+		Optional<BasePrize> participationPrize = Optional.fromNullable(currentComp.getParticipationPrize());
+
 		if (placements.isEmpty()) {
+			// Record everyone as having participated
+			for (Plot plot : bridge.getUsedPlots()) {
+				for (UUID owner : plot.getOwners()) {
+					OfflinePlayer player = Bukkit.getOfflinePlayer(owner);
+					fullResults.add(new EntrantResult(owner, player.getName(), plot.getId().toString(), Optional.<Integer>absent(), participationPrize, false));
+				}
+			}
+
 			logger.warning("[Results] No votes have been recorded for the competition. No winner will be declared");
 			// TODO: Declare no winner.
-			return;
-		}
-		
-		if (placements.size() < maxPlacements) {
-			logger.warning("[Results] Not enough plots were voted on to determine enough winners. Only " + placements.size() + " ranks were filled out of " + maxPlacements);
-		}
-		
-		logger.info("[Results] " + currentComp.getTheme() + " has been completed");
-		logger.info("[Results] There were " + bridge.getUsedPlotCount() + " entrants");
-		logger.info("[Results] The results were:");
-		int index = 1;
-		for (PlotId plotId : placements) {
-			StringBuilder ownerNames = new StringBuilder();
-			Plot plot = bridge.getPlot(plotId);
-			for (UUID owner : plot.getOwners()) {
-				if (ownerNames.length() != 0) {
-					ownerNames.append(", ");
-				}
-				ownerNames.append(Bukkit.getOfflinePlayer(owner));
+		} else {
+			if (placements.size() < maxPlacements) {
+				logger.warning("[Results] Not enough plots were voted on to determine enough winners. Only " + placements.size() + " ranks were filled out of " + maxPlacements);
 			}
-			
-			logger.info("[Results] Place " + index + ": " + ownerNames + " with plot " + plotId);
-			++index;
+
+			logger.info("[Results] " + currentComp.getTheme() + " has been completed");
+			logger.info("[Results] There were " + bridge.getUsedPlotCount() + " entrants");
+			logger.info("[Results] The results were:");
+			int index = 1;
+			for (PlotId plotId : placements) {
+				StringBuilder ownerNames = new StringBuilder();
+				Plot plot = bridge.getPlot(plotId);
+				// Select the prize
+				Optional<BasePrize> prize;
+				if (index == 1) {
+					prize = Optional.fromNullable(currentComp.getFirstPrize());
+				} else if (index == 2) {
+					prize = Optional.fromNullable(currentComp.getSecondPrize());
+				} else {
+					prize = participationPrize;
+				}
+
+				for (UUID owner : plot.getOwners()) {
+					OfflinePlayer player = Bukkit.getOfflinePlayer(owner);
+					fullResults.add(new EntrantResult(owner, player.getName(), plot.getId().toString(), Optional.of(index), prize, false));
+
+					if (ownerNames.length() != 0) {
+						ownerNames.append(", ");
+					}
+					ownerNames.append(Bukkit.getOfflinePlayer(owner));
+				}
+
+				logger.info("[Results] Place " + index + ": " + ownerNames + " with plot " + plotId);
+				++index;
+			}
+
+			// Add all non winners
+			for (Plot plot : bridge.getUsedPlots()) {
+				// Ignore plots that got a placement
+				if (placements.contains(plot.getId())) {
+					continue;
+				}
+
+				for (UUID owner : plot.getOwners()) {
+					OfflinePlayer player = Bukkit.getOfflinePlayer(owner);
+					fullResults.add(new EntrantResult(owner, player.getName(), plot.getId().toString(), Optional.<Integer>absent(), participationPrize, false));
+				}
+			}
 		}
-		
+
+		// Record the results
+		try {
+			backend.addResults(currentComp, fullResults);
+		} catch (SQLException e) {
+			logger.log(Level.SEVERE, "Failed to record results", e);
+		}
 		currentComp.setState(CompState.Closed);
 		updateCurrentComp();
 	}
