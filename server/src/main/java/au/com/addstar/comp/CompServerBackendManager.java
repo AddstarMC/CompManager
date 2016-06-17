@@ -95,8 +95,7 @@ public class CompServerBackendManager extends CompBackendManager {
 		try {
 			handler = getPool().getConnection();
 
-			ResultSet rs = handler.executeQuery(STATEMENT_VOTE_GETALL_COMP, comp.getCompId());
-			try {
+			try (ResultSet rs = handler.executeQuery(STATEMENT_VOTE_GETALL_COMP, comp.getCompId())) {
 				SetMultimap<UUID, T> votes = HashMultimap.create();
 				while (rs.next()) {
 					String rawUUID = rs.getString("UUID");
@@ -129,8 +128,6 @@ public class CompServerBackendManager extends CompBackendManager {
 				}
 
 				return votes;
-			} finally {
-				rs.close();
 			}
 		} finally {
 			if (handler != null) {

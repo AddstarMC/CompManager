@@ -56,7 +56,7 @@ public class Confirmation<T extends Confirmable> {
 	 * @return a {@link Builder}
 	 */
 	public static <T extends Confirmable> Builder<T> builder(T handler) {
-		return new Builder<T>(handler);
+		return new Builder<>(handler);
 	}
 	
 	public static class Builder<T extends Confirmable> {

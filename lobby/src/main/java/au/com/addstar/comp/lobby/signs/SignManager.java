@@ -121,7 +121,7 @@ public class SignManager {
 	public void removeAll(String serverId) {
 		List<BaseSign> signs = serverSigns.removeAll(serverId);
 		for (BaseSign sign : signs) {
-			signs.remove(sign.getBlock());
+			this.signs.remove(sign.getBlock());
 		}
 	}
 	

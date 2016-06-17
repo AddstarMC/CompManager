@@ -24,7 +24,7 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 	@Override
 	public List<Placement> countVotes(Multimap<PlotId, RankedVote> votes) {
 		TreeMultimap<Integer, PlotId> rankedPlots;
-		rankedPlots = TreeMultimap.create(Ordering.natural().reversed(), Ordering.arbitrary());
+		rankedPlots = TreeMultimap.create(Ordering.natural().reverse(), Ordering.arbitrary());
 
 		for (PlotId plot : votes.keySet()) {
 			int score = 0;

@@ -39,11 +39,8 @@ public class Messages {
 		properties = new Properties(defaultLang);
 		
 		if (file.exists()) {
-			FileInputStream input = new FileInputStream(file);
-			try {
+			try (FileInputStream input = new FileInputStream(file)) {
 				properties.load(input);
-			} finally {
-				input.close();
 			}
 		}
 	}

@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompPlugin;
-import au.com.addstar.comp.CompServerBackendManager;
 import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,7 +14,6 @@ import org.bukkit.entity.Player;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-import com.intellectualcrafters.plot.object.Plot;
 
 public class VoteStorage<T extends Vote> {
 	private final AbstractVotingStrategy<T> strategy;

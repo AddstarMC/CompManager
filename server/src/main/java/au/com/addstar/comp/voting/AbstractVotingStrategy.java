@@ -3,7 +3,6 @@ package au.com.addstar.comp.voting;
 import java.util.List;
 
 import com.google.common.collect.Multimap;
-import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotId;
 
 /**

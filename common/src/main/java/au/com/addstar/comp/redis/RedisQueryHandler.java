@@ -8,5 +8,5 @@ public interface RedisQueryHandler {
 	 * @return The response
 	 * @throws QueryException thrown to indicate a problem
 	 */
-	public String onQuery(String command, String[] arguments) throws QueryException;
+	String onQuery(String command, String[] arguments) throws QueryException;
 }

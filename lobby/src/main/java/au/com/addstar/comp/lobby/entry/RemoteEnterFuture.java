@@ -29,16 +29,20 @@ public class RemoteEnterFuture extends AbstractFuture<Confirmable> implements Fu
 	@Override
 	public void onSuccess(String returnValue) {
 		String[] parts = returnValue.split(",");
-		if (parts[0].equals("true")) {
+		switch (parts[0]) {
+		case "true":
 			// Entry is ok
 			set(new RemoteEnterHandler(server, playerId, redisManager, messages));
-		} else if (parts[0].equals("false")) {
+			break;
+		case "false":
 			// Was blocked from entering
 			Reason reason = Reason.valueOf(parts[1]);
 			setException(new EntryDeniedException(reason, ""));
-		} else {
+			break;
+		default:
 			// I dont know what this is
 			setException(new QueryException("Unknown return value"));
+			break;
 		}
 	}
 	

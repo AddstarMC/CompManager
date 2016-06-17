@@ -50,11 +50,8 @@ public class WhitelistHandler {
 	public boolean isWhitelisted(UUID playerId) throws SQLException {
 		ConnectionHandler handler = pool.getConnection();
 		try {
-			ResultSet result = handler.executeQuery(STATEMENT_GET, idToString(playerId));
-			try {
+			try (ResultSet result = handler.executeQuery(STATEMENT_GET, idToString(playerId))) {
 				return result.next();
-			} finally {
-				result.close();
 			}
 		} finally {
 			handler.release();

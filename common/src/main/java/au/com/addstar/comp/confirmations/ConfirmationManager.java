@@ -11,8 +11,8 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
 
 public class ConfirmationManager {
-	private Map<CommandSender, Confirmation<?>> confirmations;
-	private TreeMultimap<Long, CommandSender> orderedConfirmations;
+	private final Map<CommandSender, Confirmation<?>> confirmations;
+	private final TreeMultimap<Long, CommandSender> orderedConfirmations;
 	
 	public ConfirmationManager() {
 		confirmations = Maps.newHashMap();

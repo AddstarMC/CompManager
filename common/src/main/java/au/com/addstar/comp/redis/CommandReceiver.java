@@ -6,5 +6,5 @@ public interface CommandReceiver {
 	 * @param serverId The sending server id
 	 * @param command The command being sent
 	 */
-	public void onReceive(String serverId, String command);
+	void onReceive(String serverId, String command);
 }

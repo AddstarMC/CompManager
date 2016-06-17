@@ -82,7 +82,7 @@ public class JoinCommand implements TabExecutor {
 					.withTokenFailMessage(messages.get("join.denied.token"))
 					.build();
 			
-			confirmationManager.addConfirmation((Player)sender, confirmation);
+			confirmationManager.addConfirmation(sender, confirmation);
 		} catch (EntryDeniedException e) {
 			switch (e.getReason()) {
 			case NotRunning:

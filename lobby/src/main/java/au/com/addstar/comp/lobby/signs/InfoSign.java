@@ -178,7 +178,7 @@ public class InfoSign extends BaseSign {
 		case Voting:
 			setLine(1, "Time Left");
 			time = comp.getVoteEndDate();
-			return;
+			break;
 		}
 		
 		// Time remaining
@@ -205,7 +205,7 @@ public class InfoSign extends BaseSign {
 			setLine(0, "Voting Closes");
 			setLine(1, "Time Left");
 			time = comp.getVoteEndDate();
-			return;
+			break;
 		}
 		
 		setLine(1, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + CompUtils.formatDate(time));

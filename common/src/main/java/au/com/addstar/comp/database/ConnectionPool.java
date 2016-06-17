@@ -16,7 +16,7 @@ public class ConnectionPool {
     
     private long maxIdleTime;
     
-    private List<ConnectionHandler> connections;
+    private final List<ConnectionHandler> connections;
 
     public ConnectionPool(String connectionString, String username, String password) {
         this.connectionString = connectionString;

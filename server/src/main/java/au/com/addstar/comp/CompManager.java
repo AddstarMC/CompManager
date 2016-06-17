@@ -28,7 +28,6 @@ import au.com.addstar.comp.entry.EntryDeniedException;
 import au.com.addstar.comp.entry.EntryDeniedException.Reason;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.P2Bridge;
-import au.com.addstar.comp.voting.likedislike.LikeDislikeStrategy;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 public class CompManager {

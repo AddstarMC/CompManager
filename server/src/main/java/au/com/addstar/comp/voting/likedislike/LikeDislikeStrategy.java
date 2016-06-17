@@ -14,7 +14,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
-import com.intellectualcrafters.plot.object.Plot;
 
 import au.com.addstar.comp.voting.AbstractVoteProvider;
 import au.com.addstar.comp.voting.Placement;
@@ -36,7 +35,7 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 	@Override
 	public List<Placement> countVotes(Multimap<PlotId, LDVote> votes) {
 		TreeMultimap<Integer, PlotId> rankedPlots;
-		rankedPlots = TreeMultimap.create(Ordering.natural().reversed(), Ordering.arbitrary());
+		rankedPlots = TreeMultimap.create(Ordering.natural().reverse(), Ordering.arbitrary());
 		
 		for (PlotId plot : votes.keySet()) {
 			int score = 0;

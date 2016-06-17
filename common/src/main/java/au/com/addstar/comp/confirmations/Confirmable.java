@@ -4,10 +4,10 @@ public interface Confirmable {
 	/**
 	 * Confirms this task
 	 */
-	public void confirm();
+	void confirm();
 	
 	/**
 	 * Aborts the task.
 	 */
-	public void abort();
+	void abort();
 }

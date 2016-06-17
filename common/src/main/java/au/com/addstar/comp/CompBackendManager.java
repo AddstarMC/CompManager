@@ -117,8 +117,10 @@ public class CompBackendManager {
 				if (stateString.equalsIgnoreCase("auto")) {
 					result.setAutoState();
 				} else {
-					CompState state = CompState.valueOf(rs.getString("State"));
-					if (state == null) {
+					CompState state;
+					try {
+						state = CompState.valueOf(rs.getString("State"));
+					} catch (IllegalArgumentException e) {
 						state = CompState.Closed;
 					}
 					result.setState(state);
@@ -301,8 +303,7 @@ public class CompBackendManager {
 			handler = getPool().getConnection();
 
 			List<EntrantResult> results = Lists.newArrayList();
-			ResultSet rs = handler.executeQuery(winnersOnly ? STATEMENT_RESULT_GETALL_WINNERS : STATEMENT_RESULT_GETALL_COMP, comp.getCompId());
-			try {
+			try (ResultSet rs = handler.executeQuery(winnersOnly ? STATEMENT_RESULT_GETALL_WINNERS : STATEMENT_RESULT_GETALL_COMP, comp.getCompId())) {
 				while (rs.next()) {
 					try {
 						UUID playerId = UUID.fromString(rs.getString("UUID"));
@@ -333,8 +334,6 @@ public class CompBackendManager {
 						// Skip the entry
 					}
 				}
-			} finally {
-				rs.close();
 			}
 
 			return results;
@@ -350,8 +349,7 @@ public class CompBackendManager {
 		try {
 			handler = getPool().getConnection();
 
-			ResultSet rs = handler.executeQuery(STATEMENT_RESULT_GET, comp.getCompId(), playerId.toString());
-			try {
+			try (ResultSet rs = handler.executeQuery(STATEMENT_RESULT_GET, comp.getCompId(), playerId.toString())) {
 				if (rs.next()) {
 					try {
 						String playerName = rs.getString("Name");
@@ -381,8 +379,6 @@ public class CompBackendManager {
 						// Skip the entry
 					}
 				}
-			} finally {
-				rs.close();
 			}
 
 			return null;

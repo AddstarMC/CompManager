@@ -3,8 +3,6 @@ package au.com.addstar.comp.voting;
 import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.entity.Player;
 
-import com.intellectualcrafters.plot.object.Plot;
-
 public abstract class AbstractVoteProvider<T extends Vote> {
 	private final VoteStorage<T> storage;
 	
