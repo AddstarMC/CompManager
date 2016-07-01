@@ -1,32 +1,28 @@
 package au.com.addstar.comp.notifications;
 
-import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang.time.DurationFormatUtils;
-import org.bukkit.ChatColor;
-
-import com.google.common.base.Optional;
-import com.intellectualcrafters.configuration.ConfigurationSection;
-
 import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
+import au.com.addstar.comp.util.CompUtils;
+import com.google.common.base.Optional;
+import com.intellectualcrafters.configuration.ConfigurationSection;
+import org.apache.commons.lang.time.DurationFormatUtils;
+import org.bukkit.ChatColor;
 
-public class Notification {
+import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
+
+public class StateChangeNotification {
 	private static final String TimeLeftToken = "${time-left}";
 	private static final String ThemeToken = "${theme}";
 	private static final String StateToken = "${state}";
 	private static final String EndToken = "${end}";
-	
+
 	private String message;
-	
-	// Conditions
-	private Optional<CompState> ifState;
-	private Optional<Boolean> ifEntrant;
-	private Optional<Boolean> ifFull;
-	
-	public Notification() {
+	private NotificationManager.DisplayTarget displayTarget;
+	private long displayTime;
+
+	public StateChangeNotification() {
 	}
 
 	public String getMessage() {
@@ -35,6 +31,14 @@ public class Notification {
 	
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public long getDisplayTime() {
+		return displayTime;
+	}
+
+	public NotificationManager.DisplayTarget getDisplayTarget() {
+		return displayTarget;
 	}
 	
 	private static final String TIME_LEFT_FORMAT_LONG = "d'd 'H'h'";
@@ -116,64 +120,34 @@ public class Notification {
 		
 		return message;
 	}
-	
-	public Optional<CompState> getIfState() {
-		return ifState;
-	}
-	
-	public void setIfState(Optional<CompState> state) {
-		ifState = state;
-	}
-	
-	public Optional<Boolean> getIfEntrant() {
-		return ifEntrant;
-	}
-	
-	public void setIfEntrant(Optional<Boolean> ifEntrant) {
-		this.ifEntrant = ifEntrant;
-	}
-	
-	public Optional<Boolean> getIfFull() {
-		return ifFull;
-	}
-	
-	public void setIfFull(Optional<Boolean> ifFull) {
-		this.ifFull = ifFull;
-	}
-	
+
 	public void load(ConfigurationSection section) {
 		message = ChatColor.translateAlternateColorCodes('&', section.getString("message"));
-		
-		// Conditions
-		if (section.isString("if-state")) {
-			switch (section.getString("if-state").toLowerCase()) {
-			case "open":
-				ifState = Optional.of(CompState.Open);
-				break;
-			case "voting":
-				ifState = Optional.of(CompState.Voting);
-				break;
-			case "closed":
-				ifState = Optional.of(CompState.Closed);
-				break;
-			default:
-				ifState = Optional.absent();
-				break;
-			}
-		} else {
-			ifState = Optional.absent();
+
+		switch (section.getString("location")) {
+		case "action":
+			displayTarget = NotificationManager.DisplayTarget.ActionBar;
+			break;
+		case "chat":
+			displayTarget = NotificationManager.DisplayTarget.Chat;
+			break;
+		case "system":
+			displayTarget = NotificationManager.DisplayTarget.SystemMessage;
+			break;
+		case "title":
+			displayTarget = NotificationManager.DisplayTarget.Title;
+			break;
+		case "subtitle":
+			displayTarget = NotificationManager.DisplayTarget.Subtitle;
+			break;
 		}
-		
-		if (section.isBoolean("if-entrant")) {
-			ifEntrant = Optional.of(section.getBoolean("if-entrant"));
-		} else {
-			ifEntrant = Optional.absent();
-		}
-		
-		if (section.isBoolean("if-full")) {
-			ifFull = Optional.of(section.getBoolean("if-full"));
-		} else {
-			ifFull = Optional.absent();
+
+		try {
+			displayTime = CompUtils.parseDateDiff(section.getString("display-time", "5s"));
+		} catch (IllegalArgumentException e) {
+			// Fallback to default value
+			displayTime = TimeUnit.SECONDS.toMillis(5);
+			// TODO: Notify of error
 		}
 	}
 }

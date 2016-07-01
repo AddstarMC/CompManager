@@ -42,4 +42,28 @@ broadcasts:
   6:
     message: Use /compvote to vote for plots
     if-state: VOTING
-  
+
+# These broadcasts happen upon changing between comp states. These will
+# be broadcast on manual and automatic state changes
+# Each entry should be formatted as so
+# <open|closed|voting>:              required
+#   message: <message-to-display>    required
+#   location: <where-to-display>     required
+#   display-time: <time-to-display>  required
+#
+# The display-time and location fields are the same type as in the
+# broadcast-settings key above.
+# The message supports the same tokens as standard broadcasts
+state-broadcasts:
+  open:
+    message: &aThis competition is now open!
+    location: subtitle
+    display-time: 10s
+  closed:
+    message: &cThis competition is now closed!
+    location: subtitle
+    display-time: 10s
+  voting:
+    message: &6This competition has finished. Voting is now open!
+    location: subtitle
+    display-time: 10s

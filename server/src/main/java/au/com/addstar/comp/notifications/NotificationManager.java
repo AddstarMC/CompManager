@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -42,6 +44,9 @@ public class NotificationManager {
 	private List<Notification> autoBroadcasts;
 	private long nextBroadcastTime;
 	private int broadcastIndex;
+
+	// State change broadcasts
+	private Map<CompState, StateChangeNotification> stateStateChangeNotifications;
 	
 	// Map of end time to runnable
 	private TreeMultimap<Long, Runnable> displayRefreshers;
@@ -51,6 +56,7 @@ public class NotificationManager {
 		this.compManager = compManager;
 		autoBroadcasts = Lists.newArrayList();
 		displayRefreshers = TreeMultimap.create(Ordering.natural(), Ordering.arbitrary());
+		stateStateChangeNotifications = Maps.newHashMap();
 	}
 	
 	/**
@@ -102,21 +108,60 @@ public class NotificationManager {
 			
 			// Load broadcasts
 			ConfigurationSection broadcastsSection = config.getConfigurationSection("broadcasts");
-			List<Notification> notifications = Lists.newArrayList();
-			
-			for (String key : broadcastsSection.getKeys(false)) {
-				ConfigurationSection keySection = broadcastsSection.getConfigurationSection(key);
-				
-				if (!keySection.contains("message")) {
-					continue;
+			if (broadcastsSection != null) {
+				List<Notification> notifications = Lists.newArrayList();
+
+				for (String key : broadcastsSection.getKeys(false)) {
+					ConfigurationSection keySection = broadcastsSection.getConfigurationSection(key);
+
+					if (!keySection.contains("message")) {
+						continue;
+					}
+
+					Notification notification = new Notification();
+					notification.load(keySection);
+					notifications.add(notification);
 				}
-				
-				Notification notification = new Notification();
-				notification.load(keySection);
-				notifications.add(notification);
+
+				autoBroadcasts = notifications;
 			}
-			
-			autoBroadcasts = notifications;
+
+			// Load state change broadcasts
+			ConfigurationSection stateChangeSection = config.getConfigurationSection("state-broadcasts");
+			if (stateChangeSection != null) {
+				Map<CompState, StateChangeNotification> stateChangeNotifications = Maps.newHashMap();
+
+				for (String key : stateChangeSection.getKeys(false)) {
+					ConfigurationSection keySection = stateChangeSection.getConfigurationSection(key);
+
+					if (!keySection.contains("message") && !keySection.contains("location") && !keySection.contains("display-time")) {
+						continue;
+					}
+
+					// Determine the state
+					CompState state;
+					switch (key.toLowerCase()) {
+					case "open":
+						state = CompState.Open;
+						break;
+					case "closed":
+						state = CompState.Closed;
+						break;
+					case "voting":
+						state = CompState.Voting;
+						break;
+					default:
+						// Invalid state
+						continue;
+					}
+
+					StateChangeNotification notification = new StateChangeNotification();
+					notification.load(keySection);
+					stateChangeNotifications.put(state, notification);
+				}
+
+				this.stateStateChangeNotifications = stateChangeNotifications;
+			}
 		} catch (InvalidConfigurationException e) {
 			throw new IOException(e);
 		}
@@ -276,6 +321,7 @@ public class NotificationManager {
 				break;
 			case Subtitle:
 			case Title:
+				System.out.println("Showing title " + title);
 				title.show(player);
 				break;
 			}
@@ -333,6 +379,15 @@ public class NotificationManager {
 			title.show(player);
 			break;
 		}
+	}
+
+	public void broadcastStateChange(CompState newState) {
+		StateChangeNotification notification = stateStateChangeNotifications.get(newState);
+		if (notification == null) {
+			return;
+		}
+
+		broadcast(notification.formatMessage(compManager), notification.getDisplayTarget(), notification.getDisplayTime());
 	}
 	
 	/**

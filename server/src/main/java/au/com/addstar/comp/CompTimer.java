@@ -2,11 +2,12 @@ package au.com.addstar.comp;
 
 import au.com.addstar.comp.notifications.NotificationManager;
 import au.com.addstar.comp.notifications.NotificationManager.DisplayTarget;
+import au.com.addstar.comp.util.Messages;
 
 public class CompTimer implements Runnable {
 	private final CompManager compManager;
 	private final NotificationManager notifications;
-	
+
 	private CompState lastState;
 	
 	public CompTimer(CompManager compManager, NotificationManager notifications) {
@@ -30,19 +31,8 @@ public class CompTimer implements Runnable {
 	private void doStateNotifications(Competition comp) {
 		CompState state = comp.getState();
 		
-		// TODO: Customizable messages
 		if (state != lastState) {
-			switch (state) {
-			case Closed:
-				notifications.broadcast("Placeholder: Comp is now closed", DisplayTarget.Subtitle, 5000);
-				break;
-			case Open:
-				notifications.broadcast("Placeholder: Comp is now open", DisplayTarget.Subtitle, 5000);
-				break;
-			case Voting:
-				notifications.broadcast("Placeholder: Comp has finished. Voting is now open", DisplayTarget.Subtitle, 5000);
-				break;
-			}
+			notifications.broadcastStateChange(state);
 			compManager.notifyStateChange(lastState);
 			lastState = state;
 		}
