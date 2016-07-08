@@ -8,26 +8,6 @@
 	</parent>
 	<artifactId>CompManager-server</artifactId>
 
-	<repositories>
-		<repository>
-			<id>addstar-release-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
-		</repository>
-	
-		<repository>
-			<id>addstar-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/all-snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>xephi-repo</id>
-			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -35,11 +15,10 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>au.com.addstar</groupId>
 			<artifactId>Monolith</artifactId>
-			<version>1.3.0-SNAPSHOT</version>
+			<version>1.4.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

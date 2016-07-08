@@ -7,17 +7,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>CompManager-lobby</artifactId>
-	
-	<repositories>
-		<repository>
-			<id>addstar-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/all-snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -29,7 +19,7 @@
 		<dependency>
 			<groupId>au.com.addstar</groupId>
 			<artifactId>Monolith</artifactId>
-			<version>1.3.0-SNAPSHOT</version>
+			<version>1.4.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
