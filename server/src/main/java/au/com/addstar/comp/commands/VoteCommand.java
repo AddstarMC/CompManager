@@ -1,6 +1,8 @@
 package au.com.addstar.comp.commands;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -46,19 +48,36 @@ public class VoteCommand implements TabExecutor {
 			sender.sendMessage(messages.get("vote.denied.state"));
 			return true;
 		}
-		
+
 		// See if we are in a plot
 		Plot plot = bridge.getPlotAt(player.getLocation());
 		if (plot == null) {
 			sender.sendMessage(messages.get("vote.denied.no-plot"));
 			return true;
 		}
-		
-		if (plot.getOwners().isEmpty()) {
+
+		if (!plot.hasOwner()) {
 			sender.sendMessage(messages.get("vote.denied.no-owner"));
 			return true;
 		}
-		
+
+		try {
+			if (plot.getOwners().isEmpty()) {
+				sender.sendMessage(messages.get("vote.denied.no-owner"));
+				return true;
+			}
+		} catch (Exception e) {
+			sender.sendMessage("Debug: plot.getOwners() access exception: " + e.getMessage());
+
+			UUID ownerDeprecated = plot.owner;
+
+			if (ownerDeprecated == null) {
+				sender.sendMessage("Debug: ownerDeprecated == null");
+				sender.sendMessage(messages.get("vote.denied.no-owner"));
+				return true;
+			}
+		}
+
 		VoteStorage<Vote> storage = (VoteStorage<Vote>)manager.getVoteStorage();
 		Vote vote;
 		try {

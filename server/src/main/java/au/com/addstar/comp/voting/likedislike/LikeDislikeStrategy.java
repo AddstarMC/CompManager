@@ -79,8 +79,11 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		
 		@Override
 		public LDVote onVoteCommand(Player voter, PlotId plot, String[] args) throws IllegalArgumentException {
+
+			String voteOptionsMsg = "You must specify 'like', 'dislike', or 'skip' for your vote; 'yes' and 'no' are also allowed";
+
 			if (args.length < 1) {
-				throw new IllegalArgumentException("You must specify either 'like', 'dislike', or 'skip' for your vote");
+				throw new IllegalArgumentException(voteOptionsMsg);
 			}
 			
 			// Parse the vote type
@@ -98,7 +101,7 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 				type = LDVote.Type.Skip;
 				break;
 			default:
-				throw new IllegalArgumentException("You must specify either 'like', 'dislike', or 'skip' for your vote");
+				throw new IllegalArgumentException(voteOptionsMsg);
 			}
 			
 			return new LDVote(plot, type);

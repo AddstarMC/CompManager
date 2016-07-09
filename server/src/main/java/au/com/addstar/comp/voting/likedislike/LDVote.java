@@ -34,6 +34,7 @@ public class LDVote extends Vote {
 		} else if (value > 0) {
 			type = Type.Like;
 		} else {
+			// Neutral vote; neither like nor dislike
 			type = Type.Skip;
 		}
 
