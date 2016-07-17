@@ -79,6 +79,9 @@ public class ListCommand implements ICommand {
 				case Voting:
 					stateString = ChatColor.YELLOW + "Voting";
 					break;
+				case Visit:
+					stateString = ChatColor.YELLOW + "Visit";
+					break;
 				default:
 				case Closed:
 					stateString = ChatColor.RED + "Closed";

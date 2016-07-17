@@ -148,6 +148,7 @@ public class InfoSign extends BaseSign {
 		switch (comp.getState()) {
 		default:
 		case Closed:
+		case Visit:
 			return;
 		case Open:
 			setLine(1, "Ends");
@@ -170,6 +171,7 @@ public class InfoSign extends BaseSign {
 		switch (comp.getState()) {
 		default:
 		case Closed:
+		case Visit:
 			return;
 		case Open:
 			setLine(1, "Time Left");
@@ -195,6 +197,7 @@ public class InfoSign extends BaseSign {
 		switch (comp.getState()) {
 		default:
 		case Closed:
+		case Visit:
 			return;
 		case Open:
 			setLine(0, "Ends");

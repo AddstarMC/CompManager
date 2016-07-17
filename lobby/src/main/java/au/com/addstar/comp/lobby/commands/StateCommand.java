@@ -88,11 +88,15 @@ public class StateCommand implements ICommand {
 		case "voting":
 			state = CompState.Voting;
 			break;
+		case "visit":
+		case "visiting":
+			state = CompState.Visit;
+			break;
 		case "auto":
 			state = null;
 			break;
 		default:
-			throw new BadArgumentException(1, "Unknown state. Should be open, close, vote, or auto");
+			throw new BadArgumentException(1, "Unknown state. Should be open, closed, voting, visit, or auto");
 		}
 		
 		boolean save = false;
@@ -127,7 +131,7 @@ public class StateCommand implements ICommand {
 		if (args.length == 1) {
 			return Monolith.matchStrings(args[0], manager.getServerIds());
 		} else if (args.length == 2) {
-			return Monolith.matchStrings(args[1], Arrays.asList("open", "close", "closed", "vote", "voting", "auto"));
+			return Monolith.matchStrings(args[1], Arrays.asList("open", "close", "closed", "vote", "voting", "visit", "visiting", "auto"));
 		}
 		
 		return null;

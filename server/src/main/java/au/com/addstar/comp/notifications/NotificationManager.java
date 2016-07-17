@@ -150,6 +150,9 @@ public class NotificationManager {
 					case "voting":
 						state = CompState.Voting;
 						break;
+					case "visit":
+						state = CompState.Visit;
+						break;
 					default:
 						// Invalid state
 						continue;

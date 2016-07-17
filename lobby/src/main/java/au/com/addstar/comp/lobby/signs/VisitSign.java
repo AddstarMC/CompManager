@@ -88,7 +88,7 @@ public class VisitSign extends BaseSign {
 				switch (comp.getState()) {
 				case Closed:
 					setLine(2, messages.get("state.closed"));
-					setLine(3, messages.get(""));
+					setLine(3, "");
 					break;
 				case Open:
 					if (!isFull) {
@@ -102,6 +102,10 @@ public class VisitSign extends BaseSign {
 					setLine(2, messages.get("state.voting"));
 					setLine(3, messages.get("sign.click-to-visit"));
 					break;
+				case Visit:
+					setLine(2, messages.get("state.visit"));
+					setLine(3, messages.get("sign.click-to-visit"));
+					break;
 				}
 
 				update();
@@ -110,7 +114,7 @@ public class VisitSign extends BaseSign {
 			@Override
 			public void onFailure(Throwable error) {
 				setLine(2, messages.get("state.offline"));
-				
+				setLine(3, "");
 				update();
 			}
 		});

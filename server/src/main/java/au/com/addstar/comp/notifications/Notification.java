@@ -156,6 +156,9 @@ public class Notification {
 			case "closed":
 				ifState = Optional.of(CompState.Closed);
 				break;
+			case "visit":
+				ifState = Optional.of(CompState.Visit);
+				break;
 			default:
 				ifState = Optional.absent();
 				break;

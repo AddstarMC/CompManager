@@ -78,11 +78,15 @@ public class StateCommand implements ICommand {
 		case "voting":
 			state = CompState.Voting;
 			break;
+		case "visit":
+		case "visiting":
+			state = CompState.Visit;
+			break;
 		case "auto":
 			state = null;
 			break;
 		default:
-			throw new BadArgumentException(0, "Unknown state. Should be open, close, vote, or auto");
+			throw new BadArgumentException(0, "Unknown state. Should be open, closed, voting, visit, or auto");
 		}
 		
 		boolean save = false;

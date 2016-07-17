@@ -5,7 +5,7 @@ package au.com.addstar.comp;
  */
 public enum CompState {
 	/**
-	 * The competition is closed.
+	 * The competition is closed; the world cannot be joined
 	 */
 	Closed,
 	/**
@@ -15,5 +15,9 @@ public enum CompState {
 	/**
 	 * The competition is accessible, but only for voting
 	 */
-	Voting
+	Voting,
+	/**
+	 * The competition is accessible, but only for visiting / browsing
+	 */
+	Visit
 }
