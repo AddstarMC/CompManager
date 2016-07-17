@@ -77,7 +77,7 @@ public class TallyVotesCommand implements ICommand {
 			}
 		}).expiresIn(20, TimeUnit.SECONDS).build();
 		
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[&c&lWARNING&6] &eThis running this will tally the votes, close the comp, and award winners"));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[&c&lWARNING&6] &Running this will tally the votes, close the comp, and award winners"));
 		sender.sendMessage(ChatColor.GOLD + "Do you really want to do this? Run " + ChatColor.RED + "/agree" + ChatColor.GOLD + " to continue");
 		
 		confirmations.addConfirmation(sender, confirmation);

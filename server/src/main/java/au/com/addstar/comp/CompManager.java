@@ -10,15 +10,12 @@ import java.util.logging.Logger;
 
 import au.com.addstar.comp.prizes.BasePrize;
 import au.com.addstar.comp.voting.*;
+import com.google.common.base.*;
 import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intellectualcrafters.plot.object.Plot;
@@ -91,12 +88,20 @@ public class CompManager {
 		}
 
 		if (currentComp != null) {
-			AbstractVotingStrategy<?> strategy = VotingStrategies.getStrategy(currentComp.getVotingStrategy());
-			if (strategy == null) {
-				if (currentComp.getVotingStrategy() != null) {
-					logger.warning("Failed to find voting strategy " + currentComp.getVotingStrategy() + ". Falling back to default strategy");
-				}
+			AbstractVotingStrategy<?> strategy;
+			String votingStrategyName = currentComp.getVotingStrategy();
+
+			if (Strings.isNullOrEmpty(votingStrategyName)) {
+				logger.warning("Voting strategy not defined; using the default strategy");
 				strategy = VotingStrategies.getDefault();
+			} else {
+				strategy = VotingStrategies.getStrategy(votingStrategyName);
+				if (strategy == null) {
+					if (votingStrategyName != null) {
+						logger.warning("Failed to find voting strategy " + votingStrategyName + ". Falling back to default strategy");
+					}
+					strategy = VotingStrategies.getDefault();
+				}
 			}
 
 			voteStorage = new VoteStorage<>(strategy, this);
