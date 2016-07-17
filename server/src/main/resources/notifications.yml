@@ -1,12 +1,12 @@
 broadcast-settings:
-  interval: 15m
+  interval: 60s
   in-sequence: true
   # The location to display notifications at.
   # Values: action, chat, system, title, subtitle
   location: action
   # This is the time notifications are shown for
   # This only applies to action, title, and subtitle locations
-  display-time: 5s
+  display-time: 10s
 
 # All the broadcasts to show to players
 # Each broadcast entry should be formatted like so:
@@ -27,20 +27,20 @@ broadcast-settings:
 #   if-full: true or false, checks if the comp is full 
 broadcasts:
   1:
-    message: Time remaining ${time-left}
+    message: '&d»» &eTime remaining &6${time-left} &d««'
     if-state: OPEN
   2:
-    message: Voting closes in ${time-left}
+    message: '&d»» &eVoting closes in &6${time-left} &d««'
     if-state: VOTING
   3:
-    message: Use /compinfo to view theme, criteria, and time remaining
+    message: '&d»» &eUse &b/compinfo &eto view comp information &d««'
     if-state: OPEN
   4:
-    message: Use /comp or /spawn to return to the lobby
+    message: '&d»» &eUse &b/comp &eto return to the lobby &d««'
   5:
-    message: This comp is ${theme}
+    message: '&d»» &eThe theme for this comp is: &6${theme} &d««'
   6:
-    message: Use /compvote to vote for plots
+    message: '&d»» &eUse &b/compvote &eto vote for plots &d««'
     if-state: VOTING
 
 # These broadcasts happen upon changing between comp states. These will

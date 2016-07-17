@@ -18,8 +18,8 @@ join.prompt.footer=&cComp plots are &oonly&c to be used for participating in thi
 &ePlease adhere to the theme and criteria!\n\
 &6If you agree to these rules type: &b/agree {theme}&r\n\
 &d----------------------------------------------------
-join.done=&aYou have joined the comp: &b{theme}\n\
-&eGood luck and remember to follow the rules!
+join.done=&d»» &aYou have joined the comp: &b{theme}\n\
+&d»» &eGood luck and remember to follow the rules!
 join.denied.timeout=&cYou did not accept in time.
 join.denied.full=&cSorry, this comp is full.
 join.denied.not-running=&cSorry, there isn't a comp running.
@@ -49,6 +49,7 @@ state.voting=&3&lVOTING
 state.closed=&4&lCLOSED
 state.offline=&4&lOFFLINE
 state.full=&4&lFULL
+state.visit=&7&lVISIT
 
 # Sign text
 sign.click-to-join=&e&lClick to &nJoin
