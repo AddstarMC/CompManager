@@ -57,7 +57,7 @@ public class Competition {
 		} else if (System.currentTimeMillis() < voteEndDate) {
 			return CompState.Voting;
 		} else {
-			return CompState.Closed;
+			return CompState.Visit;
 		}
 	}
 	
