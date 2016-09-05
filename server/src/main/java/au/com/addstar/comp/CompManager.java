@@ -78,7 +78,7 @@ public class CompManager {
 			Optional<Integer> compID = backend.getCompID(Bukkit.getServerName());
 			if (compID.isPresent()) {
 				currentComp = backend.load(compID.get());
-				logger.info("Current Competition: " + currentComp.getTheme());
+				logger.info("Current Competition (ID " + compID.get() + "): " + currentComp.getTheme());
 			} else {
 				currentComp = null;
 				logger.info("Current Competition: None");

@@ -12,4 +12,20 @@ redis:
 
 # The number of seconds between server pings
 # A server ping checks if a server is online 
-ping-interval: 10 
+ping-interval: 10
+
+# While a comp is running, a reminder message will be globally broadcast at regular intervals
+# When the comp starts, the interval is global-broadcast-running-max minutes
+# Near the end of the comp, the interval is global-broadcast-running-min minutes
+#
+# Similarly, during voting, a reminder message is broadcast,
+# starting at global-broadcast-voting-max minutes when voting starts
+# and decreasing to global-broadcast-voting-min minutes near the end of voting
+#
+# For everyone to see the messages, use pex group Everyone add addstar.compbcast
+broadcast-settings:
+  broadcast-channel: CompBCast
+  global-broadcast-running-min: 15
+  global-broadcast-running-max: 120
+  global-broadcast-voting-min: 10
+  global-broadcast-voting-max: 60

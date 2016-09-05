@@ -54,3 +54,7 @@ state.visit=&7&lVISIT
 # Sign text
 sign.click-to-join=&e&lClick to &nJoin
 sign.click-to-visit=&1&lClick to Visit
+
+# Broadcast
+broadcast.running=&6[&aComp&6] &bTime remaining to finish '{theme}': {timeleft}
+broadcast.voting=&6[&aComp&6] &bVote for winners in '{theme}'; {timeleft} remaining

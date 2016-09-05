@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import au.com.addstar.bc.BungeeChat;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.lambdaworks.redis.RedisException;
@@ -30,12 +34,14 @@ public class LobbyPlugin extends JavaPlugin {
 	private SignManager signManager;
 	private ConfirmationManager confirmationManager;
 	private Messages messages;
-	
+
+	public PluginManager pm = null;
+
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
 		reloadConfig();
-		
+
 		databaseManager = new DatabaseManager(this);
 		try {
 			databaseManager.initialize();
@@ -43,7 +49,7 @@ public class LobbyPlugin extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Failed to initialize database connection", e);
 			return;
 		}
-		
+
 		redisManager = new RedisManager(getConfig().getConfigurationSection("redis"));
 		try {
 			redisManager.initialize();
@@ -51,7 +57,7 @@ public class LobbyPlugin extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Failed to initialize redis connection", e);
 			return;
 		}
-		
+
 		// Initialize other modules
 		messages = new Messages(new File(getDataFolder(), "messages.lang"), getResource("messages.lang"));
 		try {
@@ -60,7 +66,7 @@ public class LobbyPlugin extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Failed to load messages", e);
 			return;
 		}
-		
+
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		compManager = new CompManager(new CompBackendManager(databaseManager), redisManager, this);
 		compManager.reload();
@@ -72,7 +78,7 @@ public class LobbyPlugin extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Failed to load signs", e);
 			// No need to stop because of that
 		}
-		
+
 		// Register commands
 		new CompAdminCommand(whitelistHandler, compManager, redisManager, signManager, messages).registerAs(getCommand("compadmin"));
 		new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
@@ -86,22 +92,47 @@ public class LobbyPlugin extends JavaPlugin {
 				confirmationManager.expireConfirmations();
 			}
 		}, 20, 20);
-		
+
+		// Grab the plugin manager
+		pm = this.getServer().getPluginManager();
+
+		// Plugin p = pm.getPlugin("BungeeChatBukkit");
+		// Boolean bcHooked;
+		String broadcastChannel;
+		ConfigurationSection broadcastSettings = getConfig().getConfigurationSection("broadcast-settings");
+
+		Plugin p = pm.getPlugin("BungeeChatBukkit");
+		if (p != null && p instanceof BungeeChat) {
+			broadcastChannel = broadcastSettings.getString("broadcast-channel", "CompBCast");
+			getLogger().log(Level.INFO, "BungeeChat found, using channel " + broadcastChannel);
+		} else {
+			broadcastChannel = null;
+			getLogger().log(Level.INFO, "BungeeChat not found! No cross server messages");
+		}
+
 		// Register tasks
 		// TODO: Make refresh interval configurable
 		Bukkit.getScheduler().runTaskTimer(this, new SignRefresher(signManager), 0, 200);
 		Bukkit.getScheduler().runTaskTimer(this, new ServerStatusUpdater(compManager), 200, 200);
 		Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
+		Bukkit.getScheduler().runTaskTimer(this,
+				new BroadcastReminder(
+						compManager,
+						broadcastChannel, broadcastSettings,
+						getLogger(),
+						messages),
+				20, 20);
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
-	
+
 	@Override
 	public void onDisable() {
 		databaseManager.shutdown();
 	}
-	
+
 	/**
 	 * Gets the competiton manager
+	 *
 	 * @return The CompManager
 	 */
 	public CompManager getManager() {

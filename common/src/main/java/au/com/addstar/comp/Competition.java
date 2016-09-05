@@ -159,6 +159,10 @@ public class Competition {
 		return getState() == CompState.Open;
 	}
 
+	public boolean isVoting() {
+		return getState() == CompState.Voting;
+	}
+
 	public String getVotingStrategy() {
 		return votingStrategy;
 	}
