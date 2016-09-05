@@ -154,7 +154,7 @@ public class BroadcastReminder implements Runnable {
 		// Add/update the cached date for this comp
 		lastBroadcastMap.put(compId, System.currentTimeMillis());
 
-		int timeRemainingMinutes = minutesRemaining(endDate);
+		long timeRemainingMinutes = minutesRemaining(endDate);
 		String timeRemaining;
 
 		// Format time remaining as user-friendly text, for example 2d 23h or 3h 57m
@@ -218,12 +218,12 @@ public class BroadcastReminder implements Runnable {
 	 * @param endDateMillis Ending date
 	 * @return The elapsed time, in minutes
 	 */
-	private int minutesRemaining(long endDateMillis) {
+	private long minutesRemaining(long endDateMillis) {
 		double differenceMinutes = millisToMinutes(System.currentTimeMillis(), endDateMillis);
 		if (differenceMinutes < 0)
 			return 0;
 		else
-			return (int) differenceMinutes;
+			return Math.round(differenceMinutes);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class BroadcastReminder implements Runnable {
 			int intervalMax,
 			Map<Integer, Long> lastBroadcastMap) {
 
-		int timeRemainingMinutes = minutesRemaining(endDate);
+		long timeRemainingMinutes = minutesRemaining(endDate);
 		if (timeRemainingMinutes < 5) {
 			// Less than 5 minutes remain
 			// This is not enough time for people to reasonably accomplish anything

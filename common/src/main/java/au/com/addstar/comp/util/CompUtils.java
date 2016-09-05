@@ -85,7 +85,7 @@ public final class CompUtils {
 	 * @return The formatted string
 	 */
 	public static String formatTimeRemaining(long remaining) {
-		if (remaining < TimeUnit.DAYS.toMillis(1)) {
+		if (Math.abs(remaining) < TimeUnit.DAYS.toMillis(1)) {
 			return DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_SHORT);
 		} else {
 			return DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_LONG);
