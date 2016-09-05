@@ -56,5 +56,5 @@ sign.click-to-join=&e&lClick to &nJoin
 sign.click-to-visit=&1&lClick to Visit
 
 # Broadcast
-broadcast.running=&6[&aComp&6] &bTime remaining to finish '{theme}': {timeleft}
-broadcast.voting=&6[&aComp&6] &bVote for winners in '{theme}'; {timeleft} remaining
+broadcast.running=&6[&aComp&6] &bTime remaining to finish '&a{theme}&b'&e: {timeleft}
+broadcast.voting=&6[&aComp&6] &bVote for winners in '&a{theme}&b'; &e{timeleft} remaining

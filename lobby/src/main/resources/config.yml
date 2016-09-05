@@ -25,7 +25,7 @@ ping-interval: 10
 # For everyone to see the messages, use pex group Everyone add addstar.compbcast
 broadcast-settings:
   broadcast-channel: CompBCast
-  global-broadcast-running-min: 15
-  global-broadcast-running-max: 120
-  global-broadcast-voting-min: 10
-  global-broadcast-voting-max: 60
+  global-broadcast-running-min: 45
+  global-broadcast-running-max: 180
+  global-broadcast-voting-min: 45
+  global-broadcast-voting-max: 180
