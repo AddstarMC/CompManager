@@ -47,6 +47,14 @@
 			<version>1.10-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- Used for Proxy-wide broadcast -->
+		<dependency>
+			<groupId>au.com.addstar</groupId>
+			<artifactId>BungeeChat-Bukkit</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 	
 	<build>
