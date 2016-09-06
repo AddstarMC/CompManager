@@ -68,15 +68,18 @@ public class LobbyPlugin extends JavaPlugin {
 		}
 
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
-		compManager = new CompManager(new CompBackendManager(databaseManager), redisManager, this);
-		compManager.reload();
+
+		compManager = new CompManager(new CompBackendManager(databaseManager), redisManager, this, messages);
+		compManager.reload(false);
+
 		confirmationManager = new ConfirmationManager();
+
 		signManager = new SignManager(new File(getDataFolder(), "signs.yml"), compManager, messages, confirmationManager);
 		try {
 			signManager.load();
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Failed to load signs", e);
-			// No need to stop because of that
+			// No need to stop because of this error
 		}
 
 		// Register commands
@@ -115,13 +118,7 @@ public class LobbyPlugin extends JavaPlugin {
 		Bukkit.getScheduler().runTaskTimer(this, new SignRefresher(signManager), 0, 200);
 		Bukkit.getScheduler().runTaskTimer(this, new ServerStatusUpdater(compManager), 200, 200);
 		Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
-		Bukkit.getScheduler().runTaskTimer(this,
-				new BroadcastReminder(
-						compManager,
-						broadcastChannel, broadcastSettings,
-						getLogger(),
-						messages),
-				20, 20);
+		Bukkit.getScheduler().runTaskTimer(this, new BroadcastReminder(compManager, broadcastChannel), 20, 20);
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
 
@@ -131,7 +128,7 @@ public class LobbyPlugin extends JavaPlugin {
 	}
 
 	/**
-	 * Gets the competiton manager
+	 * Gets the competition manager
 	 *
 	 * @return The CompManager
 	 */

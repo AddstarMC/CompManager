@@ -3,48 +3,21 @@ package au.com.addstar.comp.lobby;
 import au.com.addstar.bc.BungeeChat;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.util.CompUtils;
-import au.com.addstar.comp.util.Messages;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Periodically broadcast reminders using BungeeChat
  */
 public class BroadcastReminder implements Runnable {
 	private final CompManager manager;
-	private final Logger logger;
-
-	private final Messages messages;
 
 	private String bungeeChatBroadcastChannel;
-
-	/**
-	 * Minimum minutes between broadcasting that a comp is running
-	 */
-	private int broadcastIntervalRunningMin;
-
-	/**
-	 * Maximum minutes between broadcasting that a comp is running
-	 */
-	private int broadcastIntervalRunningMax;
-
-	/**
-	 * Minimum minutes between broadcasting that a comp is in the voting state
-	 */
-	private int broadcastIntervalVotingMin;
-
-	/**
-	 * Maximum minutes between broadcasting that a comp is in the voting state
-	 */
-	private int broadcastIntervalVotingMax;
 
 	/**
 	 * Map between compId and the last "Enter this comp" broadcast
@@ -59,37 +32,16 @@ public class BroadcastReminder implements Runnable {
 	/**
 	 * Constructor
 	 *
-	 * @param manager           Manager
-	 * @param broadcastChannel  Broadcast channel name; null if BungeeChat is not available
-	 * @param broadcastSettings Broadcast settings from config.yml
-	 * @param pluginLogger      Logger
-	 * @param pluginMessages    Messages
+	 * @param manager          Manager
+	 * @param broadcastChannel Broadcast channel name; null if BungeeChat is not available
 	 */
 	public BroadcastReminder(
 			CompManager manager,
-			String broadcastChannel,
-			ConfigurationSection broadcastSettings,
-			Logger pluginLogger,
-			Messages pluginMessages) {
+			String broadcastChannel) {
 
 		this.manager = manager;
-
-		broadcastIntervalRunningMin = stringToInt(broadcastSettings, "global-broadcast-running-min", 15);
-		broadcastIntervalRunningMax = stringToInt(broadcastSettings, "global-broadcast-running-max", 120);
-
-		broadcastIntervalVotingMin = stringToInt(broadcastSettings, "global-broadcast-voting-min", 10);
-		broadcastIntervalVotingMax = stringToInt(broadcastSettings, "global-broadcast-voting-max", 60);
-
-		logger = pluginLogger;
-		logger.log(Level.INFO, "Broadcast interval running: " +
-				broadcastIntervalRunningMin + " to " + broadcastIntervalRunningMax + " minutes");
-
-		logger.log(Level.INFO, "Broadcast interval voting: " +
-				broadcastIntervalVotingMin + " to " + broadcastIntervalVotingMax + " minutes");
-
-		messages = pluginMessages;
-
 		this.bungeeChatBroadcastChannel = broadcastChannel;
+
 	}
 
 	/**
@@ -110,10 +62,10 @@ public class BroadcastReminder implements Runnable {
 				if (shouldBroadcast(
 						compId,
 						activeComp.getStartDate(), activeComp.getEndDate(),
-						broadcastIntervalRunningMin, broadcastIntervalRunningMax,
+						manager.getGlobalBroadcastRunningMin(), manager.getGlobalBroadcastRunningMax(),
 						lastRunningBroadcast)) {
 
-					String msg = messages.get("broadcast.running", "theme", activeComp.getTheme());
+					String msg = manager.getMessage("broadcast.running", "theme", activeComp.getTheme());
 					broadcastNow(
 							compId,
 							activeComp.getEndDate(),
@@ -126,10 +78,10 @@ public class BroadcastReminder implements Runnable {
 				if (shouldBroadcast(
 						compId,
 						activeComp.getEndDate(), activeComp.getVoteEndDate(),
-						broadcastIntervalVotingMin, broadcastIntervalVotingMax,
+						manager.getGlobalBroadcastVotingMin(), manager.getGlobalBroadcastVotingMax(),
 						lastVotingBroadcast)) {
 
-					String msg = messages.get("broadcast.voting", "theme", activeComp.getTheme());
+					String msg = manager.getMessage("broadcast.voting", "theme", activeComp.getTheme());
 					broadcastNow(
 							compId,
 							activeComp.getVoteEndDate(),
@@ -272,32 +224,6 @@ public class BroadcastReminder implements Runnable {
 	}
 
 	/**
-	 * Lookup the config value and convert to an integer
-	 *
-	 * @param configSettings Configuration section
-	 * @param keyName        Setting to find
-	 * @param defaultValue   Default value if not found or not numeric
-	 * @return Configuration value
-	 */
-	private int stringToInt(ConfigurationSection configSettings, String keyName, int defaultValue) {
-		if (configSettings == null) {
-			logger.log(Level.WARNING, "Config section is null; cannot get setting for " + keyName);
-			return defaultValue;
-		}
-
-		String valueText = configSettings.getString(keyName, Integer.toString(defaultValue));
-		if (Strings.isNullOrEmpty(valueText))
-			return defaultValue;
-
-		try {
-			int value = Integer.parseInt(valueText);
-			return value;
-		} catch (NumberFormatException e) {
-			return defaultValue;
-		}
-	}
-
-	/**
 	 * Convert the duration between two millisecond dates, then convert to minutes
 	 *
 	 * @param startDate
@@ -307,6 +233,5 @@ public class BroadcastReminder implements Runnable {
 	private double timespanMinutes(long startDate, long endDate) {
 		return (endDate - startDate) / 1000.0 / 60.0;
 	}
-
 
 }
