@@ -2,14 +2,13 @@ package au.com.addstar.comp.lobby;
 
 import au.com.addstar.bc.BungeeChat;
 import au.com.addstar.comp.Competition;
-
 import au.com.addstar.comp.util.CompUtils;
 import au.com.addstar.comp.util.Messages;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Map;
@@ -60,7 +59,11 @@ public class BroadcastReminder implements Runnable {
 	/**
 	 * Constructor
 	 *
-	 * @param manager
+	 * @param manager           Manager
+	 * @param broadcastChannel  Broadcast channel name; null if BungeeChat is not available
+	 * @param broadcastSettings Broadcast settings from config.yml
+	 * @param pluginLogger      Logger
+	 * @param pluginMessages    Messages
 	 */
 	public BroadcastReminder(
 			CompManager manager,
@@ -89,6 +92,9 @@ public class BroadcastReminder implements Runnable {
 		this.bungeeChatBroadcastChannel = broadcastChannel;
 	}
 
+	/**
+	 * Check each comp to see if a reminder needs to be broadcasted
+	 */
 	@Override
 	public void run() {
 		for (final CompServer server : manager.getServers()) {
@@ -174,27 +180,6 @@ public class BroadcastReminder implements Runnable {
 	}
 
 	/**
-	 * Return the broadcast message prefix, for example [Comp]
-	 *
-	 * @param compPrefix
-	 * @return
-	 */
-	private String getPrefix(String compPrefix) {
-		return ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "Comp" + ChatColor.GOLD + "]";
-	}
-
-	/**
-	 * Convert the number of milliseconds between two dates, then convert to minutes
-	 *
-	 * @param startDate
-	 * @param endDate
-	 * @return Duration, in minutes
-	 */
-	private double millisToMinutes(long startDate, long endDate) {
-		return (endDate - startDate) / 1000.0 / 60.0;
-	}
-
-	/**
 	 * Compute the time, in milliseconds, between the current time and startDateMillis
 	 *
 	 * @param startDateMillis Starting date
@@ -205,7 +190,7 @@ public class BroadcastReminder implements Runnable {
 			return 0;
 		}
 
-		double differenceMinutes = millisToMinutes(startDateMillis, System.currentTimeMillis());
+		double differenceMinutes = timespanMinutes(startDateMillis, System.currentTimeMillis());
 		if (differenceMinutes < 0)
 			return 0;
 		else
@@ -219,7 +204,7 @@ public class BroadcastReminder implements Runnable {
 	 * @return The elapsed time, in minutes
 	 */
 	private long minutesRemaining(long endDateMillis) {
-		double differenceMinutes = millisToMinutes(System.currentTimeMillis(), endDateMillis);
+		double differenceMinutes = timespanMinutes(System.currentTimeMillis(), endDateMillis);
 		if (differenceMinutes < 0)
 			return 0;
 		else
@@ -268,7 +253,7 @@ public class BroadcastReminder implements Runnable {
 		// The threshold is a value between intervalMin and intervalMax,
 		// scaled based on the fraction of time remaining
 
-		double activityLengthMinutes = millisToMinutes(startDate, endDate);
+		double activityLengthMinutes = timespanMinutes(startDate, endDate);
 		double fractionRemaining = 0;
 		if (activityLengthMinutes > 0) {
 			fractionRemaining = timeRemainingMinutes / activityLengthMinutes;
@@ -288,9 +273,10 @@ public class BroadcastReminder implements Runnable {
 
 	/**
 	 * Lookup the config value and convert to an integer
-	 * @param configSettings    Configuration section
-	 * @param keyName           Setting to find
-	 * @param defaultValue      Default value if not found or not numeric
+	 *
+	 * @param configSettings Configuration section
+	 * @param keyName        Setting to find
+	 * @param defaultValue   Default value if not found or not numeric
 	 * @return Configuration value
 	 */
 	private int stringToInt(ConfigurationSection configSettings, String keyName, int defaultValue) {
@@ -310,5 +296,17 @@ public class BroadcastReminder implements Runnable {
 			return defaultValue;
 		}
 	}
+
+	/**
+	 * Convert the duration between two millisecond dates, then convert to minutes
+	 *
+	 * @param startDate
+	 * @param endDate
+	 * @return Duration, in minutes
+	 */
+	private double timespanMinutes(long startDate, long endDate) {
+		return (endDate - startDate) / 1000.0 / 60.0;
+	}
+
 
 }
