@@ -50,7 +50,7 @@ public class ReloadCommand implements ICommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String parent, String label, String[] args) throws BadArgumentException {
-		manager.reload();
+		manager.reload(true);
 		sender.sendMessage(ChatColor.GOLD + "Reloaded competitions");
 		
 		// TODO: Update signs etc.

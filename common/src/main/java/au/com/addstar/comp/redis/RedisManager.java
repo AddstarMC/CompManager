@@ -90,7 +90,6 @@ public class RedisManager {
 	
 	/**
 	 * Sends a command to the target server
-	 * @param serverId The id of the server to receive it
 	 * @param command The command to send
 	 */
 	public void broadcastCommand(String command) {

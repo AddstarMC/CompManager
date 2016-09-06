@@ -16,7 +16,7 @@ public class CommandHandler implements CommandReceiver {
 			reload(serverId);
 			break;
 		case "reloadall":
-			manager.reload();
+			manager.reload(true);
 			break;
 		}
 	}
@@ -25,7 +25,7 @@ public class CommandHandler implements CommandReceiver {
 		CompServer server = manager.getServer(serverId);
 		if (server == null) {
 			// Reload all because a server may have just been assigned
-			manager.reload();
+			manager.reload(true);
 		} else {
 			// Reload just this server
 			server.reload();
