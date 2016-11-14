@@ -26,10 +26,10 @@ public class CompServerBackendManager extends CompBackendManager {
 	private static final StatementKey STATEMENT_VOTE_GETALL_PLAYER;
 
 	static {
-		STATEMENT_VOTE_ADD = new StatementKey("INSERT INTO " + TABLE_VOTES + " (CompID, UUID, PlotID, Vote) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE Vote=VALUES(Vote)");
+		STATEMENT_VOTE_ADD = new StatementKey("INSERT INTO " + TABLE_VOTES + " (CompID, UUID, PlotID, PlotOwner, Vote) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE Vote=VALUES(Vote)");
 		STATEMENT_VOTE_REMOVE = new StatementKey("DELETE FROM " + TABLE_VOTES + " WHERE CompID=? AND UUID=? AND PlotID=?");
-		STATEMENT_VOTE_GETALL_COMP = new StatementKey("SELECT UUID, PlotID, Vote FROM " + TABLE_VOTES + " WHERE CompID=?");
-		STATEMENT_VOTE_GETALL_PLAYER = new StatementKey("SELECT PlotID, Vote FROM " + TABLE_VOTES + " WHERE CompID=? AND UUID=?");
+		STATEMENT_VOTE_GETALL_COMP = new StatementKey("SELECT UUID, PlotID, PlotOwner, Vote FROM " + TABLE_VOTES + " WHERE CompID=?");
+		STATEMENT_VOTE_GETALL_PLAYER = new StatementKey("SELECT PlotID, PlotOwner, Vote FROM " + TABLE_VOTES + " WHERE CompID=? AND UUID=?");
 	}
 
 	public CompServerBackendManager(DatabaseManager manager) {
@@ -55,6 +55,7 @@ public class CompServerBackendManager extends CompBackendManager {
 			List<T> votes = Lists.newArrayList();
 			while (rs.next()) {
 				String rawPlotId = rs.getString("PlotID");
+				String rawPlotOwnerUUID = rs.getString("UUID");
 				int voteValue = rs.getInt("Vote");
 
 				PlotId plot = PlotId.fromString(rawPlotId);
@@ -100,6 +101,7 @@ public class CompServerBackendManager extends CompBackendManager {
 				while (rs.next()) {
 					String rawUUID = rs.getString("UUID");
 					String rawPlotId = rs.getString("PlotID");
+					String rawPlotOwnerUUID = rs.getString("UUID");
 					int voteValue = rs.getInt("Vote");
 
 					UUID id;
@@ -149,7 +151,7 @@ public class CompServerBackendManager extends CompBackendManager {
 		try {
 			handler = getPool().getConnection();
 
-			handler.executeUpdate(STATEMENT_VOTE_ADD, comp.getCompId(), voter.toString(), vote.getPlot().toString(), vote.toNumber());
+			handler.executeUpdate(STATEMENT_VOTE_ADD, comp.getCompId(), voter.toString(), vote.getPlot().toString(), vote.getPlotOwner().toString(), vote.toNumber());
 		} finally {
 			if (handler != null) {
 				handler.release();

@@ -3,6 +3,8 @@ package au.com.addstar.comp.voting;
 import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public abstract class AbstractVoteProvider<T extends Vote> {
 	private final VoteStorage<T> storage;
 	
@@ -25,12 +27,13 @@ public abstract class AbstractVoteProvider<T extends Vote> {
 	 * return null in this method and manually record the vote with <code>getStorage().recordVote(voter, vote)</code>
 	 * @param voter The player running the vote command
 	 * @param plot The plot being voted on
+	 * @param owner The owner of the plot
 	 * @param arguments The arguments provided to the vote command
 	 * @return The created vote, or null if it will be handled elsewhere
 	 * @throws IllegalArgumentException Throws an exception if the provided arguments arent valid for this strategy
 	 * @throws IllegalStateException Thrown if the vote command cannot be used
 	 */
-	public T onVoteCommand(Player voter, PlotId plot, String[] arguments) throws IllegalArgumentException {
+	public T onVoteCommand(Player voter, PlotId plot, UUID owner, String[] arguments) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 	
