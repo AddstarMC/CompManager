@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 	@Override
@@ -57,14 +58,14 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 		}
 
 		@Override
-		public RankedVote onVoteCommand(Player voter, PlotId plot, String[] arguments) throws IllegalArgumentException {
+		public RankedVote onVoteCommand(Player voter, PlotId plot, UUID plotowner, String[] arguments) throws IllegalArgumentException {
 			if (arguments.length < 1) {
 				throw new IllegalArgumentException("Expected a value from 1 to 5 inclusive for the vote");
 			}
 
 			try {
 				int value = Integer.parseInt(arguments[0]);
-				return loadVote(plot, value - 3);
+				return loadVote(plot, plotowner, value - 3);
 			} catch (NumberFormatException e) {
 				throw new IllegalArgumentException("Expected a value from 1 to 5 inclusive for the vote");
 			}
@@ -81,7 +82,7 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 		}
 
 		@Override
-		public RankedVote loadVote(PlotId plotId, int value) throws IllegalArgumentException {
+		public RankedVote loadVote(PlotId plotId, UUID plotowner, int value) throws IllegalArgumentException {
 			RankedVote.Rank rank;
 			if (value <= -2) {
 				rank = RankedVote.Rank.ExtremelyDislike;
@@ -95,7 +96,7 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 				rank = RankedVote.Rank.ExtremelyLike;
 			}
 
-			return new RankedVote(plotId, rank);
+			return new RankedVote(plotId, plotowner, rank);
 		}
 	}
 }

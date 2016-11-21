@@ -1,9 +1,6 @@
 package au.com.addstar.comp.voting.likedislike;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.entity.Player;
@@ -78,7 +75,7 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		} 
 		
 		@Override
-		public LDVote onVoteCommand(Player voter, PlotId plot, String[] args) throws IllegalArgumentException {
+		public LDVote onVoteCommand(Player voter, PlotId plot, UUID plotowner, String[] args) throws IllegalArgumentException {
 
 			String voteOptionsMsg = "You must specify 'like', 'dislike', or 'skip' for your vote; 'yes' and 'no' are also allowed";
 
@@ -104,7 +101,7 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 				throw new IllegalArgumentException(voteOptionsMsg);
 			}
 			
-			return new LDVote(plot, type);
+			return new LDVote(plot, plotowner, type);
 		}
 		
 		@Override
@@ -127,8 +124,8 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		}
 
 		@Override
-		public LDVote loadVote(PlotId plotId, int value) {
-			return LDVote.fromValue(plotId, value);
+		public LDVote loadVote(PlotId plotId, UUID plotowner, int value) {
+			return LDVote.fromValue(plotId, plotowner, value);
 		}
 	}
 }

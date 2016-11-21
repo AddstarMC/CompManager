@@ -3,10 +3,12 @@ package au.com.addstar.comp.voting.ranked;
 import au.com.addstar.comp.voting.Vote;
 import com.intellectualcrafters.plot.object.PlotId;
 
+import java.util.UUID;
+
 public class RankedVote extends Vote {
 	private final Rank rank;
-	public RankedVote(PlotId plot, Rank rank) {
-		super(plot);
+	public RankedVote(PlotId plot, UUID plotowner, Rank rank) {
+		super(plot, plotowner);
 		this.rank = rank;
 	}
 

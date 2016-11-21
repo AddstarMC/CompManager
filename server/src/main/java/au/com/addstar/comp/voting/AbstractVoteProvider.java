@@ -27,13 +27,13 @@ public abstract class AbstractVoteProvider<T extends Vote> {
 	 * return null in this method and manually record the vote with <code>getStorage().recordVote(voter, vote)</code>
 	 * @param voter The player running the vote command
 	 * @param plot The plot being voted on
-	 * @param owner The owner of the plot
+	 * @param plotowner The owner of the plot
 	 * @param arguments The arguments provided to the vote command
 	 * @return The created vote, or null if it will be handled elsewhere
 	 * @throws IllegalArgumentException Throws an exception if the provided arguments arent valid for this strategy
 	 * @throws IllegalStateException Thrown if the vote command cannot be used
 	 */
-	public T onVoteCommand(Player voter, PlotId plot, UUID owner, String[] arguments) throws IllegalArgumentException {
+	public T onVoteCommand(Player voter, PlotId plot, UUID plotowner, String[] arguments) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 	
@@ -58,9 +58,10 @@ public abstract class AbstractVoteProvider<T extends Vote> {
 	/**
 	 * Loads a vote from its value and plot
 	 * @param plotId The plot the vote is for
+	 * @param plotowner The owner of the plot
 	 * @param value The value of the vote
 	 * @return The loaded vote
 	 * @throws IllegalArgumentException Thrown if the value is not valid for the vote type
 	 */
-	public abstract T loadVote(PlotId plotId, int value) throws IllegalArgumentException;
+	public abstract T loadVote(PlotId plotId, UUID plotowner, int value) throws IllegalArgumentException;
 }

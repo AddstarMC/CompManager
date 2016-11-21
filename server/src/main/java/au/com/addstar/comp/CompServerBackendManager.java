@@ -64,9 +64,17 @@ public class CompServerBackendManager extends CompBackendManager {
 					continue;
 				}
 
+				UUID plotowner;
+				try {
+					plotowner = UUID.fromString(rawPlotOwnerUUID);
+				} catch (IllegalArgumentException e) {
+					// It's fine to have invalid plotowners stored (will happen when this change is first deployed)
+					plotowner = null;
+				}
+
 				T vote;
 				try {
-					vote = provider.loadVote(plot, voteValue);
+					vote = provider.loadVote(plot, plotowner, voteValue);
 				} catch (IllegalArgumentException e) {
 					// Drop invalid votes
 					continue;
@@ -118,9 +126,17 @@ public class CompServerBackendManager extends CompBackendManager {
 						continue;
 					}
 
+					UUID plotowner;
+					try {
+						plotowner = UUID.fromString(rawPlotOwnerUUID);
+					} catch (IllegalArgumentException e) {
+						// It's fine to have invalid plotowners stored (will happen when this change is first deployed)
+						plotowner = null;
+					}
+
 					T vote;
 					try {
-						vote = provider.loadVote(plot, voteValue);
+						vote = provider.loadVote(plot, plotowner, voteValue);
 					} catch (IllegalArgumentException e) {
 						// Drop invalid votes
 						continue;
