@@ -33,13 +33,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>au.com.addstar</groupId>
-			<artifactId>Monolith</artifactId>
-			<version>1.4.4</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>com.intellectualcrafters</groupId>
 			<artifactId>PlotSquared</artifactId>
 			<version>3.5.1-SNAPSHOT</version>
@@ -50,13 +43,6 @@
 					<artifactId>worldedit</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.11-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

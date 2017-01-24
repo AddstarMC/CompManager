@@ -39,14 +39,6 @@
 			<version>1.4.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.11-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- Used for Proxy-wide broadcast -->
 		<dependency>
 			<groupId>au.com.addstar</groupId>
