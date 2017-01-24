@@ -1,8 +1,6 @@
 package au.com.addstar.comp;
 
 import au.com.addstar.comp.notifications.NotificationManager;
-import au.com.addstar.comp.notifications.NotificationManager.DisplayTarget;
-import au.com.addstar.comp.util.Messages;
 
 public class CompTimer implements Runnable {
 	private final CompManager compManager;

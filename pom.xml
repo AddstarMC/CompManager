@@ -12,7 +12,7 @@
     <scm>
         <connection>scm:git:git@github.com:AddstarMC/CompManager.git</connection>
         <developerConnection>scm:git:git@github.com:AddstarMC/CompManager.git</developerConnection>
-        <url>https://github.com/AddstarMC/pandora</url>
+        <url>https://github.com/AddstarMC/CompManager</url>
         <tag>HEAD</tag>
     </scm>
     <developers>
@@ -56,8 +56,9 @@
         </repository>
         <!-- For Vault -->
         <repository>
-            <id>theyeticave</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases/</url>
+            <id>vault-repo</id>
+            <name>Public Releases</name>
+            <url>http://nexus.hc.to/content/repositories/pub_releases/</url>
         </repository>
         <repository>
             <id>addstar-release-repo</id>
@@ -80,7 +81,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.10-R0.1-SNAPSHOT</version>
+            <version>1.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

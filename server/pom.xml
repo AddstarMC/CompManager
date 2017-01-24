@@ -35,14 +35,14 @@
 		<dependency>
 			<groupId>au.com.addstar</groupId>
 			<artifactId>Monolith</artifactId>
-			<version>1.4.4-SNAPSHOT</version>
+			<version>1.4.4</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.intellectualcrafters</groupId>
 			<artifactId>PlotSquared</artifactId>
-			<version>3.4.4</version>
+			<version>3.5.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -54,8 +54,8 @@
 
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>minecraft-server</artifactId>
-			<version>1.10-SNAPSHOT</version>
+			<artifactId>spigot-api</artifactId>
+			<version>1.11-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

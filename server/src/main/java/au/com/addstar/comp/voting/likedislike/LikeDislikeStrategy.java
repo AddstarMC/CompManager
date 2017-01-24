@@ -1,8 +1,22 @@
 package au.com.addstar.comp.voting.likedislike;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
+import au.com.addstar.comp.CompPlugin;
+import au.com.addstar.comp.gui.Hotbar;
+import au.com.addstar.comp.gui.HotbarButton;
+import au.com.addstar.comp.gui.HotbarComponent;
+import au.com.addstar.comp.gui.Icon;
+import au.com.addstar.comp.gui.listeners.ButtonClickListener;
+import au.com.addstar.comp.gui.listeners.LDVoteClickListener;
+import au.com.addstar.comp.gui.listeners.PlotMoveClickListener;
+import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotId;
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Predicate;
@@ -16,6 +30,7 @@ import au.com.addstar.comp.voting.AbstractVoteProvider;
 import au.com.addstar.comp.voting.Placement;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * The like / dislike strategy. Players can either like or dislike
@@ -24,6 +39,8 @@ import au.com.addstar.comp.voting.AbstractVotingStrategy;
  * Scores are tallied and the plots are ranked by the number of points they have.
  */
 public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
+
+
 	@Override
 	public boolean allowRevote() {
 		return true;
@@ -63,7 +80,31 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		
 		return Collections.unmodifiableList(places);
 	}
-	
+	@Override
+	public Hotbar createHotbar(){
+		Hotbar hotbar =  new Hotbar();
+		setHasHotbar(true);
+		int i = 0;
+		for (LDVote.Type voteType : LDVote.Type.values()){
+			HotbarButton button = new HotbarButton(i,voteType.toString());
+			ButtonClickListener listener = new LDVoteClickListener(CompPlugin.instance,this , voteType);
+			button.addClickListener(listener);
+			hotbar.add(button);
+			i++;
+		}
+
+		HotbarButton pbutton = new HotbarButton(8,"Previous Plot");
+		ItemStack item =  new ItemStack(Material.WOOL,1, DyeColor.PINK.getDyeData());
+		pbutton.setIcon(new Icon(item));
+		pbutton.addClickListener(new PlotMoveClickListener(CompPlugin.instance,true));
+		hotbar.add(pbutton);
+		HotbarButton nbutton = new HotbarButton(8,"Previous Plot");
+		item =  new ItemStack(Material.WOOL,1, DyeColor.CYAN.getDyeData());
+		nbutton.setIcon(new Icon(item));
+		nbutton.addClickListener(new PlotMoveClickListener(CompPlugin.instance,true));
+		hotbar.add(nbutton);
+		return hotbar;
+	}
 	@Override
 	public AbstractVoteProvider<LDVote> createProvider(VoteStorage<LDVote> storage) {
 		return new VoteProvider(storage);
@@ -127,5 +168,6 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		public LDVote loadVote(PlotId plotId, UUID plotowner, int value) {
 			return LDVote.fromValue(plotId, plotowner, value);
 		}
+
 	}
 }

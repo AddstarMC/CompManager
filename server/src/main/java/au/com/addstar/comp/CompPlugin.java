@@ -2,10 +2,13 @@ package au.com.addstar.comp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import au.com.addstar.comp.gui.Hotbar;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.intellectualcrafters.plot.PS;
@@ -27,6 +30,8 @@ import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 public class CompPlugin extends JavaPlugin {
+
+	public static CompPlugin instance;
 	private DatabaseManager databaseManager;
 	private WhitelistHandler whitelistHandler;
 	private CompManager compManager;
@@ -34,9 +39,17 @@ public class CompPlugin extends JavaPlugin {
 	private P2Bridge bridge;
 	private ConfirmationManager confirmationManager;
 	private NotificationManager notificationManager;
-	private Messages messages;
+	public Messages messages;
 	private RemoteJoinManager remoteJoinManager;
-	
+	private static HashMap<Player, Hotbar> currentHotbars = new HashMap();
+
+
+	public static HashMap<Player, Hotbar> getCurrentHotbars()
+	{
+		return currentHotbars;
+	}
+
+
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
@@ -124,5 +137,29 @@ public class CompPlugin extends JavaPlugin {
 	
 	public CompManager getCompManager() {
 		return compManager;
+	}
+
+	public static void setHotbar(Hotbar bar, Player player ){
+		if (currentHotbars.containsKey(player)) {
+			(currentHotbars.get(player)).close();
+		}
+		player.getInventory().clear();
+
+		currentHotbars.put(player, bar);
+
+		bar.showHotbar(player);
+	}
+
+	public static void removeHotbar(Player player)
+	{
+		if (player != null) {
+			player.getInventory().clear();
+		}
+		currentHotbars.remove(player);
+	}
+
+
+	public P2Bridge getBridge() {
+		return bridge;
 	}
 }

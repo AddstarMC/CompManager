@@ -1,5 +1,6 @@
 package au.com.addstar.comp.voting.ranked;
 
+import au.com.addstar.comp.gui.Hotbar;
 import au.com.addstar.comp.voting.AbstractVoteProvider;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
 import au.com.addstar.comp.voting.Placement;
@@ -50,6 +51,12 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 	@Override
 	public AbstractVoteProvider<RankedVote> createProvider(VoteStorage<RankedVote> storage) {
 		return new RankedProvider(storage);
+	}
+
+	@Override
+	public Hotbar createHotbar() {
+		setHasHotbar(false);
+		return null;
 	}
 
 	private class RankedProvider extends AbstractVoteProvider<RankedVote> {

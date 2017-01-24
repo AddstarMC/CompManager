@@ -1,5 +1,6 @@
 package au.com.addstar.comp.voting;
 
+import au.com.addstar.comp.gui.Hotbar;
 import au.com.addstar.comp.voting.likedislike.LikeDislikeStrategy;
 import au.com.addstar.comp.voting.ranked.RankedStrategy;
 import com.google.common.collect.Maps;
@@ -11,6 +12,8 @@ public class VotingStrategies {
 	public static final AbstractVotingStrategy<?> RANKED_STRATEGY;
 
 	private static final Map<String, AbstractVotingStrategy<?>> strategies;
+
+
 
 	static {
 		LIKE_DISLIKE_STRATEGY = new LikeDislikeStrategy();
@@ -32,4 +35,7 @@ public class VotingStrategies {
 	public static AbstractVotingStrategy<?> getDefault() {
 		return LIKE_DISLIKE_STRATEGY;
 	}
+
+
+
 }

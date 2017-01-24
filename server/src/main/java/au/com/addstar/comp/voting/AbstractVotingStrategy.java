@@ -2,6 +2,7 @@ package au.com.addstar.comp.voting;
 
 import java.util.List;
 
+import au.com.addstar.comp.gui.Hotbar;
 import com.google.common.collect.Multimap;
 import com.intellectualcrafters.plot.object.PlotId;
 
@@ -10,6 +11,14 @@ import com.intellectualcrafters.plot.object.PlotId;
  * @param <T> The type of vote
  */
 public abstract class AbstractVotingStrategy<T extends Vote> {
+
+
+	public void setHasHotbar(boolean hasHotbar) {
+		this.hasHotbar = hasHotbar;
+	}
+
+	private boolean hasHotbar;
+
 	/**
 	 * Checks if re-voting is allowed with this strategy
 	 * @return True if users can change their vote on a plot
@@ -29,4 +38,10 @@ public abstract class AbstractVotingStrategy<T extends Vote> {
 	 * @return The provider
 	 */
 	public abstract AbstractVoteProvider<T> createProvider(VoteStorage<T> storage);
+
+	public boolean hasHotbar(){
+		return hasHotbar;
+	}
+
+	public abstract Hotbar createHotbar();
 }

@@ -40,9 +40,10 @@ public class P2Bridge {
 				return plot;
 			}
 		}
-		
+
 		return null;
 	}
+
 	
 	/**
 	 * Gets any plot at the given location
