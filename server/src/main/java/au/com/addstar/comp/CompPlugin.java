@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import au.com.addstar.comp.gui.Hotbar;
+import au.com.addstar.comp.gui.listeners.HotbarListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -108,6 +109,7 @@ public class CompPlugin extends JavaPlugin {
 		
 		// Start listeners
 		Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager, bridge, messages), this);
+		Bukkit.getPluginManager().registerEvents(new HotbarListener(this), this);
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
 			@Override
 			public void run() {
