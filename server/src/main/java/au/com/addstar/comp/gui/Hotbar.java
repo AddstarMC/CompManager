@@ -32,11 +32,10 @@ public class Hotbar {
     }
     public void render()
     {
-        HotbarComponent[] arrayOfHotbarComponent;
-        int j = (arrayOfHotbarComponent = this.components).length;
+        int j = components.length;
         for (int i = 0; i < j; i++)
         {
-            HotbarComponent component = arrayOfHotbarComponent[i];
+            HotbarComponent component = components[i];
             if (component != null) {
                 component.render();
             }
@@ -46,12 +45,26 @@ public class Hotbar {
     {
         CompPlugin.removeHotbar(this.player);
     }
+
     public void onClick(int slot)
     {
         if (this.components[slot] == null) {
             return;
         }
-        this.components[slot].onClick(this.player);
+        if(slot < components.length && slot >= 0) {
+            this.components[slot].onClick(this.player);
+        }
+
     }
+
+    public void onSelect(int slot){
+        if (this.components[slot] == null) {
+            return;
+        }
+        if(slot < components.length && slot >= 0) {
+            this.components[slot].onSelect(this.player);
+        }
+    }
+
 
 }

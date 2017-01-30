@@ -9,6 +9,7 @@ import com.plotsquared.bukkit.object.BukkitPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 
 import java.util.UUID;
@@ -37,16 +38,24 @@ public class PlotMoveClickListener implements ButtonClickListener {
     @Override
     public void onClick(Player player) {
         Plot plot = bridge.getPlotAt(player.getLocation());
-        boolean found = false;
-        Iterable<Plot> plots = bridge.getOrderedPlots(bridge.getUsedPlotCount());
         Plot tpPlot;
-        if (prev) {
-            tpPlot = getPrevPlot(plot);
-        } else {
-            tpPlot = getNextPlot(plot);
+        if(plot != null) {
+            if (prev) {
+                tpPlot = getPrevPlot(plot);
+            } else {
+                tpPlot = getNextPlot(plot);
+            }
+            if (tpPlot == null) {
+                player.sendMessage("No More Plots");
+                return;
+            }
+        }else{
+            tpPlot = getNextPlot(null);
         }
         tpPlot.teleportPlayer(new BukkitPlayer(player));
-        player.sendMessage("Teleported to PLot");
+        player.sendMessage("Teleported to next Plot");
+
+
     }
 
     private Plot getNextPlot(Plot plot) {
@@ -63,7 +72,17 @@ public class PlotMoveClickListener implements ButtonClickListener {
                     }
                 }
             }
-            if (newPlot.getId() == plot.getId()) found = true;
+            if(plot == null){
+                for (UUID id : newPlot.getOwners()) {
+                    OfflinePlayer entrant = Bukkit.getOfflinePlayer(id);
+                    if (manager.hasEntered(entrant)) {
+                        p = newPlot;
+                        return p;
+                    }
+                }
+            }else {
+                if (newPlot.getId() == plot.getId()) found = true;
+            }
         }
         if (!found) {
             p = bridge.getOrderedPlots(1).iterator().next();
@@ -84,7 +103,6 @@ public class PlotMoveClickListener implements ButtonClickListener {
             }
             i++;
         }
-        bridge.getOrderedPlots(bridge.getUsedPlotCount());
         int x = 0;
         for (Plot newPlot : plots) {
             if (x == i - 1) {
@@ -101,7 +119,6 @@ public class PlotMoveClickListener implements ButtonClickListener {
             }
             x++;
         }
-        if (p == null) p = bridge.getOrderedPlots(1).iterator().next();
         return p;
     }
 

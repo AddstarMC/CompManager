@@ -3,6 +3,10 @@ package au.com.addstar.comp.commands;
 import java.util.List;
 import java.util.UUID;
 
+import au.com.addstar.comp.CompPlugin;
+import au.com.addstar.comp.voting.AbstractVotingStrategy;
+import au.com.addstar.comp.voting.VotingStrategies;
+import au.com.addstar.comp.voting.likedislike.LDVote;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -49,6 +53,16 @@ public class VoteCommand implements TabExecutor {
 			return true;
 		}
 
+		AbstractVotingStrategy strategy = VotingStrategies.getStrategy(manager.getCurrentComp().getVotingStrategy());
+		if(strategy ==  null){
+			strategy = VotingStrategies.getDefault();
+		}
+		if(strategy.hasHotbar()){
+			sender.sendMessage("Strategy has a hotbar - creating");
+			CompPlugin.setHotbar(strategy.getHotbar(), player);
+		}else{
+			sender.sendMessage("Strategy has no hotbar." + strategy.toString());
+		}
 		// See if we are in a plot
 		Plot plot = bridge.getPlotAt(player.getLocation());
 		if (plot == null) {

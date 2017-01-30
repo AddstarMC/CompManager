@@ -13,11 +13,17 @@ import com.intellectualcrafters.plot.object.PlotId;
 public abstract class AbstractVotingStrategy<T extends Vote> {
 
 
+	public AbstractVotingStrategy() {
+		this.hasHotbar = false;
+		this.hotbar = null;
+	}
+
 	public void setHasHotbar(boolean hasHotbar) {
 		this.hasHotbar = hasHotbar;
 	}
 
 	private boolean hasHotbar;
+	private Hotbar hotbar;
 
 	/**
 	 * Checks if re-voting is allowed with this strategy
@@ -43,5 +49,14 @@ public abstract class AbstractVotingStrategy<T extends Vote> {
 		return hasHotbar;
 	}
 
-	public abstract Hotbar createHotbar();
+	protected abstract Hotbar createHotbar();
+
+	public void setHotbar(Hotbar hotbar) {
+		this.hotbar = hotbar;
+	}
+
+	public Hotbar getHotbar(){
+		return hotbar;
+	}
+
 }

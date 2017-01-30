@@ -20,21 +20,17 @@ import java.util.UUID;
 public class LDVoteClickListener implements ButtonClickListener {
 
     private LDVote.Type type;
-    private final CompManager manager;
-    private final P2Bridge bridge;
-    private final Messages messages;
+    private Messages messages;
 
-    public LDVoteClickListener(CompPlugin plugin, LikeDislikeStrategy strategy, LDVote.Type type) {
+    public LDVoteClickListener(LDVote.Type type) {
         this.type = type;
-        manager = plugin.getCompManager();
-        bridge = plugin.getBridge();
-        messages = plugin.messages;
+        messages = CompPlugin.instance.messages;
     }
 
 
     @Override
     public void onClick(Player player) {
-        Plot plot = bridge.getPlotAt(player.getLocation());
+        Plot plot = CompPlugin.instance.getBridge().getPlotAt(player.getLocation());
         if (plot == null) {
             player.sendMessage(messages.get("vote.denied.no-plot"));
             return;
@@ -60,7 +56,7 @@ public class LDVoteClickListener implements ButtonClickListener {
                 return;
             }
         }
-        VoteStorage<Vote> storage = (VoteStorage<Vote>)manager.getVoteStorage();
+        VoteStorage<Vote> storage = (VoteStorage<Vote>)CompPlugin.instance.getCompManager().getVoteStorage();
         Vote vote;
         try {
             UUID owner = plot.getOwners().iterator().next();

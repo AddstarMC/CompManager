@@ -1,6 +1,7 @@
 package au.com.addstar.comp.gui;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 
 /**
  * Created for use for the Add5tar MC Minecraft server
@@ -41,6 +42,8 @@ public abstract class HotbarComponent {
     }
 
     public abstract void onClick(Player paramPlayer);
+
+    public abstract void onSelect(Player paramPlayer);
 
     public abstract void render();
 }

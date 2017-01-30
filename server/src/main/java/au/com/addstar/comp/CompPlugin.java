@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import au.com.addstar.comp.gui.Hotbar;
-import au.com.addstar.comp.gui.listeners.HotbarListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,7 +54,7 @@ public class CompPlugin extends JavaPlugin {
 	public void onEnable() {
 		saveDefaultConfig();
 		reloadConfig();
-		
+		instance = this;
 		databaseManager = new DatabaseManager(this);
 		try {
 			databaseManager.initialize();
@@ -123,6 +122,7 @@ public class CompPlugin extends JavaPlugin {
 		
 		// Load the comp
 		compManager.reloadCurrentComp();
+		instance = this;
 	}
 	
 	private void registerQueryHandlers() {
@@ -144,12 +144,17 @@ public class CompPlugin extends JavaPlugin {
 	public static void setHotbar(Hotbar bar, Player player ){
 		if (currentHotbars.containsKey(player)) {
 			(currentHotbars.get(player)).close();
+			instance.getLogger().info("Player has existing hotbar we are removing ");
 		}
 		player.getInventory().clear();
-
+		if(bar == null){
+			instance.getLogger().info( "Hotbar was null");
+			return;
+		}
 		currentHotbars.put(player, bar);
-
+		instance.getLogger().info( "Hotbar added to " +player.getDisplayName());
 		bar.showHotbar(player);
+		player.sendMessage("Use the hotbar to select your action and then click.");
 	}
 
 	public static void removeHotbar(Player player)

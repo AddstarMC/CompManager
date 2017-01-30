@@ -1,9 +1,12 @@
 package au.com.addstar.comp.gui;
 
 import au.com.addstar.comp.gui.listeners.ButtonClickListener;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Wool;
 
 import java.util.ArrayList;
 
@@ -13,13 +16,20 @@ import java.util.ArrayList;
  */
 public class HotbarButton extends HotbarComponent {
 
-    private ArrayList<ButtonClickListener> listeners = new ArrayList();
+    private ArrayList<ButtonClickListener> listeners = new ArrayList<>();
+    private Icon icon;
 
     public HotbarButton(int slot, String title)
     {
         super(slot);
         this.title = title;
-        setIcon(new Icon(new ItemStack(Material.STONE)));
+        setIcon(new Icon(new ItemStack(Material.WOOL)));
+    }
+    public HotbarButton(int slot, String title, DyeColor color)
+    {
+        super(slot);
+        this.title = title;
+        setIcon(new Icon(new ItemStack(Material.WOOL,1,color.getDyeData())));
     }
 
     public Icon getIcon() {
@@ -29,8 +39,6 @@ public class HotbarButton extends HotbarComponent {
     public void setIcon(Icon icon) {
         this.icon = icon;
     }
-
-    Icon icon;
 
     public String getTitle() {
         return title;
@@ -57,6 +65,12 @@ public class HotbarButton extends HotbarComponent {
         for (ButtonClickListener listener : this.listeners) {
             listener.onClick(player);
         }
+    }
+
+    @Override
+    public void onSelect(Player player) {
+        player.sendMessage("This button :" + getTitle());
+        player.sendMessage("Action:" + getLore().toString());
     }
 
     public void addClickListener(ButtonClickListener listener)

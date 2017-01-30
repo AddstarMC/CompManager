@@ -2,6 +2,7 @@ package au.com.addstar.comp.voting.likedislike;
 
 import au.com.addstar.comp.voting.Vote;
 import com.intellectualcrafters.plot.object.PlotId;
+import org.bukkit.DyeColor;
 
 import java.util.UUID;
 
@@ -17,6 +18,18 @@ public class LDVote extends Vote {
 		return type;
 	}
 
+	public static DyeColor getColor(Type type){
+		switch (type) {
+			case Dislike:
+				return DyeColor.RED;
+			case Like:
+				return DyeColor.GREEN;
+			case Skip:
+			default:
+				return DyeColor.BLACK;
+		}
+	}
+
 	@Override
 	public int toNumber() {
 		switch (type) {
@@ -28,6 +41,7 @@ public class LDVote extends Vote {
 				return 0;
 		}
 	}
+
 
 	public static LDVote fromValue(PlotId plot, UUID plotowner, int value) {
 		Type type;

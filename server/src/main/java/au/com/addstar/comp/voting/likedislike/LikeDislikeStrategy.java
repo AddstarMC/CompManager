@@ -5,10 +5,7 @@ import java.util.*;
 import java.util.List;
 
 import au.com.addstar.comp.CompPlugin;
-import au.com.addstar.comp.gui.Hotbar;
-import au.com.addstar.comp.gui.HotbarButton;
-import au.com.addstar.comp.gui.HotbarComponent;
-import au.com.addstar.comp.gui.Icon;
+import au.com.addstar.comp.gui.*;
 import au.com.addstar.comp.gui.listeners.ButtonClickListener;
 import au.com.addstar.comp.gui.listeners.LDVoteClickListener;
 import au.com.addstar.comp.gui.listeners.PlotMoveClickListener;
@@ -30,7 +27,7 @@ import au.com.addstar.comp.voting.AbstractVoteProvider;
 import au.com.addstar.comp.voting.Placement;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Wool;
 
 /**
  * The like / dislike strategy. Players can either like or dislike
@@ -40,6 +37,12 @@ import org.bukkit.inventory.ItemStack;
  */
 public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 
+
+	public LikeDislikeStrategy() {
+		super();
+		setHasHotbar(true);
+		setHotbar(createHotbar());
+	}
 
 	@Override
 	public boolean allowRevote() {
@@ -80,29 +83,28 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		
 		return Collections.unmodifiableList(places);
 	}
+
 	@Override
-	public Hotbar createHotbar(){
+	protected Hotbar createHotbar(){
 		Hotbar hotbar =  new Hotbar();
 		setHasHotbar(true);
 		int i = 0;
 		for (LDVote.Type voteType : LDVote.Type.values()){
-			HotbarButton button = new HotbarButton(i,voteType.toString());
-			ButtonClickListener listener = new LDVoteClickListener(CompPlugin.instance,this , voteType);
+			HotbarButton button = new HotbarButton(i,voteType.toString(),LDVote.getColor(voteType));
+			ButtonClickListener listener = new LDVoteClickListener(voteType);
 			button.addClickListener(listener);
+			button.setLore(Lore.fromString("Click to use,  when used will vote: " + voteType.toString()));
 			hotbar.add(button);
 			i++;
 		}
-
-		HotbarButton pbutton = new HotbarButton(8,"Previous Plot");
-		ItemStack item =  new ItemStack(Material.WOOL,1, DyeColor.PINK.getDyeData());
-		pbutton.setIcon(new Icon(item));
-		pbutton.addClickListener(new PlotMoveClickListener(CompPlugin.instance,true));
-		hotbar.add(pbutton);
-		HotbarButton nbutton = new HotbarButton(8,"Previous Plot");
-		item =  new ItemStack(Material.WOOL,1, DyeColor.CYAN.getDyeData());
-		nbutton.setIcon(new Icon(item));
-		nbutton.addClickListener(new PlotMoveClickListener(CompPlugin.instance,true));
-		hotbar.add(nbutton);
+		HotbarButton pButton = new HotbarButton(7,"Previous Plot",DyeColor.CYAN);
+		pButton.setLore(new Lore("Click to move back to the last plot"));
+		pButton.addClickListener(new PlotMoveClickListener(CompPlugin.instance,true));
+		hotbar.add(pButton);
+		HotbarButton nButton = new HotbarButton(8,"Next Plot",DyeColor.PINK);
+		nButton.setLore(new Lore("Click to move to the next plot"));
+		nButton.addClickListener(new PlotMoveClickListener(CompPlugin.instance,false));
+		hotbar.add(nButton);
 		return hotbar;
 	}
 	@Override
