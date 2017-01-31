@@ -5,22 +5,15 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.gui.Hotbar;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
 import au.com.addstar.comp.voting.VotingStrategies;
-import com.google.common.base.Strings;
 import com.plotsquared.bukkit.events.PlayerEnterPlotEvent;
 import com.plotsquared.bukkit.events.PlayerLeavePlotEvent;
-import com.plotsquared.bukkit.events.PlotEvent;
-import com.plotsquared.bukkit.listeners.PlayerEvents;
-import com.sun.media.jfxmedia.events.PlayerStateEvent;
-import net.minecraft.server.v1_11_R1.PlayerInventory;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.logging.Logger;
 
@@ -31,13 +24,10 @@ import java.util.logging.Logger;
 public class HotbarListener implements Listener {
 
     private final Logger logger;
-    private CompPlugin plugin;
 
     public HotbarListener(CompPlugin plugin) {
 
         logger = plugin.getLogger();
-        this.plugin = plugin;
-
     }
 
 

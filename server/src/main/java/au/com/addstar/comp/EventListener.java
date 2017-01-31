@@ -122,7 +122,6 @@ public class EventListener implements Listener {
 		if (manager.getCurrentComp().getMaxEntrants() - bridge.getUsedPlotCount() <= 1) {
 			event.getPlayer().sendMessage(messages.get("join.denined.full"));
 			event.setCancelled(true);
-			return;
 		}
 	}
 	

@@ -35,8 +35,7 @@ public class Hotbar {
 
     public void render() {
         int j = components.length;
-        for (int i = 0; i < j; i++) {
-            HotbarComponent component = components[i];
+        for (HotbarComponent component : components) {
             if (component != null) {
                 component.render();
             }

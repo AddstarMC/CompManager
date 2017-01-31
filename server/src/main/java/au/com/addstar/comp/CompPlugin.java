@@ -41,7 +41,7 @@ public class CompPlugin extends JavaPlugin {
 	private NotificationManager notificationManager;
 	public Messages messages;
 	private RemoteJoinManager remoteJoinManager;
-	private static HashMap<Player, Hotbar> currentHotbars = new HashMap();
+	private static HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
 
 
 	public static HashMap<Player, Hotbar> getCurrentHotbars()

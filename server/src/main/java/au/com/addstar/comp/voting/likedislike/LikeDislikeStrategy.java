@@ -1,6 +1,5 @@
 package au.com.addstar.comp.voting.likedislike;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -9,11 +8,8 @@ import au.com.addstar.comp.gui.*;
 import au.com.addstar.comp.gui.listeners.ButtonClickListener;
 import au.com.addstar.comp.gui.listeners.LDVoteClickListener;
 import au.com.addstar.comp.gui.listeners.PlotMoveClickListener;
-import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotId;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Predicate;
@@ -27,7 +23,6 @@ import au.com.addstar.comp.voting.AbstractVoteProvider;
 import au.com.addstar.comp.voting.Placement;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
-import org.bukkit.material.Wool;
 
 /**
  * The like / dislike strategy. Players can either like or dislike

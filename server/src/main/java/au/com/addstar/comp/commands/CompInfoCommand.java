@@ -34,20 +34,7 @@ public class CompInfoCommand implements CommandExecutor {
 		}
 		
 		String stateString = messages.get("state." + comp.getState().name().toLowerCase());
-		long timeEnd;
-		switch (comp.getState()) {
-		case Open:
-			timeEnd = comp.getEndDate();
-			break;
-		case Voting:
-			timeEnd = comp.getVoteEndDate();
-			break;
-		default:
-		case Closed:
-			timeEnd = -1;
-			break;
-		}
-		
+		long timeEnd = compManager.getTimeEnd();
 		sender.sendMessage(messages.get("info.header", "theme", comp.getTheme(), "state", stateString));
 		
 		// Display the end time

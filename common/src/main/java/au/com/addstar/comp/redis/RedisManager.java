@@ -291,11 +291,7 @@ public class RedisManager {
 		 * @return True if too old
 		 */
 		public boolean isOld() {
-			if (System.currentTimeMillis() > initializeTime + 10000) {
-				return true;
-			} else {
-				return false;
-			}
+			return System.currentTimeMillis() > initializeTime + 10000;
 		}
 		
 		@Override

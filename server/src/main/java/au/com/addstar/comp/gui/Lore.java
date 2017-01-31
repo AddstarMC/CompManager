@@ -24,7 +24,7 @@ public class Lore
 
     public ArrayList<String> toArray()
     {
-        ArrayList<String> loreList = new ArrayList();
+        ArrayList<String> loreList = new ArrayList<>();
         String[] arrayOfString;
         int j = (arrayOfString = this.lore).length;
         for (int i = 0; i < j; i++)

@@ -48,7 +48,7 @@ public class P2Bridge {
 		}
 		plugin.getLogger().log("Found " + plots.size() + " plots");
 		return plots;
-	};
+	}
 
 	
 	/**

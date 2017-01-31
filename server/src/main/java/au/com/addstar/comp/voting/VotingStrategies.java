@@ -1,6 +1,5 @@
 package au.com.addstar.comp.voting;
 
-import au.com.addstar.comp.gui.Hotbar;
 import au.com.addstar.comp.voting.likedislike.LikeDislikeStrategy;
 import au.com.addstar.comp.voting.ranked.RankedStrategy;
 import com.google.common.collect.Maps;

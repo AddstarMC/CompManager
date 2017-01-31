@@ -8,6 +8,6 @@ import org.bukkit.entity.Player;
  */
 public interface ButtonClickListener {
 
-        public abstract void onClick(Player player);
+        void onClick(Player player);
 
 }

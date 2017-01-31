@@ -97,9 +97,7 @@ public class CompManager {
 			} else {
 				strategy = VotingStrategies.getStrategy(votingStrategyName);
 				if (strategy == null) {
-					if (votingStrategyName != null) {
-						logger.warning("Failed to find voting strategy " + votingStrategyName + ". Falling back to default strategy");
-					}
+					logger.warning("Failed to find voting strategy " + votingStrategyName + ". Falling back to default strategy");
 					strategy = VotingStrategies.getDefault();
 				}
 			}
@@ -179,12 +177,8 @@ public class CompManager {
 		if (currentComp == null) {
 			return false;
 		}
-		
-		if (bridge.getUsedPlotCount() >= currentComp.getMaxEntrants()) {
-			return true;
-		} else {
-			return false;
-		}
+
+		return bridge.getUsedPlotCount() >= currentComp.getMaxEntrants();
 	}
 	
 	public CompState getState() {
@@ -194,6 +188,20 @@ public class CompManager {
 			return CompState.Closed;
 		}
 	}
+
+	public Long getTimeEnd(){
+		switch (currentComp.getState()) {
+			case Open:
+				return currentComp.getEndDate();
+			case Voting:
+				 return currentComp.getVoteEndDate();
+			default:
+			case Closed:
+				return -1L;
+		}
+	}
+
+
 	
 	/**
 	 * Notifies the manager that the state has changed automatically.

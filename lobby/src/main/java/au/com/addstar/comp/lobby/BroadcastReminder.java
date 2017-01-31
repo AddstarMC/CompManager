@@ -213,13 +213,9 @@ public class BroadcastReminder implements Runnable {
 
 		double broadcastIntervalThreshold = intervalMin + (intervalMax - intervalMin) * fractionRemaining;
 
-		if (differenceMinutes >= broadcastIntervalThreshold) {
-			// Need to broadcast the message
-			return true;
-		} else {
-			// Do not broadcast the message yet
-			return false;
-		}
+		// Need to broadcast the message
+// Do not broadcast the message yet
+		return differenceMinutes >= broadcastIntervalThreshold;
 
 	}
 

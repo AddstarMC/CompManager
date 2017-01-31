@@ -3,10 +3,6 @@ package au.com.addstar.comp.commands;
 import java.util.List;
 import java.util.UUID;
 
-import au.com.addstar.comp.CompPlugin;
-import au.com.addstar.comp.voting.AbstractVotingStrategy;
-import au.com.addstar.comp.voting.VotingStrategies;
-import au.com.addstar.comp.voting.likedislike.LDVote;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
