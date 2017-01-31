@@ -41,7 +41,6 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 	public LikeDislikeStrategy() {
 		super();
 		setHasHotbar(true);
-		setHotbar(createHotbar());
 	}
 
 	@Override

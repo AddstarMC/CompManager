@@ -15,7 +15,6 @@ public abstract class AbstractVotingStrategy<T extends Vote> {
 
 	public AbstractVotingStrategy() {
 		this.hasHotbar = false;
-		this.hotbar = null;
 	}
 
 	public void setHasHotbar(boolean hasHotbar) {
@@ -23,7 +22,6 @@ public abstract class AbstractVotingStrategy<T extends Vote> {
 	}
 
 	private boolean hasHotbar;
-	private Hotbar hotbar;
 
 	/**
 	 * Checks if re-voting is allowed with this strategy
@@ -51,12 +49,8 @@ public abstract class AbstractVotingStrategy<T extends Vote> {
 
 	protected abstract Hotbar createHotbar();
 
-	public void setHotbar(Hotbar hotbar) {
-		this.hotbar = hotbar;
-	}
-
 	public Hotbar getHotbar(){
-		return hotbar;
+		return createHotbar();
 	}
 
 }
