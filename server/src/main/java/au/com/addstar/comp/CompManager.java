@@ -164,7 +164,11 @@ public class CompManager {
 	 * @return True if they have a plot
 	 */
 	public boolean hasEntered(OfflinePlayer player) {
-		return bridge.getPlot(player.getUniqueId()) != null;
+		return hasEntered(player.getUniqueId());
+	}
+
+	public boolean hasEntered(UUID id){
+		return bridge.getPlot(id) != null;
 	}
 	
 	/**

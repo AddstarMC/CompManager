@@ -53,8 +53,10 @@ public class PlotMoveClickListener implements ButtonClickListener {
         }else{
             tpPlot = getNextPlot(null);
         }
+
         tpPlot.teleportPlayer(new BukkitPlayer(player));
         player.sendMessage(messages.get("teleport.next.plot"));
+        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()).getName());
 
 
     }
@@ -66,10 +68,14 @@ public class PlotMoveClickListener implements ButtonClickListener {
         for (Plot newPlot : plots) {
             if (found) {
                 for (UUID id : newPlot.getOwners()) {
-                    OfflinePlayer entrant = Bukkit.getOfflinePlayer(id);
-                    if (manager.hasEntered(entrant)) {
-                        p = newPlot;
-                        return p;
+                    if (id != null) {
+                        OfflinePlayer entrant = Bukkit.getOfflinePlayer(id);
+                        if (entrant != null) {
+                            if (manager.hasEntered(entrant)) {
+                                p = newPlot;
+                                return p;
+                            }
+                        }
                     }
                 }
             }
