@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * Created for the AddstarMC
@@ -20,7 +21,6 @@ import java.util.UUID;
  */
 public class PlotMoveClickListener implements ButtonClickListener {
 
-    private final CompManager manager;
     private final P2Bridge bridge;
     private final Messages messages;
     private boolean prev;
@@ -30,7 +30,6 @@ public class PlotMoveClickListener implements ButtonClickListener {
     }
 
     public PlotMoveClickListener(CompPlugin plugin,boolean prev) {
-        manager = plugin.instance.getCompManager();
         bridge = plugin.getBridge();
         messages = plugin.messages;
         this.prev = prev;
@@ -64,33 +63,26 @@ public class PlotMoveClickListener implements ButtonClickListener {
     private Plot getNextPlot(Plot plot) {
         Iterable<Plot> plots = bridge.getOwnedPlots();
         boolean found = false;
-        Plot p = null;
         for (Plot newPlot : plots) {
             if (found) {
                 for (UUID id : newPlot.getOwners()) {
                     if (id != null) {
-                                p = newPlot;
-                                return p;
+                                return newPlot;
                     }
                 }
             }
             if(plot == null){
                 for (UUID id : newPlot.getOwners()) {
                     if(id != null) {
-                        p = newPlot;
-                        return p;
+                        return newPlot;
                     }
                 }
             }else {
                 if (newPlot.getId() == plot.getId()) found = true;
             }
         }
-        if (!found) {
-            p = null;
-        }
-        return p;
+        return null;
     }
-
     private Plot getPrevPlot(Plot plot) {
         Iterable<Plot> plots = bridge.getOwnedPlots();
         boolean found = false;
@@ -118,6 +110,5 @@ public class PlotMoveClickListener implements ButtonClickListener {
         }
         return null;
     }
-
 }
 
