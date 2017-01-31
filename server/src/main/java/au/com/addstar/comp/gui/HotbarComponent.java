@@ -1,13 +1,15 @@
 package au.com.addstar.comp.gui;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 
 /**
  * Created for use for the Add5tar MC Minecraft server
  * Created by benjamincharlton on 23/01/2017.
  */
 public abstract class HotbarComponent {
+
+    Hotbar hotbar;
+    int slot;
 
     public HotbarComponent(int slot) {
         this.slot = slot;
@@ -24,8 +26,6 @@ public abstract class HotbarComponent {
         this.slot = slot;
     }
 
-    int slot;
-
     public Hotbar getHotbar() {
         return hotbar;
     }
@@ -33,8 +33,6 @@ public abstract class HotbarComponent {
     public void initialize(Hotbar hotbar) {
         this.hotbar = hotbar;
     }
-
-    Hotbar hotbar;
 
     public void renderItem(int slot, Icon item, String title, Lore lore)
     {

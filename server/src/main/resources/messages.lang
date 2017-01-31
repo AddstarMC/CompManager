@@ -61,3 +61,4 @@ vote.done = &aYour vote has been accepted, thank you
 #Teleport Messages
 teleport.no.more.plots = &cSorry, there are no more plots to go to.
 teleport.next.plot = &aYou have been teleported to the next plot.
+teleport.noPlot = &cSorry, you must stand in a plot to tp.

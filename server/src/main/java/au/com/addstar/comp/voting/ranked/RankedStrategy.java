@@ -54,7 +54,7 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 	}
 
 	@Override
-	public Hotbar createHotbar() {
+	public Hotbar createHotbar(Player player) {
 		setHasHotbar(false);
 		return null;
 	}

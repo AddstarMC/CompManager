@@ -1,19 +1,14 @@
 package au.com.addstar.comp.gui.listeners;
 
-import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 import com.intellectualcrafters.plot.object.Plot;
 import com.plotsquared.bukkit.object.BukkitPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
 
-
-import java.util.UUID;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 /**
  * Created for the AddstarMC
@@ -38,7 +33,7 @@ public class PlotMoveClickListener implements ButtonClickListener {
     @Override
     public void onClick(Player player) {
         Plot plot = bridge.getPlotAt(player.getLocation());
-        Plot tpPlot;
+        Plot tpPlot = null;
         if(plot != null) {
             if (prev) {
                 tpPlot = getPrevPlot(plot);
@@ -50,14 +45,13 @@ public class PlotMoveClickListener implements ButtonClickListener {
                 return;
             }
         }else{
-            tpPlot = getNextPlot(null);
+            player.sendMessage(messages.get("teleport.noPlot"));
         }
-
-        tpPlot.teleportPlayer(new BukkitPlayer(player));
-        player.sendMessage(messages.get("teleport.next.plot"));
-        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()).getName());
-
-
+        if (tpPlot != null) {
+            tpPlot.teleportPlayer(new BukkitPlayer(player));
+            player.sendMessage(messages.get("teleport.next.plot"));
+            player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()).getName());
+        }
     }
 
     private Plot getNextPlot(Plot plot) {
@@ -65,48 +59,24 @@ public class PlotMoveClickListener implements ButtonClickListener {
         boolean found = false;
         for (Plot newPlot : plots) {
             if (found) {
-                for (UUID id : newPlot.getOwners()) {
-                    if (id != null) {
-                                return newPlot;
-                    }
-                }
+                return newPlot;
             }
-            if(plot == null){
-                for (UUID id : newPlot.getOwners()) {
-                    if(id != null) {
-                        return newPlot;
-                    }
-                }
-            }else {
-                if (newPlot.getId() == plot.getId()) found = true;
+            if(plot == null)  return newPlot;
+            if (newPlot.getId() == plot.getId()) found = true;
             }
-        }
         return null;
     }
     private Plot getPrevPlot(Plot plot) {
-        Iterable<Plot> plots = bridge.getOwnedPlots();
+        ArrayList<Plot> plots = bridge.getOwnedPlots();
         boolean found = false;
         int i = 0;
         for (Plot newPlot : plots) {
 
             if (newPlot.getId() == plot.getId()) found = true;
             if (found) {
-                break;
+                if (i>0)return plots.get(i-1);
             }
             i++;
-        }
-        int x = 0;
-        if(i==0){
-          return null;
-        }
-        for (Plot newPlot : plots) {
-            if (x == i - 1) {
-
-                        return newPlot;
-                    }
-
-            if( x>i)break;
-            x++;
         }
         return null;
     }

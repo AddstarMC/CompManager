@@ -5,6 +5,7 @@ import java.util.List;
 import au.com.addstar.comp.gui.Hotbar;
 import com.google.common.collect.Multimap;
 import com.intellectualcrafters.plot.object.PlotId;
+import org.bukkit.entity.Player;
 
 /**
  * Represents a way of producing and counting votes
@@ -47,10 +48,10 @@ public abstract class AbstractVotingStrategy<T extends Vote> {
 		return hasHotbar;
 	}
 
-	protected abstract Hotbar createHotbar();
+	protected abstract Hotbar createHotbar(Player player);
 
-	public Hotbar getHotbar(){
-		return createHotbar();
+	public Hotbar getHotbar(Player player){
+		return createHotbar(player);
 	}
 
 }

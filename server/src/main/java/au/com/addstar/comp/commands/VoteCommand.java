@@ -52,18 +52,6 @@ public class VoteCommand implements TabExecutor {
 			sender.sendMessage(messages.get("vote.denied.state"));
 			return true;
 		}
-
-		AbstractVotingStrategy strategy = VotingStrategies.getStrategy(manager.getCurrentComp().getVotingStrategy());
-		if(strategy ==  null){
-			strategy = VotingStrategies.getDefault();
-		}
-		if(strategy.hasHotbar()){
-			//sender.sendMessage("Strategy has a hotbar - creating");
-			CompPlugin.setHotbar(strategy.getHotbar(), player);
-		}else{
-			//sender.sendMessage("Strategy has no hotbar." + strategy.toString());
-		}
-		// See if we are in a plot
 		Plot plot = bridge.getPlotAt(player.getLocation());
 		if (plot == null) {
 			sender.sendMessage(messages.get("vote.denied.no-plot"));

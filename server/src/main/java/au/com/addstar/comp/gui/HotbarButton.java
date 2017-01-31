@@ -5,8 +5,6 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Wool;
 
 import java.util.ArrayList;
 
@@ -18,6 +16,8 @@ public class HotbarButton extends HotbarComponent {
 
     private ArrayList<ButtonClickListener> listeners = new ArrayList<>();
     private Icon icon;
+    private String title = "Button";
+    private Lore lore = new Lore(new String[] { "" });
 
     public HotbarButton(int slot, String title)
     {
@@ -25,6 +25,7 @@ public class HotbarButton extends HotbarComponent {
         this.title = title;
         setIcon(new Icon(new ItemStack(Material.WOOL)));
     }
+
     public HotbarButton(int slot, String title, DyeColor color)
     {
         super(slot);
@@ -55,9 +56,6 @@ public class HotbarButton extends HotbarComponent {
     public void setLore(Lore lore) {
         this.lore = lore;
     }
-
-    private String title = "Button";
-    private Lore lore = new Lore(new String[] { "" });
 
     @Override
     public void onClick(Player player)

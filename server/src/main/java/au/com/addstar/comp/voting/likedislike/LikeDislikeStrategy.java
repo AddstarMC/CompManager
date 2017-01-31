@@ -84,8 +84,8 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 	}
 
 	@Override
-	protected Hotbar createHotbar(){
-		Hotbar hotbar =  new Hotbar();
+	protected Hotbar createHotbar(Player player){
+		Hotbar hotbar =  new Hotbar(player);
 		setHasHotbar(true);
 		int i = 0;
 		for (LDVote.Type voteType : LDVote.Type.values()){

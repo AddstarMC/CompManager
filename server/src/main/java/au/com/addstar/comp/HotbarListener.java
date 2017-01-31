@@ -7,6 +7,7 @@ import au.com.addstar.comp.voting.AbstractVotingStrategy;
 import au.com.addstar.comp.voting.VotingStrategies;
 import com.google.common.base.Strings;
 import com.plotsquared.bukkit.events.PlayerEnterPlotEvent;
+import com.plotsquared.bukkit.events.PlayerLeavePlotEvent;
 import com.plotsquared.bukkit.events.PlotEvent;
 import com.plotsquared.bukkit.listeners.PlayerEvents;
 import com.sun.media.jfxmedia.events.PlayerStateEvent;
@@ -71,21 +72,32 @@ public class HotbarListener implements Listener {
         if (CompPlugin.instance.getCompManager().getState() != CompState.Voting) {
             return;
         }
-        if (!CompPlugin.getCurrentHotbars().containsKey(e.getPlayer())) {
+        showHotBar(e.getPlayer());
+    }
+
+    private void showHotBar(Player player){
+        if (!CompPlugin.getCurrentHotbars().containsKey(player)) {
             AbstractVotingStrategy strategy = VotingStrategies.getStrategy(CompPlugin.instance.getCompManager().getCurrentComp().getVotingStrategy());
             if(strategy ==  null){
                 strategy = VotingStrategies.getDefault();
             }
             if(strategy.hasHotbar()){
-                e.getPlayer().sendMessage("Strategy has a hotbar - creating");
-                CompPlugin.setHotbar(strategy.getHotbar(), e.getPlayer());
+               player.sendMessage("Strategy has a hotbar - creating");
+                CompPlugin.setHotbar(strategy.getHotbar(player));
             }else{
-                e.getPlayer().sendMessage("Strategy has no hotbar." + strategy.toString());
+                player.sendMessage("Strategy has no hotbar." + strategy.toString());
             }
         }else{
-            CompPlugin.setHotbar(CompPlugin.getCurrentHotbars().get(e.getPlayer()),e.getPlayer());
+            CompPlugin.setHotbar(CompPlugin.getCurrentHotbars().get(player));
         }
     }
+
+    public void onPlotExit(PlayerLeavePlotEvent e){
+        if (CompPlugin.getCurrentHotbars().containsKey(e.getPlayer())) {
+            removePlayerHotbar(e.getPlayer());
+        }
+    }
+
 
 
     @EventHandler

@@ -141,19 +141,20 @@ public class CompPlugin extends JavaPlugin {
 		return compManager;
 	}
 
-	public static void setHotbar(Hotbar bar, Player player ){
-		if (currentHotbars.containsKey(player)) {
-			(currentHotbars.get(player)).close();
-			instance.getLogger().info("Player has existing hotbar we are removing ");
-		}
-		player.getInventory().clear();
+	public static void setHotbar(Hotbar bar){
 		if(bar == null){
 			instance.getLogger().info( "Hotbar was null");
 			return;
 		}
+		Player player = bar.getPlayer();
+		if (currentHotbars.containsKey(player)) {
+			(currentHotbars.get(player)).close();
+			instance.getLogger().info("Player has existing hotbar we are removing ");
+		}
+		bar.getPlayer().getInventory().clear();
 		currentHotbars.put(player, bar);
 		instance.getLogger().info( "Hotbar added to " +player.getDisplayName());
-		bar.showHotbar(player);
+		bar.showHotbar();
 		player.sendMessage("Use the hotbar to select your action and then click.");
 	}
 
