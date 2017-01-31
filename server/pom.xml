@@ -59,6 +59,14 @@
 						<goals>
 							<goal>shade</goal>
 						</goals>
+						<configuration>
+							<minimizeJar>true</minimizeJar>
+							<artifactSet>
+								<excludes>
+									<exclude>com.google.guava:guava:*</exclude>
+								</excludes>
+							</artifactSet>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

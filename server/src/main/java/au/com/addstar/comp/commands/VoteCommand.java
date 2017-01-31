@@ -58,10 +58,10 @@ public class VoteCommand implements TabExecutor {
 			strategy = VotingStrategies.getDefault();
 		}
 		if(strategy.hasHotbar()){
-			sender.sendMessage("Strategy has a hotbar - creating");
+			//sender.sendMessage("Strategy has a hotbar - creating");
 			CompPlugin.setHotbar(strategy.getHotbar(), player);
 		}else{
-			sender.sendMessage("Strategy has no hotbar." + strategy.toString());
+			//sender.sendMessage("Strategy has no hotbar." + strategy.toString());
 		}
 		// See if we are in a plot
 		Plot plot = bridge.getPlotAt(player.getLocation());

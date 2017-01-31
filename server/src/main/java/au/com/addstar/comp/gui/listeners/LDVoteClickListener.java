@@ -1,13 +1,10 @@
 package au.com.addstar.comp.gui.listeners;
 
-import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.util.Messages;
-import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.voting.Vote;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.likedislike.LDVote;
-import au.com.addstar.comp.voting.likedislike.LikeDislikeStrategy;
 import com.intellectualcrafters.plot.object.Plot;
 import org.bukkit.entity.Player;
 

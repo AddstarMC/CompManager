@@ -28,6 +28,7 @@ public class PlotMoveClickListener implements ButtonClickListener {
     public PlotMoveClickListener(CompPlugin plugin) {
         this(plugin,false);
     }
+
     public PlotMoveClickListener(CompPlugin plugin,boolean prev) {
         manager = plugin.getCompManager();
         bridge = plugin.getBridge();
@@ -46,20 +47,20 @@ public class PlotMoveClickListener implements ButtonClickListener {
                 tpPlot = getNextPlot(plot);
             }
             if (tpPlot == null) {
-                player.sendMessage("No More Plots");
+                player.sendMessage(messages.get("teleport.no.more.plots"));
                 return;
             }
         }else{
             tpPlot = getNextPlot(null);
         }
         tpPlot.teleportPlayer(new BukkitPlayer(player));
-        player.sendMessage("Teleported to next Plot");
+        player.sendMessage(messages.get("teleport.next.plot"));
 
 
     }
 
     private Plot getNextPlot(Plot plot) {
-        Iterable<Plot> plots = bridge.getOrderedPlots(bridge.getUsedPlotCount());
+        Iterable<Plot> plots = bridge.getOwnedPlots();
         boolean found = false;
         Plot p = null;
         for (Plot newPlot : plots) {
@@ -85,13 +86,13 @@ public class PlotMoveClickListener implements ButtonClickListener {
             }
         }
         if (!found) {
-            p = bridge.getOrderedPlots(1).iterator().next();
+            p = null;
         }
         return p;
     }
 
     private Plot getPrevPlot(Plot plot) {
-        Iterable<Plot> plots = bridge.getOrderedPlots(bridge.getUsedPlotCount());
+        Iterable<Plot> plots = bridge.getOwnedPlots();
         boolean found = false;
         Plot p = null;
         int i = 0;
@@ -104,6 +105,9 @@ public class PlotMoveClickListener implements ButtonClickListener {
             i++;
         }
         int x = 0;
+        if(i==0){
+          return null;
+        }
         for (Plot newPlot : plots) {
             if (x == i - 1) {
                 for (UUID id : newPlot.getOwners()) {

@@ -36,7 +36,7 @@ import org.bukkit.material.Wool;
  * Scores are tallied and the plots are ranked by the number of points they have.
  */
 public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
-
+ 	//todo Move Text to Lang file
 
 	public LikeDislikeStrategy() {
 		super();

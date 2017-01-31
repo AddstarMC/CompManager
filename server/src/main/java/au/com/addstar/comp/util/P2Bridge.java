@@ -1,11 +1,6 @@
 package au.com.addstar.comp.util;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,6 +38,16 @@ public class P2Bridge {
 
 		return null;
 	}
+
+	public ArrayList<Plot> getOwnedPlots(){
+		ArrayList<Plot> plots = new ArrayList<>();
+		for (Plot plot : plugin.getPlots()) {
+			if (plot.hasOwner()) {
+				plots.add(plot);
+			}
+		}
+		return plots;
+	};
 
 	
 	/**
