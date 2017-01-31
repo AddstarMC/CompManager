@@ -30,7 +30,7 @@ public class PlotMoveClickListener implements ButtonClickListener {
     }
 
     public PlotMoveClickListener(CompPlugin plugin,boolean prev) {
-        manager = plugin.getCompManager();
+        manager = plugin.instance.getCompManager();
         bridge = plugin.getBridge();
         messages = plugin.messages;
         this.prev = prev;
@@ -69,20 +69,14 @@ public class PlotMoveClickListener implements ButtonClickListener {
             if (found) {
                 for (UUID id : newPlot.getOwners()) {
                     if (id != null) {
-                        OfflinePlayer entrant = Bukkit.getOfflinePlayer(id);
-                        if (entrant != null) {
-                            if (manager.hasEntered(entrant)) {
                                 p = newPlot;
                                 return p;
-                            }
-                        }
                     }
                 }
             }
             if(plot == null){
                 for (UUID id : newPlot.getOwners()) {
-                    OfflinePlayer entrant = Bukkit.getOfflinePlayer(id);
-                    if (manager.hasEntered(entrant)) {
+                    if(id != null) {
                         p = newPlot;
                         return p;
                     }
@@ -100,7 +94,6 @@ public class PlotMoveClickListener implements ButtonClickListener {
     private Plot getPrevPlot(Plot plot) {
         Iterable<Plot> plots = bridge.getOwnedPlots();
         boolean found = false;
-        Plot p = null;
         int i = 0;
         for (Plot newPlot : plots) {
 
@@ -116,20 +109,14 @@ public class PlotMoveClickListener implements ButtonClickListener {
         }
         for (Plot newPlot : plots) {
             if (x == i - 1) {
-                for (UUID id : newPlot.getOwners()) {
-                    OfflinePlayer entrant = Bukkit.getOfflinePlayer(id);
-                    if (manager.hasEntered(entrant)) {
-                        p = newPlot;
-                        return p;
-                    } else {
-                        return getPrevPlot(newPlot);
+
+                        return newPlot;
                     }
-                }
-                break;
-            }
+
+            if( x>i)break;
             x++;
         }
-        return p;
+        return null;
     }
 
 }
