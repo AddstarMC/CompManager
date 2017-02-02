@@ -34,7 +34,8 @@ public class HotbarButton extends HotbarComponent {
     {
         super(slot);
         this.title = title;
-        setIcon(new Icon(new ItemStack(Material.WOOL,1,color.getWoolData())));
+
+        setIcon(new Icon(new ItemStack(Material.STAINED_GLASS_PANE,1,color.getDyeData())));
     }
 
     public Icon getIcon() {

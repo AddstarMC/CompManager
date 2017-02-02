@@ -23,7 +23,7 @@ public class LDVote extends Vote {
 			case Dislike:
 				return DyeColor.RED;
 			case Like:
-				return DyeColor.GREEN;
+				return DyeColor.LIME;
 			case Skip:
 			default:
 				return DyeColor.BLACK;
