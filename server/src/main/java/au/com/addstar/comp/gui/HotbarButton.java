@@ -1,10 +1,14 @@
 package au.com.addstar.comp.gui;
 
 import au.com.addstar.comp.gui.listeners.ButtonClickListener;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Wool;
 
 import java.util.ArrayList;
 
@@ -30,7 +34,7 @@ public class HotbarButton extends HotbarComponent {
     {
         super(slot);
         this.title = title;
-        setIcon(new Icon(new ItemStack(Material.WOOL,1,color.getDyeData())));
+        setIcon(new Icon(new ItemStack(Material.WOOL,1,color.getWoolData())));
     }
 
     public Icon getIcon() {
