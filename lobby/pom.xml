@@ -65,6 +65,7 @@
 							<artifactSet>
 								<excludes>
 									<exclude>com.google.guava:guava:*</exclude>
+									<exclude>io.netty:*:*</exclude>
 								</excludes>
 							</artifactSet>
 						</configuration>
