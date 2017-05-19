@@ -14,28 +14,28 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class TreasureKeyPrize extends BasePrize {
 	private int count;
-    private String name;
+	private String name;
 	
 	public TreasureKeyPrize(int keyCount, String keyName) {
 		Preconditions.checkArgument(keyCount > 0);
 		Preconditions.checkArgument(keyName.length() > 0);
 		this.count = keyCount;
-        this.name = keyName;
+		this.name = keyName;
 	}
 
 	@Override
 	public boolean award(Player player) {
-	    throw new NotImplementedException();
+		throw new NotImplementedException();
 		return false;
 	}
 
 	@Override
 	public String toDatabase() {
-		return count + " " + name;
+		return count + " " + name + " key" + (count > 1 ? "s" : "");
 	}
 
 	@Override
 	public String toHumanReadable() {
-	    return count + " " + name + " key" + (count > 1 ? "s" : "");
+		return count + " " + name + " key" + (count > 1 ? "s" : "");
 	}
 }
