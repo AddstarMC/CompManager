@@ -2,10 +2,22 @@ package au.com.addstar.comp.prizes;
 
 import org.bukkit.entity.Player;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Represents a prize that can be given to players
  */
 public abstract class BasePrize {
+
+	/**
+	 * Pattern for matching strings like:
+	 *  5 Diamond Keys
+	 *  2 Emerald Keys
+	 *  1 Diamond Key
+	 */
+	private static final Pattern keyPattern = Pattern.compile("(\\d+) ([^ ]+) keys?", Pattern.CASE_INSENSITIVE);
+
 	/**
 	 * Awards the prize to the given player
 	 * @param player The player to award
@@ -44,7 +56,14 @@ public abstract class BasePrize {
 		if (input.startsWith("$")) {
 			return new MoneyPrize(input);
 		} else {
-			throw new IllegalArgumentException("Unknown prize type");
+			Matcher keyMatcher = keyPattern.matcher(input);
+			if (keyMatcher.find()) {
+				int keyCount = Integer.parseInt(keyMatcher.group(0));
+				String keyType = keyMatcher.group(1);
+				return new TreasureKeyPrize(keyCount, keyType);
+			} else {
+				throw new IllegalArgumentException("Unknown prize type");
+			}
 		}
 	}
 }
