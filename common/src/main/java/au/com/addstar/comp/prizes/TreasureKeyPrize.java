@@ -26,7 +26,6 @@ public class TreasureKeyPrize extends BasePrize {
 	@Override
 	public boolean award(Player player) {
 		throw new NotImplementedException();
-		return false;
 	}
 
 	@Override
