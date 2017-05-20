@@ -58,8 +58,8 @@ public abstract class BasePrize {
 		} else {
 			Matcher keyMatcher = keyPattern.matcher(input);
 			if (keyMatcher.find()) {
-				int keyCount = Integer.parseInt(keyMatcher.group(0));
-				String keyType = keyMatcher.group(1);
+				int keyCount = Integer.parseInt(keyMatcher.group(1));
+				String keyType = keyMatcher.group(2);
 				return new TreasureKeyPrize(keyCount, keyType);
 			} else {
 				throw new IllegalArgumentException("Unknown prize type");
