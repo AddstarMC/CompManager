@@ -127,7 +127,7 @@ public class HotbarListener implements Listener {
     {
         if(event.getWhoClicked() instanceof Player){
         Player player = (Player)event.getWhoClicked();
-        logger.info(player.getDisplayName() + " clicked slot " + event.getSlot() + "button=" + event.getHotbarButton());
+        // logger.info(player.getDisplayName() + " clicked slot " + event.getSlot() + "button=" + event.getHotbarButton());
         if (CompPlugin.getCurrentHotbars().containsKey(player)) {
             event.setCancelled(true);
         }
