@@ -24,21 +24,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-
 	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>CompManager-common</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>au.com.addstar</groupId>
-			<artifactId>Monolith</artifactId>
-			<version>1.4.8-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
 		<!-- Used for Proxy-wide broadcast -->
 		<dependency>
 			<groupId>au.com.addstar</groupId>

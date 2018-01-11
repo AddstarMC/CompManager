@@ -13,7 +13,7 @@
         <connection>scm:git:git@github.com:AddstarMC/CompManager.git</connection>
         <developerConnection>scm:git:git@github.com:AddstarMC/CompManager.git</developerConnection>
         <url>https://github.com/AddstarMC/CompManager</url>
-        <tag>HEAD</tag>
+        <tag>master</tag>
     </scm>
     <developers>
         <developer>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>au.com.addstar</groupId>
             <artifactId>Monolith</artifactId>
-            <version>1.4.5-SNAPSHOT</version>
+            <version>1.4.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
