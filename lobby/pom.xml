@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>au.com.addstar</groupId>
 			<artifactId>Monolith</artifactId>
-			<version>1.4.4-SNAPSHOT</version>
+			<version>1.4.8-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Used for Proxy-wide broadcast -->
