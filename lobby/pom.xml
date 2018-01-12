@@ -25,6 +25,12 @@
 		</repository>
 	</repositories>
 	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>CompManager-common</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 		<!-- Used for Proxy-wide broadcast -->
 		<dependency>
 			<groupId>au.com.addstar</groupId>
