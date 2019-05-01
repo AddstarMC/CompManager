@@ -4,26 +4,26 @@ author: Schmoller
 version: ${plugin.version}
 
 main: au.com.addstar.comp.CompPlugin
-depend: [ProtocolLib, Monolith]
+depend: [ProtocolLib, Monolith, PlotSquared]
 
 # TODO: standardise permissions
 permissions:
   comp.admin:
-    default: OP
+    default: op
   comp.whitelist.admin:
-    default: OP
+    default: op
   comp.enter.bypass:
-    default: OP
+    default: op
   comp.build.bypass:
-    default: OP
+    default: op
   comp.admin.reload:
-    default: OP
+    default: op
   comp.join:
     default: true
   comp.admin.state:
-    default: OP
+    default: op
   comp.admin.tallyvotes:
-    default: OP
+    default: op
 
 commands:
   compadmin:

@@ -9,7 +9,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
-import com.intellectualcrafters.plot.object.PlotId;
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
+
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -23,7 +24,6 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 		return false;
 	}
 
-	@Override
 	public List<Placement> countVotes(Multimap<PlotId, RankedVote> votes) {
 		TreeMultimap<Integer, PlotId> rankedPlots;
 		rankedPlots = TreeMultimap.create(Ordering.natural().reverse(), Ordering.arbitrary());
@@ -64,7 +64,6 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 			super(storage);
 		}
 
-		@Override
 		public RankedVote onVoteCommand(Player voter, PlotId plot, UUID plotowner, String[] arguments) throws IllegalArgumentException {
 			if (arguments.length < 1) {
 				throw new IllegalArgumentException("Expected a value from 1 to 5 inclusive for the vote");
@@ -88,7 +87,6 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 			return "1-5";
 		}
 
-		@Override
 		public RankedVote loadVote(PlotId plotId, UUID plotowner, int value) throws IllegalArgumentException {
 			RankedVote.Rank rank;
 			if (value <= -2) {

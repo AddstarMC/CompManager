@@ -52,12 +52,7 @@ public class RemoteJoinManager implements RedisQueryHandler {
 		synchronized (pendingEntrants) {
 			final EnterHandler handler = pendingEntrants.remove(playerId);
 			if (handler != null) {
-				Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(CompPlugin.class), new Runnable() {
-					@Override
-					public void run() {
-						handler.complete();
-					}
-				});
+				Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(CompPlugin.class), handler::complete);
 				return true;
 			} else {
 				return false;
@@ -69,12 +64,7 @@ public class RemoteJoinManager implements RedisQueryHandler {
 		synchronized (pendingEntrants) {
 			final EnterHandler handler = pendingEntrants.remove(playerId);
 			if (handler != null) {
-				Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(CompPlugin.class), new Runnable() {
-					@Override
-					public void run() {
-						handler.abort();
-					}
-				});
+				Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(CompPlugin.class), handler::abort);
 				return true;
 			} else {
 				return false;

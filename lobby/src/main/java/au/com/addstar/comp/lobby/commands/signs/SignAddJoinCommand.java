@@ -7,7 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.Function;
+import java.util.function.Function;
 
 import au.com.addstar.comp.lobby.signs.BaseSign;
 import au.com.addstar.comp.lobby.signs.SignManager;
@@ -68,12 +68,7 @@ public class SignAddJoinCommand implements ICommand {
 	}
 	
 	private Function<Block, BaseSign> makeCreationFunction(final String serverId) {
-		return new Function<Block, BaseSign>() {
-			@Override
-			public BaseSign apply(Block block) {
-				return manager.makeJoinSign(serverId, block);
-			}
-		};
+		return block -> manager.makeJoinSign(serverId, block);
 	}
 
 	@Override

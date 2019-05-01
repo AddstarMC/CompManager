@@ -4,6 +4,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Simple periodic task to update the online status
  * of servers by pinging them
@@ -26,7 +28,7 @@ public class ServerStatusUpdater implements Runnable {
 				}
 				
 				@Override
-				public void onFailure(Throwable error) {
+				public void onFailure(@NotNull Throwable error) {
 					server.setOnline(false);
 				}
 			});

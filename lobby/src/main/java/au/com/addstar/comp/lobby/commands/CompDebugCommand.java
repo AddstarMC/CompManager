@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -62,7 +63,7 @@ public class CompDebugCommand implements ICommand {
 			}
 			
 			@Override
-			public void onFailure(Throwable error) {
+			public void onFailure(@NotNull Throwable error) {
 				sender.sendMessage("Query errored: " + error);
 			}
 		});

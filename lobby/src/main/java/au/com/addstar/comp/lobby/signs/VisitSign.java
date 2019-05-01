@@ -4,6 +4,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -112,7 +113,7 @@ public class VisitSign extends BaseSign {
 			}
 			
 			@Override
-			public void onFailure(Throwable error) {
+			public void onFailure(@NotNull Throwable error) {
 				setLine(2, messages.get("state.offline"));
 				setLine(3, "");
 				update();

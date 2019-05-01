@@ -56,7 +56,7 @@ public class BroadcastReminder implements Runnable {
 				continue;
 			}
 
-			Integer compId = activeComp.getCompId();
+			int compId = activeComp.getCompId();
 
 			if (activeComp.isRunning()) {
 				if (shouldBroadcast(

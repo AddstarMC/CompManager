@@ -27,7 +27,7 @@ public class SignListener implements Listener {
 		}
 		
 		Block block = event.getClickedBlock();
-		if (block.getType() != Material.WALL_SIGN && block.getType() != Material.SIGN_POST) {
+		if (block.getType() != Material.WALL_SIGN && block.getType() != Material.SIGN) {
 			return;
 		}
 		

@@ -3,44 +3,38 @@
 	<parent>
 		<groupId>au.com.addstar</groupId>
 		<artifactId>CompManager-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>CompManager-server</artifactId>
-
-	<repositories>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>addstar-release-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
-		</repository>
-		<repository>
-			<id>addstar-snapshot-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>CompManager-common</artifactId>
-			<version>${project.version}</version>
+			<version>0.0.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.intellectualcrafters</groupId>
-			<artifactId>PlotSquared</artifactId>
-			<version>3.5.1-SNAPSHOT</version>
+			<groupId>com.github.intellectualsites.plotsquared</groupId>
+			<artifactId>PlotSquared-Api</artifactId>
+			<version>4.176</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>com.sk89q</groupId>
-					<artifactId>worldedit</artifactId>
+					<groupId>com.sk89q.worldedit</groupId>
+					<artifactId>worldedit-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.github.intellectualsites.plotsquared</groupId>
+			<artifactId>Plotsquared</artifactId>
+			<version>4.0.0.265</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.spigotmc</groupId>
+					<artifactId>spigot</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

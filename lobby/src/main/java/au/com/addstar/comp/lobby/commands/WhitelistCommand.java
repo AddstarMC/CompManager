@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
@@ -127,7 +128,7 @@ final class WhitelistCommand implements ICommand {
 		}
 		
 		@Override
-		public void onFailure(Throwable error) {
+		public void onFailure(@NotNull Throwable error) {
 			sender.sendMessage(ChatColor.RED + "Unable to lookup player: " + error.getMessage());
 			System.err.println("Failed to lookup player:");
 			error.printStackTrace();

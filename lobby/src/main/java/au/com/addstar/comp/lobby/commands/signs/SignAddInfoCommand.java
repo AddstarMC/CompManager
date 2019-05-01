@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.Function;
+import java.util.function.Function;
 
 import au.com.addstar.comp.lobby.signs.InfoSign.InfoType;
 import au.com.addstar.comp.lobby.signs.BaseSign;
@@ -96,12 +96,7 @@ public class SignAddInfoCommand implements ICommand {
 	}
 	
 	private Function<Block, BaseSign> makeCreationFunction(final String serverId, final InfoType type) {
-		return new Function<Block, BaseSign>() {
-			@Override
-			public BaseSign apply(Block block) {
-				return manager.makeInfoSign(serverId, type, block);
-			}
-		};
+		return block -> manager.makeInfoSign(serverId, type, block);
 	}
 
 	@Override

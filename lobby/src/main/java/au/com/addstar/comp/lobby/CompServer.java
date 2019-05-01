@@ -8,8 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.Futures;
@@ -123,12 +122,7 @@ public class CompServer {
 	public ListenableFuture<Boolean> isEntrant(UUID playerId) {
 		ListenableFuture<String> future = redis.query(serverId, "is_entrant", playerId.toString());
 		
-		return Futures.transform(future, new Function<String, Boolean>() {
-			@Override
-			public Boolean apply(String input) {
-				return Boolean.valueOf(input);
-			}
-		});
+		return Futures.transform(future, Boolean::valueOf);
 	}
 	
 	/**
@@ -147,12 +141,7 @@ public class CompServer {
 	public ListenableFuture<Integer> getEntrantCount() {
 		ListenableFuture<String> future = redis.query(serverId, "entrant_count");
 		
-		return Futures.transform(future, new Function<String, Integer>() {
-			@Override
-			public Integer apply(String input) {
-				return Integer.valueOf(input);
-			}
-		});
+		return Futures.transform(future, Integer::valueOf);
 	}
 	
 	/**

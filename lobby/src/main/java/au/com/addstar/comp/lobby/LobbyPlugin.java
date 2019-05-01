@@ -26,6 +26,7 @@ import au.com.addstar.comp.redis.RedisQueryTimeoutTask;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
+@SuppressWarnings("unused")
 public class LobbyPlugin extends JavaPlugin {
 	private DatabaseManager databaseManager;
 	private WhitelistHandler whitelistHandler;
@@ -89,12 +90,7 @@ public class LobbyPlugin extends JavaPlugin {
 		// Register listeners
 		Bukkit.getPluginManager().registerEvents(new SignListener(signManager), this);
 		redisManager.setCommandReceiver(new CommandHandler(compManager));
-		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-			@Override
-			public void run() {
-				confirmationManager.expireConfirmations();
-			}
-		}, 20, 20);
+		Bukkit.getScheduler().runTaskTimer(this, () -> confirmationManager.expireConfirmations(), 20, 20);
 
 		// Grab the plugin manager
 		pm = this.getServer().getPluginManager();
@@ -105,7 +101,7 @@ public class LobbyPlugin extends JavaPlugin {
 		ConfigurationSection broadcastSettings = getConfig().getConfigurationSection("broadcast-settings");
 
 		Plugin p = pm.getPlugin("BungeeChatBukkit");
-		if (p != null && p instanceof BungeeChat) {
+		if (p instanceof BungeeChat) {
 			broadcastChannel = broadcastSettings.getString("broadcast-channel", "CompBCast");
 			getLogger().log(Level.INFO, "BungeeChat found, using channel " + broadcastChannel);
 		} else {

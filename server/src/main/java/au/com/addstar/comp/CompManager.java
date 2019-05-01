@@ -1,31 +1,39 @@
 package au.com.addstar.comp;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import au.com.addstar.comp.prizes.BasePrize;
-import au.com.addstar.comp.voting.*;
-import com.google.common.base.*;
-import com.intellectualcrafters.plot.object.PlotId;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.intellectualcrafters.plot.object.Plot;
 
 import au.com.addstar.comp.entry.EnterHandler;
 import au.com.addstar.comp.entry.EntryDeniedException;
 import au.com.addstar.comp.entry.EntryDeniedException.Reason;
+import au.com.addstar.comp.prizes.BasePrize;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.P2Bridge;
+import au.com.addstar.comp.voting.AbstractVotingStrategy;
+import au.com.addstar.comp.voting.Placement;
+import au.com.addstar.comp.voting.Vote;
+import au.com.addstar.comp.voting.VoteStorage;
+import au.com.addstar.comp.voting.VotingStrategies;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
+
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CompManager {
 	/**
@@ -53,18 +61,15 @@ public class CompManager {
 		this.logger = logger;
 		this.redis = redis;
 		
-		Entrant = new Predicate<Player>() {
-			@Override
-			public boolean apply(Player player) {
-				if (currentComp != null && currentComp.getState() != CompState.Closed) {
-					return CompManager.this.bridge.getPlot(player.getUniqueId()) != null;
-				} else {
-					return false;
-				}
+		Entrant = player -> {
+			if (currentComp != null && currentComp.getState() != CompState.Closed) {
+				return CompManager.this.bridge.getPlot(player.getUniqueId()) != null;
+			} else {
+				return false;
 			}
 		};
 		
-		NonEntrant = Predicates.not(Entrant);
+		NonEntrant = Entrant.negate();
 		
 		voteStorage = new VoteStorage<>(VotingStrategies.getDefault(), this);
 	}
@@ -75,7 +80,7 @@ public class CompManager {
 	 */
 	public void reloadCurrentComp() {
 		try {
-			Optional<Integer> compID = backend.getCompID(Bukkit.getServerName());
+			Optional<Integer> compID = backend.getCompID(Bukkit.getServer().getName());
 			if (compID.isPresent()) {
 				currentComp = backend.load(compID.get());
 				logger.info("Current Competition (ID " + compID.get() + "): " + currentComp.getTheme());
@@ -253,14 +258,14 @@ public class CompManager {
 		final int maxPlacements = 2;// TODO: Do we allow customisable placements?
 		List<PlotId> placements = determineWinners(maxPlacements);
 		List<EntrantResult> fullResults = Lists.newArrayList();
-		Optional<BasePrize> participationPrize = Optional.fromNullable(currentComp.getParticipationPrize());
+		Optional<BasePrize> participationPrize = Optional.ofNullable(currentComp.getParticipationPrize());
 
 		if (placements.isEmpty()) {
 			// Record everyone as having participated
 			for (Plot plot : bridge.getUsedPlots()) {
 				for (UUID owner : plot.getOwners()) {
 					OfflinePlayer player = Bukkit.getOfflinePlayer(owner);
-					fullResults.add(new EntrantResult(owner, player.getName(), plot.getId().toString(), Optional.<Integer>absent(), participationPrize, false));
+					fullResults.add(new EntrantResult(owner, player.getName(), plot.getId().toString(), Optional.empty(), participationPrize, false));
 				}
 			}
 
@@ -281,9 +286,9 @@ public class CompManager {
 				// Select the prize
 				Optional<BasePrize> prize;
 				if (index == 1) {
-					prize = Optional.fromNullable(currentComp.getFirstPrize());
+					prize = Optional.ofNullable(currentComp.getFirstPrize());
 				} else if (index == 2) {
-					prize = Optional.fromNullable(currentComp.getSecondPrize());
+					prize = Optional.ofNullable(currentComp.getSecondPrize());
 				} else {
 					prize = participationPrize;
 				}
@@ -311,7 +316,7 @@ public class CompManager {
 
 				for (UUID owner : plot.getOwners()) {
 					OfflinePlayer player = Bukkit.getOfflinePlayer(owner);
-					fullResults.add(new EntrantResult(owner, player.getName(), plot.getId().toString(), Optional.<Integer>absent(), participationPrize, false));
+					fullResults.add(new EntrantResult(owner, player.getName(), plot.getId().toString(), Optional.empty(), participationPrize, false));
 				}
 			}
 		}

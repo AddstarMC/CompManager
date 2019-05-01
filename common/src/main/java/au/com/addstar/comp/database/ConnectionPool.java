@@ -23,7 +23,7 @@ public class ConnectionPool {
         this.username = username;
         this.password = password;
         
-        connections = Collections.synchronizedList(Lists.<ConnectionHandler>newArrayList());
+        connections = Collections.synchronizedList(Lists.newArrayList());
         maxIdleTime = TimeUnit.SECONDS.toMillis(30);
     }
     

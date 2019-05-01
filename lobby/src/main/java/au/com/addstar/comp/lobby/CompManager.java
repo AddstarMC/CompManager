@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -12,7 +11,7 @@ import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
@@ -51,13 +50,7 @@ public class CompManager {
 	 * @param keys The new set of keys
 	 */
 	private void retainAll(Map<String, ?> map, Set<String> keys) {
-		Iterator<String> keyIterator = map.keySet().iterator();
-		while (keyIterator.hasNext()) {
-			String key = keyIterator.next();
-			if (!keys.contains(key)) {
-				keyIterator.remove();
-			}
-		}
+		map.keySet().removeIf(key -> !keys.contains(key));
 	}
 
 	/**

@@ -3,20 +3,20 @@
 	<parent>
 		<groupId>au.com.addstar</groupId>
 		<artifactId>CompManager-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>CompManager-common</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
-			<artifactId>ProtocolLib</artifactId>
-			<version>4.4.0-SNAPSHOT</version>
+			<artifactId>ProtocolLib-API</artifactId>
+			<version>4.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>biz.paluch.redis</groupId>
 			<artifactId>lettuce</artifactId>
-			<version>4.1.Final</version>
+			<version>5.0.0.Beta1</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -28,8 +28,14 @@
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
-			<version>1.6</version>
+			<version>1.7</version>
 			<scope>provided</scope>
+            <exclusions>
+                <exclusion>
+					<groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+				</exclusion>
+            </exclusions>
 		</dependency>
 	</dependencies>
 	<build>
