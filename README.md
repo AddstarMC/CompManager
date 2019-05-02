@@ -1,0 +1,2 @@
+# CompManager
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bd7ab1730fca4e21961fbcde70994973)](https://app.codacy.com/app/Narimm/CompManager?utm_source=github.com&utm_medium=referral&utm_content=AddstarMC/CompManager&utm_campaign=Badge_Grade_Settings)
