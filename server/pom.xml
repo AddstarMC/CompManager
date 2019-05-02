@@ -16,7 +16,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.intellectualsites.plotsquared</groupId>
-			<artifactId>PlotSquared-Api</artifactId>
+			<artifactId>Plotsquared-Api</artifactId>
 			<version>4.176</version>
 			<scope>provided</scope>
 			<exclusions>
