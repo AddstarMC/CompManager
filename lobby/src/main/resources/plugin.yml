@@ -2,6 +2,7 @@ name: CompLobbyManager
 description: This plugin is to go on the lobby server
 author: Schmoller
 version: ${plugin.version}
+api-version: 1.13
 
 main: au.com.addstar.comp.lobby.LobbyPlugin
 depend: [ProtocolLib, Monolith]
