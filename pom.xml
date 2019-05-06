@@ -47,29 +47,11 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public</url>
-        </repository>
-
-        <!-- ProtocolLib -->
-        <repository>
-            <id>dmulloy2-releases</id>
-            <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>
-
-        <!-- For Vault -->
-        <repository>
-            <id>vault-repo</id>
-            <name>Public Releases</name>
-            <url>http://nexus.hc.to/content/repositories/pub_releases/</url>
-        </repository>
-        <repository>
             <id>addstar-release-repo</id>
-            <url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
+            <url>http://maven.addstar.com.au/artifactory/all-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>addstar-repo</id>
@@ -79,8 +61,26 @@
             </snapshots>
         </repository>
         <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public</url>
+        </repository>
+        <!-- For Vault -->
+        <repository>
+            <id>vault-repo</id>
+            <name>Public Releases</name>
+            <url>http://nexus.hc.to/content/repositories/pub_releases/</url>
+        </repository>
+        <repository>
             <id>xephi-repo</id>
             <url>http://ci.xephi.fr/plugin/repository/everything/</url>
+        </repository>
+        <repository>
+            <id>dmulloy2-releases</id>
+            <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
     </repositories>
 
@@ -88,13 +88,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.11.2-R0.1-SNAPSHOT</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>au.com.addstar</groupId>
             <artifactId>Monolith</artifactId>
-            <version>1.4.5-SNAPSHOT</version>
+            <version>1.4.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -113,8 +113,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.3</version>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -140,7 +140,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.5.3</version>
             </plugin>
             <plugin><!--dont need to deploy this on release-->
                 <groupId>org.apache.maven.plugins</groupId>

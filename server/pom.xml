@@ -7,24 +7,6 @@
 	</parent>
 	<artifactId>CompManager-server</artifactId>
 
-	<repositories>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>addstar-release-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
-		</repository>
-		<repository>
-			<id>addstar-snapshot-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

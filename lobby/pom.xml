@@ -7,24 +7,6 @@
 	</parent>
 	<artifactId>CompManager-lobby</artifactId>
 
-	<repositories>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>addstar-release-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
-		</repository>
-		<repository>
-			<id>addstar-snapshot-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -32,18 +14,11 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>au.com.addstar</groupId>
-			<artifactId>Monolith</artifactId>
-			<version>1.4.8-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
 		<!-- Used for Proxy-wide broadcast -->
 		<dependency>
 			<groupId>au.com.addstar</groupId>
 			<artifactId>BungeeChat-Bukkit</artifactId>
-			<version>1.1.0-SNAPSHOT</version>
+			<version>1.2.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
