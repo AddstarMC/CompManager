@@ -27,20 +27,20 @@ broadcast-settings:
 #   if-full: true or false, checks if the comp is full 
 broadcasts:
   1:
-    message: '&d»» &eTime remaining &6${time-left} &d««'
+    message: '&dÂ»Â» &eTime remaining &6${time-left} &dÂ»Â»'
     if-state: OPEN
   2:
-    message: '&d»» &eVoting closes in &6${time-left} &d««'
+    message: '&dÂ»Â» &eVoting closes in &6${time-left} &dÂ»Â»'
     if-state: VOTING
   3:
-    message: '&d»» &eUse &b/compinfo &eto view comp information &d««'
+    message: '&dÂ»Â» &eUse &b/compinfo &eto view comp information &dÂ»Â»'
     if-state: OPEN
   4:
-    message: '&d»» &eUse &b/comp &eto return to the lobby &d««'
+    message: '&dÂ»Â» &eUse &b/comp &eto return to the lobby &dÂ»Â»'
   5:
-    message: '&d»» &eThe theme for this comp is: &6${theme} &d««'
+    message: '&dÂ»Â» &eThe theme for this comp is: &6${theme} &dÂ»Â»'
   6:
-    message: '&d»» &eUse &b/compvote &eto vote for plots &d««'
+    message: '&dÂ»Â» &eUse &b/compvote &eto vote for plots &dÂ»Â»'
     if-state: VOTING
 
 # These broadcasts happen upon changing between comp states. These will

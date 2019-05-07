@@ -11,17 +11,19 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.intellectualcrafters.plot.PS;
-import com.intellectualcrafters.plot.object.Plot;
-import com.intellectualcrafters.plot.object.PlotArea;
-import com.intellectualcrafters.plot.object.PlotId;
-import com.intellectualcrafters.plot.object.PlotPlayer;
+
+import com.github.intellectualsites.plotsquared.api.PlotAPI;
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
+import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
+import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
+
 
 public class P2Bridge {
-	private final PS plugin;
+	private final PlotAPI api;
 	
-	public P2Bridge(PS plugin) {
-		this.plugin = plugin;
+	public P2Bridge(PlotAPI plugin) {
+		this.api = plugin;
 	}
 	
 	/**
@@ -30,7 +32,7 @@ public class P2Bridge {
 	 * @return The Plot they own, or null
 	 */
 	public Plot getPlot(UUID playerId) {
-		for (Plot plot : plugin.getPlots()) {
+		for (Plot plot : api.getAllPlots()) {
 			if (plot.hasOwner() && plot.isOwner(playerId)) {
 				return plot;
 			}
@@ -41,12 +43,12 @@ public class P2Bridge {
 
 	public ArrayList<Plot> getOwnedPlots(){
 		ArrayList<Plot> plots = new ArrayList<>();
-		for (Plot plot : plugin.getPlots()) {
+		for (Plot plot : api.getAllPlots()) {
 			if (plot.hasOwner()) {
 				plots.add(plot);
 			}
 		}
-		plugin.getLogger().log("Found " + plots.size() + " plots");
+		Bukkit.getServer().getLogger().info("Found " + plots.size() + " plots");
 		return plots;
 	}
 
@@ -57,17 +59,16 @@ public class P2Bridge {
 	 * @return The plot or null
 	 */
 	public Plot getPlotAt(Location location) {
-		com.intellectualcrafters.plot.object.Location wrappedLocation = new com.intellectualcrafters.plot.object.Location(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-		PlotArea area = plugin.getApplicablePlotArea(wrappedLocation);
+		com.github.intellectualsites.plotsquared.plot.object.Location wrappedLocation = new com.github.intellectualsites.plotsquared.plot.object.Location(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+		PlotArea area = wrappedLocation.getPlotArea();
 		if (area == null) {
 			return null;
 		}
-		
 		return area.getPlot(wrappedLocation);
 	}
 
 	public Plot getPlot(PlotId plotId) {
-		Set<PlotArea> areas = plugin.getPlotAreas(Bukkit.getWorlds().get(0).getName());
+		Set<PlotArea> areas = api.getPlotAreas(Bukkit.getWorlds().get(0).getName());
 
 		for (PlotArea area : areas) {
 			if (area.getPlotCount() > 0) {
@@ -83,7 +84,7 @@ public class P2Bridge {
 	 */
 	public List<Plot> getUsedPlots() {
 		List<Plot> plots = Lists.newArrayList();
-		for (Plot plot : plugin.getPlots()) {
+		for (Plot plot : api.getAllPlots()) {
 			if (plot.hasOwner()) {
 				plots.add(plot);
 			}
@@ -98,7 +99,7 @@ public class P2Bridge {
 	 */
 	public int getUsedPlotCount() {
 		int count = 0;
-		for (Plot plot : plugin.getPlots()) {
+		for (Plot plot : api.getAllPlots()) {
 			if (plot.hasOwner()) {
 				++count;
 			}
@@ -112,7 +113,7 @@ public class P2Bridge {
 	 */
 	public Set<UUID> getOwners() {
 		Set<UUID> owners = Sets.newHashSet();
-		for (Plot plot : plugin.getPlots()) {
+		for (Plot plot : api.getAllPlots()) {
 			if (plot.hasOwner()) {
 				owners.addAll(plot.getOwners());
 			}
@@ -140,7 +141,7 @@ public class P2Bridge {
 			plot.teleportPlayer(wrappedPlayer);
 		}
 		
-		plugin.getPlotManager(plot).claimPlot(plot.getArea(), plot);
+		api.getPlotSquared().getPlotManager(plot).claimPlot(plot.getArea(), plot);
 	}
 	
 	/**
@@ -152,7 +153,7 @@ public class P2Bridge {
 		PlotArea targetArea = null;
 		
 		for (World world : Bukkit.getWorlds()) {
-			Set<PlotArea> areas = plugin.getPlotAreas(world.getName());
+			Set<PlotArea> areas = api.getPlotAreas(world.getName());
 			
 			targetArea = Iterables.getFirst(areas, null);
 			if (targetArea != null) {
@@ -166,12 +167,7 @@ public class P2Bridge {
 		}
 		
 		final PlotArea fTargetArea = targetArea;
-		return new Iterable<Plot>() {
-			@Override
-			public Iterator<Plot> iterator() {
-				return new PlotIterator(fTargetArea, maxPlots);
-			}
-		};
+		return () -> new PlotIterator(fTargetArea, maxPlots);
 	}
 	
 	private static class PlotIterator implements Iterator<Plot> {

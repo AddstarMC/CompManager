@@ -1,17 +1,19 @@
 package au.com.addstar.comp.notifications;
 
-import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.time.DurationFormatUtils;
-import org.bukkit.ChatColor;
-
-import com.google.common.base.Optional;
-import com.intellectualcrafters.configuration.ConfigurationSection;
+import java.util.Optional;
 
 import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
+
+import com.github.intellectualsites.plotsquared.configuration.ConfigurationSection;
+
+import org.apache.commons.lang.time.DurationFormatUtils;
+import org.bukkit.ChatColor;
+
+import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
 
 public class Notification {
 	private static final String TimeLeftToken = "${time-left}";
@@ -125,7 +127,7 @@ public class Notification {
 		ifState = state;
 	}
 	
-	public Optional<Boolean> getIfEntrant() {
+	public java.util.Optional<Boolean> getIfEntrant() {
 		return ifEntrant;
 	}
 	
@@ -160,23 +162,23 @@ public class Notification {
 				ifState = Optional.of(CompState.Visit);
 				break;
 			default:
-				ifState = Optional.absent();
+				ifState = Optional.empty();
 				break;
 			}
 		} else {
-			ifState = Optional.absent();
+			ifState = Optional.empty();
 		}
 		
 		if (section.isBoolean("if-entrant")) {
-			ifEntrant = Optional.of(section.getBoolean("if-entrant"));
+			ifEntrant = java.util.Optional.of(section.getBoolean("if-entrant"));
 		} else {
-			ifEntrant = Optional.absent();
+			ifEntrant = java.util.Optional.empty();
 		}
 		
 		if (section.isBoolean("if-full")) {
 			ifFull = Optional.of(section.getBoolean("if-full"));
 		} else {
-			ifFull = Optional.absent();
+			ifFull = Optional.empty();
 		}
 	}
 }

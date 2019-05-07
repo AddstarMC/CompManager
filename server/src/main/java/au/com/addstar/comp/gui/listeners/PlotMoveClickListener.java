@@ -3,8 +3,9 @@ package au.com.addstar.comp.gui.listeners;
 import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
-import com.intellectualcrafters.plot.object.Plot;
-import com.plotsquared.bukkit.object.BukkitPlayer;
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
+import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -48,7 +49,7 @@ public class PlotMoveClickListener implements ButtonClickListener {
             player.sendMessage(messages.get("teleport.noPlot"));
         }
         if (tpPlot != null) {
-            tpPlot.teleportPlayer(new BukkitPlayer(player));
+            tpPlot.teleportPlayer(PlotPlayer.from(player));
             player.sendMessage(messages.get("teleport.next.plot"));
             player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()).getName());
         }

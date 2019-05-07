@@ -13,7 +13,7 @@ private Material material;
 
 public BlockCriteria(int number, Block block) {
         this.number = number;
-        this.material = material;
+        this.material = block.getType();
         }
 
 

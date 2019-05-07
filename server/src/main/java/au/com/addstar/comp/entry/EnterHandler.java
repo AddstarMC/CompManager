@@ -2,10 +2,11 @@ package au.com.addstar.comp.entry;
 
 import org.bukkit.OfflinePlayer;
 
-import com.intellectualcrafters.plot.object.Plot;
 
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.confirmations.Confirmable;
+
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
 
 public abstract class EnterHandler implements Confirmable {
 	private final Competition comp;

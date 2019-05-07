@@ -73,9 +73,17 @@ public abstract class BaseCriterion {
 	 */
 	public static BaseCriterion create(String type) {
 		switch (type) {
-		default:
-		case "text":
-			return new TextCriterion();
+			case "block":
+				return new BlockIncludeCriterion();
+			case "includeBlock":
+				return new BlockIncludeCriterion();
+			default:
+			case "text":
+				return new TextCriterion();
+
+
+
+
 		}
 	}
 	

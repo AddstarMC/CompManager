@@ -13,6 +13,8 @@ import au.com.addstar.comp.redis.QueryException;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.util.Messages;
 
+import org.jetbrains.annotations.NotNull;
+
 public class RemoteEnterFuture extends AbstractFuture<Confirmable> implements FutureCallback<String> {
 	private final CompServer server;
 	private final UUID playerId;
@@ -47,7 +49,7 @@ public class RemoteEnterFuture extends AbstractFuture<Confirmable> implements Fu
 	}
 	
 	@Override
-	public void onFailure(Throwable error) {
+	public void onFailure(@NotNull Throwable error) {
 		setException(error);
 	}
 }

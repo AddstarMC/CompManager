@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>au.com.addstar</groupId>
     <artifactId>CompManager-parent</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <build.number />
@@ -31,12 +31,12 @@
         <repository>
             <id>maven.addstar.com.au</id>
             <name>maven.addstar.com.au-releases</name>
-            <url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
+            <url>https://maven.addstar.com.au/artifactory/ext-release-local</url>
         </repository>
         <snapshotRepository>
             <id>maven.addstar.com.au</id>
             <name>maven.addstar.com.au-snapshots</name>
-            <url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
+            <url>https://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
     <modules>
@@ -48,14 +48,17 @@
     <repositories>
         <repository>
             <id>addstar-release-repo</id>
-            <url>http://maven.addstar.com.au/artifactory/all-release</url>
+            <url>https://maven.addstar.com.au/artifactory/all-release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
             <id>addstar-repo</id>
-            <url>http://maven.addstar.com.au/artifactory/all-snapshot</url>
+            <url>https://maven.addstar.com.au/artifactory/all-snapshot</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -69,32 +72,45 @@
             <id>vault-repo</id>
             <name>Public Releases</name>
             <url>http://nexus.hc.to/content/repositories/pub_releases/</url>
-        </repository>
-        <repository>
-            <id>xephi-repo</id>
-            <url>http://ci.xephi.fr/plugin/repository/everything/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>dmulloy2-releases</id>
             <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>p2</id>
+            <name>Api Repo</name>
+            <url>http://ci.athion.net/job/PlotSquared-Breaking/ws/mvn/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>au.com.addstar</groupId>
             <artifactId>Monolith</artifactId>
-            <version>1.4.8-SNAPSHOT</version>
+            <version>1.5.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -149,6 +165,11 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
             </plugin>
         </plugins>
     </build>

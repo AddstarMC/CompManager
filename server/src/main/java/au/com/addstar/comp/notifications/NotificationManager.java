@@ -1,32 +1,35 @@
 package au.com.addstar.comp.notifications;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.TreeMultimap;
+
+import au.com.addstar.comp.CompManager;
+import au.com.addstar.comp.CompState;
+import au.com.addstar.comp.util.CompUtils;
+
+import com.destroystokyo.paper.Title;
+import com.github.intellectualsites.plotsquared.configuration.ConfigurationSection;
+import com.github.intellectualsites.plotsquared.configuration.InvalidConfigurationException;
+import com.github.intellectualsites.plotsquared.configuration.file.YamlConfiguration;
+
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+
+import org.apache.commons.lang.math.RandomUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
-import com.google.common.collect.Maps;
-import org.apache.commons.lang.math.RandomUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.TreeMultimap;
-import com.intellectualcrafters.configuration.ConfigurationSection;
-import com.intellectualcrafters.configuration.InvalidConfigurationException;
-import com.intellectualcrafters.configuration.file.YamlConfiguration;
-
-import au.com.addstar.comp.CompManager;
-import au.com.addstar.comp.CompState;
-import au.com.addstar.comp.util.CompUtils;
-import au.com.addstar.monolith.chat.ChatMessage;
-import au.com.addstar.monolith.chat.ChatMessageType;
-import au.com.addstar.monolith.chat.Title;
+import static net.md_5.bungee.api.ChatMessageType.SYSTEM;
 
 public class NotificationManager {
 	private static final long ActionBarDisplayTime = 2000;
@@ -268,7 +271,7 @@ public class NotificationManager {
 	 * @param displayTime The time in ms to display the message for. Not applicable to Chat or SystemMessage targets
 	 */
 	public void broadcast(String message, DisplayTarget target, long displayTime) {
-		broadcast(message, target, displayTime, Predicates.alwaysTrue());
+		broadcast(message, target, displayTime, player -> true);
 	}
 	
 	/**
@@ -279,108 +282,67 @@ public class NotificationManager {
 	 * @param predicate A predicate to select players who will receive the broadcast
 	 */
 	public void broadcast(String message, DisplayTarget target, long displayTime, Predicate<? super Player> predicate) {
-		final ChatMessage messageObject = ChatMessage.begin(message);
-		
-		// Prepare the title if needed
-		Title title = null;
-		if (target == DisplayTarget.Subtitle || target == DisplayTarget.Title) {
-			title = new Title();
-			title.setFadeInTime(500, TimeUnit.MILLISECONDS);
-			title.setDisplayTime(displayTime, TimeUnit.MILLISECONDS);
-			title.setFadeOutTime(1, TimeUnit.SECONDS);
-			
-			// Set the message
-			if (target == DisplayTarget.Title) {
-				title.setTitle(messageObject);
-			} else {
-				title.setSubtitle(messageObject);
-			}
-		}
-		
-		// Send out the message
+		final BaseComponent[] component = TextComponent.fromLegacyText(message);
+
 		for (final Player player : Bukkit.getOnlinePlayers()) {
-			if (!predicate.apply(player)) {
+			if (!predicate.test(player)) {
 				continue;
 			}
-			
-			switch (target) {
-			case ActionBar:
-				messageObject.send(player, ChatMessageType.ActionBar);
-				long refreshTime = displayTime - ActionBarDisplayTime;
-				// At least one tick
-				if (refreshTime >= 50) {
-					displayRefreshers.put(System.currentTimeMillis() + refreshTime, new Runnable() {
-						public void run() {
-							messageObject.send(player, ChatMessageType.ActionBar);
-						}
-					});
-				}
-				break;
-			case Chat:
-				messageObject.send(player, ChatMessageType.Standard);
-				break;
-			case SystemMessage:
-				messageObject.send(player, ChatMessageType.System);
-				break;
-			case Subtitle:
-			case Title:
-				System.out.println("Showing title " + title);
-				title.show(player);
-				break;
-			}
+			sendMessage(player,component,target,displayTime);
 		}
 	}
-	
-	/**
-	 * Sends a message to a player
-	 * @param player The player to message
-	 * @param message The message to send
-	 * @param target Where to display the message
-	 * @param displayTime The time in ms to display the message for. Not applicable to Chat or SystemMessage targets
-	 */
-	public void sendMessage(final Player player, String message, DisplayTarget target, long displayTime) {
-		final ChatMessage messageObject = ChatMessage.begin(message);
-		
-		// Prepare the title if needed
-		Title title = null;		
-		if (target == DisplayTarget.Subtitle || target == DisplayTarget.Title) {
-			title = new Title();
-			title.setFadeInTime(500, TimeUnit.MILLISECONDS);
-			title.setDisplayTime(displayTime, TimeUnit.MILLISECONDS);
-			title.setFadeOutTime(1, TimeUnit.SECONDS);
-			
-			// Set the message
-			if (target == DisplayTarget.Title) {
-				title.setTitle(messageObject);
-			} else {
-				title.setSubtitle(messageObject);
-			}
+	private void refreshActionBar(Player player,BaseComponent[] component,long remainingtime){
+		long refreshTime = remainingtime - ActionBarDisplayTime;
+		if (refreshTime >= 50) {
+			displayRefreshers.put(System.currentTimeMillis() + refreshTime, () -> {
+				player.sendActionBar(TextComponent.toLegacyText(component));
+				refreshActionBar(player,component,refreshTime);
+			});
 		}
-		
-		// Send out the message
+	}
+	public void sendMessage(final Player player, String message, DisplayTarget target, long displayTime) {
+		final BaseComponent[] component = TextComponent.fromLegacyText(message);
+		sendMessage(player,component,target,displayTime);
+	}
+		/**
+         * Sends a message to a player
+         * @param player The player to message
+         * @param component The message to send
+         * @param target Where to display the message
+         * @param displayTime The time in ms to display the message for. Not applicable to Chat or SystemMessage targets
+         */
+	public void sendMessage(final Player player, BaseComponent[] component, DisplayTarget target, long displayTime) {
+
 		switch (target) {
-		case ActionBar:
-			messageObject.send(player, ChatMessageType.ActionBar);
-			long refreshTime = displayTime - ActionBarDisplayTime;
-			// At least one tick
-			if (refreshTime >= 50) {
-				displayRefreshers.put(System.currentTimeMillis() + refreshTime, new Runnable() {
-					public void run() {
-						messageObject.send(player, ChatMessageType.ActionBar);
-					}
-				});
-			}
-			break;
-		case Chat:
-			messageObject.send(player, ChatMessageType.Standard);
-			break;
-		case SystemMessage:
-			messageObject.send(player, ChatMessageType.System);
-			break;
-		case Subtitle:
-		case Title:
-			title.show(player);
-			break;
+			case ActionBar:
+				player.sendActionBar(TextComponent.toLegacyText(component));
+				long refreshTime = displayTime - ActionBarDisplayTime;
+				refreshActionBar(player,component,refreshTime);
+				break;
+			case Chat:
+				player.spigot().sendMessage(component);
+				break;
+			case SystemMessage:
+				player.spigot().sendMessage(SYSTEM,component);
+				break;
+			case Subtitle:
+				int display = Math.toIntExact(displayTime);
+				Title subtitle = new Title.Builder().subtitle(component)
+						.fadeIn(Title.DEFAULT_FADE_IN)
+						.stay(display)
+						.fadeOut(Title.DEFAULT_FADE_OUT)
+						.build();
+				player.sendTitle(subtitle);
+				break;
+			case Title:
+				display = Math.toIntExact(displayTime);
+				Title title = new Title.Builder().title(component)
+						.fadeIn(Title.DEFAULT_FADE_IN)
+						.stay(display)
+						.fadeOut(Title.DEFAULT_FADE_OUT)
+						.build();
+				player.sendTitle(title);
+				break;
 		}
 	}
 

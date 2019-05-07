@@ -1,7 +1,7 @@
 package au.com.addstar.comp.voting.ranked;
 
 import au.com.addstar.comp.voting.Vote;
-import com.intellectualcrafters.plot.object.PlotId;
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
 import java.util.UUID;
 

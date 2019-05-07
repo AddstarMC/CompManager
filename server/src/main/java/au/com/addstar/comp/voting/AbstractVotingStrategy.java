@@ -4,7 +4,9 @@ import java.util.List;
 
 import au.com.addstar.comp.gui.Hotbar;
 import com.google.common.collect.Multimap;
-import com.intellectualcrafters.plot.object.PlotId;
+
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
+
 import org.bukkit.entity.Player;
 
 /**

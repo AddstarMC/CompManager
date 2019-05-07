@@ -3,14 +3,13 @@ package au.com.addstar.comp.criterions;
 import au.com.addstar.comp.criterions.criteria.BlockCriteria;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.bukkit.Material;
+
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Type;
 
 /**
- * Created for the Ark: Survival Evolved.
+ * Created for the AddstarMC Server
  * Created by Narimm on 1/02/2017.
  */
 public class BlockIncludeCriterion extends BaseCriterion {
@@ -19,12 +18,11 @@ public class BlockIncludeCriterion extends BaseCriterion {
 
     @Override
     public String describe() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Required Block: ");
-        builder.append(blockCriteria.getMaterial().name());
-        builder.append(" atleast ");
-        builder.append(blockCriteria.getNumber());
-        return builder.toString();
+        String builder = "Required Block: " +
+                blockCriteria.getMaterial().name() +
+                " atleast " +
+                blockCriteria.getNumber();
+        return builder;
     }
 
     @Override

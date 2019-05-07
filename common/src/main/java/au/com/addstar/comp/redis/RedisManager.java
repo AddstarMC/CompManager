@@ -62,7 +62,7 @@ public class RedisManager {
 		
 		handler = new RedisHandler();
 		subscribeConnection.addListener(handler);
-		subscribeConnection.psubscribe(RedisKey + ".*>" + Bukkit.getServerName());
+		subscribeConnection.psubscribe(RedisKey + ".*>" + Bukkit.getServer().getName());
 		subscribeConnection.psubscribe(RedisBcastKey + ".*");
 		
 		// Create the connection for publishing
@@ -130,11 +130,11 @@ public class RedisManager {
 	}
 	
 	private void send(String targetId, String data) {
-		publishConnection.publish(String.format("%s.%s>%s", RedisKey, Bukkit.getServerName(), targetId), data);
+		publishConnection.publish(String.format("%s.%s>%s", RedisKey, Bukkit.getServer().getName(), targetId), data);
 	}
 	
 	private void broadcast(String data) {
-		publishConnection.publish(String.format("%s.%s", RedisBcastKey, Bukkit.getServerName()), data);
+		publishConnection.publish(String.format("%s.%s", RedisBcastKey, Bukkit.getServer().getName()), data);
 	}
 	
 	private void handleQuery(String serverId, long queryId, String command, String[] args) {
@@ -225,7 +225,7 @@ public class RedisManager {
 			}
 			
 			// Make sure we arent listening to ourselves
-			if (sourceId.equals(Bukkit.getServerName())) {
+			if (sourceId.equals(Bukkit.getServer().getName())) {
 				return;
 			}
 			

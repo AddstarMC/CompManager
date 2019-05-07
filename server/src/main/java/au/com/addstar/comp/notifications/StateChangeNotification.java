@@ -4,7 +4,9 @@ import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.util.CompUtils;
-import com.intellectualcrafters.configuration.ConfigurationSection;
+
+import com.github.intellectualsites.plotsquared.configuration.ConfigurationSection;
+
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 

@@ -9,7 +9,8 @@ import au.com.addstar.comp.voting.Vote;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
-import com.intellectualcrafters.plot.object.PlotId;
+
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,10 +60,6 @@ public class CompServerBackendManager extends CompBackendManager {
 				int voteValue = rs.getInt("Vote");
 
 				PlotId plot = PlotId.fromString(rawPlotId);
-				if (plot == null) {
-					// Drop invalid votes
-					continue;
-				}
 
 				UUID plotowner;
 				try {
@@ -121,10 +118,6 @@ public class CompServerBackendManager extends CompBackendManager {
 					}
 
 					PlotId plot = PlotId.fromString(rawPlotId);
-					if (plot == null) {
-						// Drop invalid votes
-						continue;
-					}
 
 					UUID plotowner;
 					try {

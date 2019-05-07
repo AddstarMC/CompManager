@@ -7,13 +7,14 @@ import java.util.UUID;
 
 import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompPlugin;
-import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
 public class VoteStorage<T extends Vote> {
 	private final AbstractVotingStrategy<T> strategy;
@@ -62,15 +63,12 @@ public class VoteStorage<T extends Vote> {
 		votes.put(vote.getPlot(), vote);
 
 		// Record the vote in the backend
-		Bukkit.getScheduler().runTaskAsynchronously(CompPlugin.getPlugin(CompPlugin.class), new Runnable() {
-			@Override
-			public void run() {
-				try {
-					manager.getBackend().addVote(player.getUniqueId(), vote, manager.getCurrentComp());
-				} catch (SQLException e) {
-					System.err.println("[CompManager] Failed to add vote to database:");
-					e.printStackTrace();
-				}
+		Bukkit.getScheduler().runTaskAsynchronously(CompPlugin.getPlugin(CompPlugin.class), () -> {
+			try {
+				manager.getBackend().addVote(player.getUniqueId(), vote, manager.getCurrentComp());
+			} catch (SQLException e) {
+				System.err.println("[CompManager] Failed to add vote to database:");
+				e.printStackTrace();
 			}
 		});
 	}

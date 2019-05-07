@@ -5,8 +5,10 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.gui.Hotbar;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
 import au.com.addstar.comp.voting.VotingStrategies;
-import com.plotsquared.bukkit.events.PlayerEnterPlotEvent;
-import com.plotsquared.bukkit.events.PlayerLeavePlotEvent;
+
+import com.github.intellectualsites.plotsquared.bukkit.events.PlayerEnterPlotEvent;
+import com.github.intellectualsites.plotsquared.bukkit.events.PlayerLeavePlotEvent;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -103,7 +105,7 @@ public class HotbarListener implements Listener {
     public void onCreativeInventory(InventoryCreativeEvent event){
         if(event.getAction().equals(InventoryAction.HOTBAR_SWAP) || event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) ){
         if(event.getInventory().getHolder() instanceof Player){
-            if (CompPlugin.getCurrentHotbars().containsKey((Player) event.getInventory().getHolder())) {
+            if (CompPlugin.getCurrentHotbars().containsKey(event.getInventory().getHolder())) {
                 event.setCancelled(true);
             }
             }

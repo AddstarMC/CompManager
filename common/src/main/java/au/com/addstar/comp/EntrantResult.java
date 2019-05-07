@@ -1,7 +1,7 @@
 package au.com.addstar.comp;
 
 import au.com.addstar.comp.prizes.BasePrize;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -67,14 +67,6 @@ public class EntrantResult implements Comparable<EntrantResult> {
 
 	@Override
 	public int compareTo(EntrantResult o) {
-		if (rank.isPresent()) {
-			if (o.rank.isPresent()) {
-				return rank.get().compareTo(o.rank.get());
-			} else {
-				return -1;
-			}
-		} else {
-			return 1;
-		}
+		return rank.map(integer1 -> o.rank.map(integer1::compareTo).orElse(-1)).orElse(1);
 	}
 }

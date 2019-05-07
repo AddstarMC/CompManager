@@ -2,6 +2,7 @@ package au.com.addstar.comp.lobby.signs;
 
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -96,13 +97,13 @@ public class InfoSign extends BaseSign {
 				if (count == 0) {
 					setLine(2, ChatColor.DARK_RED.toString() + ChatColor.BOLD.toString() + "NONE");					
 				} else {
-					setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + String.valueOf(count));
+					setLine(2, ChatColor.DARK_BLUE.toString() + ChatColor.BOLD.toString() + count);
 				}
 				update();
 			}
 			
 			@Override
-			public void onFailure(Throwable error) {
+			public void onFailure(@NotNull Throwable error) {
 				clear();
 				if (error instanceof QueryTimeoutException) {
 					setOfflineText();
@@ -128,7 +129,7 @@ public class InfoSign extends BaseSign {
 			}
 			
 			@Override
-			public void onFailure(Throwable error) {
+			public void onFailure(@NotNull Throwable error) {
 				clear();
 				if (error instanceof QueryTimeoutException) {
 					setOfflineText();

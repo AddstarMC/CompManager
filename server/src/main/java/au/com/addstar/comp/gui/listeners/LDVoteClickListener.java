@@ -5,7 +5,8 @@ import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.voting.Vote;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.likedislike.LDVote;
-import com.intellectualcrafters.plot.object.Plot;
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
+
 import org.bukkit.entity.Player;
 
 import java.util.UUID;

@@ -14,13 +14,15 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
-import com.intellectualcrafters.plot.object.Location;
-import com.intellectualcrafters.plot.object.Plot;
-import com.plotsquared.bukkit.events.PlayerClaimPlotEvent;
+
 
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
+
+import com.github.intellectualsites.plotsquared.bukkit.events.PlayerClaimPlotEvent;
+import com.github.intellectualsites.plotsquared.plot.object.Location;
+import com.github.intellectualsites.plotsquared.plot.object.Plot;
 
 public class EventListener implements Listener {
 	private final WhitelistHandler whitelist;

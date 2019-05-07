@@ -1,6 +1,7 @@
 package au.com.addstar.comp.gui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created for use for the Add5tar MC Minecraft server
@@ -24,23 +25,18 @@ public class Lore
 
     public ArrayList<String> toArray()
     {
-        ArrayList<String> loreList = new ArrayList<>();
         String[] arrayOfString;
         int j = (arrayOfString = this.lore).length;
-        for (int i = 0; i < j; i++)
-        {
-            String loreLine = arrayOfString[i];
-            loreList.add(loreLine);
-        }
+        ArrayList<String> loreList = new ArrayList<>(Arrays.asList(arrayOfString).subList(0, j));
         return loreList;
     }
 
     public String toString()
     {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < this.lore.length; i++) {
-            result = result + this.lore[i] + (i == this.lore.length - 1 ? "" : ",");
+            result.append(this.lore[i]).append(i == this.lore.length - 1 ? "" : ",");
         }
-        return result;
+        return result.toString();
     }
 }

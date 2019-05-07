@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import au.com.addstar.comp.gui.Hotbar;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.intellectualcrafters.plot.PS;
+import com.github.intellectualsites.plotsquared.api.PlotAPI;
 import com.lambdaworks.redis.RedisException;
 
 import au.com.addstar.comp.commands.AgreeCommand;
@@ -29,6 +30,7 @@ import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
+@SuppressWarnings("unused")
 public class CompPlugin extends JavaPlugin {
 
 	public static CompPlugin instance;
@@ -79,9 +81,15 @@ public class CompPlugin extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Failed to load messages", e);
 			return;
 		}
-		
 		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
-		bridge = new P2Bridge(PS.get());
+		try{
+			PlotAPI api = new PlotAPI();
+			bridge = new P2Bridge(api);
+		}catch (Exception e){
+			e.printStackTrace();
+			Logger.getAnonymousLogger().warning("Disabling as PlotSqaured not available");
+			onDisable();
+		}
 		compManager = new CompManager(new CompServerBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
 		confirmationManager = new ConfirmationManager();
 		
@@ -109,12 +117,9 @@ public class CompPlugin extends JavaPlugin {
 		// Start listeners
 		Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager, bridge, messages), this);
 		Bukkit.getPluginManager().registerEvents(new HotbarListener(this), this);
-		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-			@Override
-			public void run() {
-				confirmationManager.expireConfirmations();
-				remoteJoinManager.expireHandlers();
-			}
+		Bukkit.getScheduler().runTaskTimer(this, () -> {
+			confirmationManager.expireConfirmations();
+			remoteJoinManager.expireHandlers();
 		}, 20, 20);
 		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 10, 10);
 		Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);

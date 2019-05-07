@@ -1,19 +1,17 @@
 package au.com.addstar.comp.voting.likedislike;
 
 import java.util.*;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.gui.*;
 import au.com.addstar.comp.gui.listeners.ButtonClickListener;
 import au.com.addstar.comp.gui.listeners.LDVoteClickListener;
 import au.com.addstar.comp.gui.listeners.PlotMoveClickListener;
-import com.intellectualcrafters.plot.object.PlotId;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
@@ -23,6 +21,8 @@ import au.com.addstar.comp.voting.AbstractVoteProvider;
 import au.com.addstar.comp.voting.Placement;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
+
+import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
 /**
  * The like / dislike strategy. Players can either like or dislike
@@ -144,12 +144,7 @@ public class LikeDislikeStrategy extends AbstractVotingStrategy<LDVote> {
 		@Override
 		public Iterable<String> onVoteTabComplete(final String[] args) {
 			if (args.length == 1) {
-				return Iterables.filter(Arrays.asList("like", "dislike", "skip"), new Predicate<String>() {
-					@Override
-					public boolean apply(String value) {
-						return args[0].toLowerCase().startsWith(value.toLowerCase());
-					}
-				});
+				return Stream.of("like", "dislike", "skip").filter(value -> args[0].toLowerCase().startsWith(value.toLowerCase())).collect(Collectors.toList());
 			}
 			
 			return null;

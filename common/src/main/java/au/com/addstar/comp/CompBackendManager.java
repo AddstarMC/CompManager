@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import au.com.addstar.comp.database.ConnectionPool;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -231,12 +231,12 @@ public class CompBackendManager {
 			if (rs.next()) {
 				int compId = rs.getInt("CompID");
 				if (rs.wasNull()) {
-					return Optional.absent();
+					return Optional.empty();
 				} else {
 					return Optional.of(compId);
 				}
 			} else {
-				return Optional.absent();
+				return Optional.empty();
 			}
 		} finally {
 			if (handler != null) {
@@ -285,7 +285,7 @@ public class CompBackendManager {
 				if (!rs.wasNull()) {
 					results.put(serverId, Optional.of(compId));
 				} else {
-					results.put(serverId, Optional.<Integer>absent());
+					results.put(serverId, Optional.empty());
 				}
 			}
 			
@@ -307,28 +307,7 @@ public class CompBackendManager {
 				while (rs.next()) {
 					try {
 						UUID playerId = UUID.fromString(rs.getString("UUID"));
-						String playerName = rs.getString("Name");
-						String plotId = rs.getString("PlotID");
-
-						int rawRank = rs.getInt("Rank");
-						Optional<Integer> rank;
-						if (rs.wasNull()) {
-							rank = Optional.absent();
-						} else {
-							rank = Optional.of(rawRank);
-						}
-
-						String rawPrize = rs.getString("Prize");
-						Optional<BasePrize> prize;
-						if (rawPrize == null) {
-							prize = Optional.absent();
-						} else {
-							prize = Optional.of(BasePrize.parsePrize(rawPrize));
-						}
-
-						boolean claimed = rs.getBoolean("Claimed");
-
-						EntrantResult result = new EntrantResult(playerId, playerName, plotId, rank, prize, claimed);
+						EntrantResult result = createEntrantResult(playerId, rs);
 						results.add(result);
 					} catch (IllegalArgumentException e) {
 						// Skip the entry
@@ -352,29 +331,7 @@ public class CompBackendManager {
 			try (ResultSet rs = handler.executeQuery(STATEMENT_RESULT_GET, comp.getCompId(), playerId.toString())) {
 				if (rs.next()) {
 					try {
-						String playerName = rs.getString("Name");
-						String plotId = rs.getString("PlotID");
-
-						int rawRank = rs.getInt("Rank");
-						Optional<Integer> rank;
-						if (rs.wasNull()) {
-							rank = Optional.absent();
-						} else {
-							rank = Optional.of(rawRank);
-						}
-
-						String rawPrize = rs.getString("Prize");
-						Optional<BasePrize> prize;
-						if (rawPrize == null) {
-							prize = Optional.absent();
-						} else {
-							prize = Optional.of(BasePrize.parsePrize(rawPrize));
-						}
-
-						boolean claimed = rs.getBoolean("Claimed");
-
-						EntrantResult result = new EntrantResult(playerId, playerName, plotId, rank, prize, claimed);
-						return result;
+						return createEntrantResult(playerId, rs);
 					} catch (IllegalArgumentException e) {
 						// Skip the entry
 					}
@@ -389,6 +346,31 @@ public class CompBackendManager {
 		}
 	}
 
+	private EntrantResult createEntrantResult(UUID playerId, ResultSet rs) throws SQLException {
+		String playerName = rs.getString("Name");
+		String plotId = rs.getString("PlotID");
+
+		int rawRank = rs.getInt("Rank");
+		Optional<Integer> rank;
+		if (rs.wasNull()) {
+			rank = Optional.empty();
+		} else {
+			rank = Optional.of(rawRank);
+		}
+
+		String rawPrize = rs.getString("Prize");
+		Optional<BasePrize> prize;
+		if (rawPrize == null) {
+			prize = Optional.empty();
+		} else {
+			prize = Optional.of(BasePrize.parsePrize(rawPrize));
+		}
+
+		boolean claimed = rs.getBoolean("Claimed");
+
+		return new EntrantResult(playerId, playerName, plotId, rank, prize, claimed);
+	}
+
 	public void addResult(Competition comp, EntrantResult result) throws SQLException {
 		ConnectionHandler handler = null;
 		try {
@@ -400,7 +382,7 @@ public class CompBackendManager {
 				prize = null;
 			}
 
-			handler.executeUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orNull(), result.getPlotId(), prize);
+			handler.executeUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orElse(null), result.getPlotId(), prize);
 		} finally {
 			if (handler != null) {
 				handler.release();
@@ -420,7 +402,7 @@ public class CompBackendManager {
 					prize = null;
 				}
 
-				handler.batchUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orNull(), result.getPlotId(), prize);
+				handler.batchUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orElse(null), result.getPlotId(), prize);
 			}
 
 			handler.executeBatch(STATEMENT_RESULT_ADD);

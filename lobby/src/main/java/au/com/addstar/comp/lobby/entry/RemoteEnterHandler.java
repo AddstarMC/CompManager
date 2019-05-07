@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -52,7 +53,7 @@ public class RemoteEnterHandler implements Confirmable {
 				}
 			}
 			@Override
-			public void onFailure(Throwable throwable) {
+			public void onFailure(@NotNull Throwable throwable) {
 				throwable.printStackTrace();
 			}
 		});
