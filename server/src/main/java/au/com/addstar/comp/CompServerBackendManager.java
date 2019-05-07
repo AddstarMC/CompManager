@@ -1,7 +1,6 @@
 package au.com.addstar.comp;
 
 
-import au.com.addstar.comp.database.ConnectionHandler;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.database.StatementKey;
 import au.com.addstar.comp.voting.AbstractVoteProvider;
@@ -12,6 +11,8 @@ import com.google.common.collect.SetMultimap;
 
 import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,12 +48,14 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong reading the votes
 	 */
 	public <T extends Vote> Collection<T> loadVotes(UUID player, Competition comp, AbstractVoteProvider<T> provider) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
-
-			ResultSet rs = handler.executeQuery(STATEMENT_VOTE_GETALL_PLAYER, comp.getCompId(), player.toString());
-
+			String sql;
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_GETALL_PLAYER.getSQL());
+			statement.setInt(1,comp.getCompId());
+			statement.setString(2,player.toString());
+			ResultSet rs = statement.executeQuery();
 			List<T> votes = Lists.newArrayList();
 			while (rs.next()) {
 				String rawPlotId = rs.getString("PlotID");
@@ -83,7 +86,7 @@ public class CompServerBackendManager extends CompBackendManager {
 			return votes;
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
@@ -97,11 +100,13 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong reading the votes
 	 */
 	public <T extends Vote> SetMultimap<UUID, T> loadVotes(Competition comp, AbstractVoteProvider<T> provider) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
-
-			try (ResultSet rs = handler.executeQuery(STATEMENT_VOTE_GETALL_COMP, comp.getCompId())) {
+			String sql;
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_GETALL_COMP.getSQL());
+			statement.setInt(1,comp.getCompId());
+			try (ResultSet rs = statement.executeQuery()) {
 				SetMultimap<UUID, T> votes = HashMultimap.create();
 				while (rs.next()) {
 					String rawUUID = rs.getString("UUID");
@@ -142,7 +147,7 @@ public class CompServerBackendManager extends CompBackendManager {
 			}
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
@@ -156,14 +161,20 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong writing the vote
 	 */
 	public void addVote(UUID voter, Vote vote, Competition comp) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
-
-			handler.executeUpdate(STATEMENT_VOTE_ADD, comp.getCompId(), voter.toString(), vote.getPlot().toString(), vote.getPlotOwner().toString(), vote.toNumber());
+			String sql;
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_ADD.getSQL());
+			statement.setInt(1,comp.getCompId());
+			statement.setString(2,voter.toString());
+			statement.setString(3,vote.getPlot().toString());
+			statement.setString(4,vote.getPlotOwner().toString());
+			statement.setInt(5,vote.toNumber());
+			statement.executeUpdate();
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
@@ -176,14 +187,18 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong clearing the vote
 	 */
 	public void removeVote(UUID voter, PlotId plot, Competition comp) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
-
-			handler.executeUpdate(STATEMENT_VOTE_REMOVE, comp.getCompId(), voter.toString(), plot.toString());
+			String sql;
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_REMOVE.getSQL());
+			statement.setInt(1,comp.getCompId());
+			statement.setString(2,voter.toString());
+			statement.setString(3,plot.toString());
+			statement.executeUpdate();
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}

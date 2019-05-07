@@ -45,7 +45,7 @@ public class LobbyPlugin extends JavaPlugin {
 
 		databaseManager = new DatabaseManager(this);
 		try {
-			databaseManager.initialize();
+			databaseManager.initialize(this.getDataFolder());
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Failed to initialize database connection", e);
 			return;

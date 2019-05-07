@@ -1,13 +1,14 @@
 package au.com.addstar.comp.whitelist;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
 
-import au.com.addstar.comp.database.ConnectionHandler;
-import au.com.addstar.comp.database.ConnectionPool;
+import au.com.addstar.comp.database.HikariConnectionPool;
 import au.com.addstar.comp.database.StatementKey;
 
 /**
@@ -26,9 +27,9 @@ public class WhitelistHandler {
 		STATEMENT_REMOVE = new StatementKey("DELETE FROM `" + TABLE + "` WHERE `uuid`=?;");
 	}
 	
-	private final ConnectionPool pool;
+	private final HikariConnectionPool pool;
 	
-	public WhitelistHandler(ConnectionPool pool) {
+	public WhitelistHandler(HikariConnectionPool pool) {
 		this.pool = pool;
 	}
 	
@@ -48,13 +49,15 @@ public class WhitelistHandler {
 	 * @throw SQLException Thrown if an SQLException occurs when querying the database
 	 */
 	public boolean isWhitelisted(UUID playerId) throws SQLException {
-		ConnectionHandler handler = pool.getConnection();
+		Connection handler = pool.getConnection();
+		PreparedStatement statement = handler.prepareStatement(STATEMENT_GET.getSQL());
+		statement.setString(1,idToString(playerId));
 		try {
-			try (ResultSet result = handler.executeQuery(STATEMENT_GET, idToString(playerId))) {
+			try (ResultSet result = statement.executeQuery()) {
 				return result.next();
 			}
 		} finally {
-			handler.release();
+			handler.close();
 		}
 	}
 	
@@ -74,11 +77,13 @@ public class WhitelistHandler {
 	 * @throws SQLException Thrown if an error occurs when querying the database
 	 */
 	public void add(UUID playerId) throws SQLException {
-		ConnectionHandler handler = pool.getConnection();
+		Connection handler = pool.getConnection();
 		try {
-			handler.executeUpdate(STATEMENT_ADD, idToString(playerId));
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_ADD.getSQL());
+			statement.setString(1,idToString(playerId));
+			statement.executeUpdate();
 		} finally {
-			handler.release();
+			handler.close();
 		}
 	}
 	
@@ -97,11 +102,13 @@ public class WhitelistHandler {
 	 * @throws SQLException Thrown if an error occurs when querying the database
 	 */
 	public void remove(UUID playerId) throws SQLException {
-		ConnectionHandler handler = pool.getConnection();
+		Connection handler = pool.getConnection();
 		try {
-			handler.executeUpdate(STATEMENT_REMOVE, idToString(playerId));
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_REMOVE.getSQL());
+			statement.setString(1,idToString(playerId));
+			statement.executeUpdate();
 		} finally {
-			handler.release();
+			handler.close();
 		}
 	}
 	

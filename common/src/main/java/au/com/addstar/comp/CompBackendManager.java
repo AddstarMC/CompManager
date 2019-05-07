@@ -1,5 +1,7 @@
 package au.com.addstar.comp;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -8,15 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import au.com.addstar.comp.database.ConnectionPool;
 import java.util.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import au.com.addstar.comp.criterions.BaseCriterion;
-import au.com.addstar.comp.database.ConnectionHandler;
 import au.com.addstar.comp.database.DatabaseManager;
+import au.com.addstar.comp.database.HikariConnectionPool;
 import au.com.addstar.comp.database.StatementKey;
 import au.com.addstar.comp.prizes.BasePrize;
 
@@ -79,7 +80,7 @@ public class CompBackendManager {
 		this.manager = manager;
 	}
 
-	protected ConnectionPool getPool() {
+	protected HikariConnectionPool getPool() {
 		return manager.getPool();
 	}
 	
@@ -103,11 +104,12 @@ public class CompBackendManager {
 	 * @throws SQLException Thrown if an SQLException occurs in the database
 	 */
 	public Competition load(int id) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = manager.getPool().getConnection();
-			
-			ResultSet rs = handler.executeQuery(STATEMENT_LOAD, id);
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_LOAD.getSQL());
+			statement.setInt(1,id);
+			ResultSet rs = statement.executeQuery();
 			if (rs.next()) {
 				Competition result = new Competition();
 				result.setCompId(id);
@@ -150,7 +152,9 @@ public class CompBackendManager {
 				result.setParticipationPrize(loadPrize(rs.getString("DefaultPrize")));
 				
 				// Load criteria
-				ResultSet criteria = handler.executeQuery(STATEMENT_CRITERIA_LOAD, id);
+				PreparedStatement criteriaStatement = handler.prepareStatement(STATEMENT_CRITERIA_LOAD.getSQL());
+				criteriaStatement.setInt(1,id);
+				ResultSet criteria = criteriaStatement.executeQuery();
 				while (criteria.next()) {
 					BaseCriterion criterion = BaseCriterion.create(criteria.getString("Type"));
 					criterion.setName(criteria.getString("Name"));
@@ -170,7 +174,7 @@ public class CompBackendManager {
 			}
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
@@ -191,28 +195,22 @@ public class CompBackendManager {
 	 */
 	public void update(Competition competition) throws SQLException {
 		Preconditions.checkArgument(competition.getCompId() >= 0);
-		
-		ConnectionHandler handler = null;
-		try {
-			handler = manager.getPool().getConnection();
-			handler.executeUpdate(STATEMENT_UPDATE,
-					competition.getTheme(),
-					(competition.isAutomatic() ? "Auto" : competition.getState().name()),
-					new Timestamp(competition.getStartDate()),
-					new Timestamp(competition.getEndDate()),
-					new Timestamp(competition.getVoteEndDate()),
-					competition.getVotingStrategy(),
-					competition.getMaxEntrants(),
-					(competition.getFirstPrize() != null ? competition.getFirstPrize().toDatabase() : null),
-					(competition.getSecondPrize() != null ? competition.getSecondPrize().toDatabase() : null),
-					(competition.getParticipationPrize() != null ? competition.getParticipationPrize().toDatabase() : null),
-					competition.getCompId()
-					);
-		} finally {
-			if (handler != null) {
-				handler.release();
-			}
-		}
+			Connection handler = manager.getPool().getConnection();
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_UPDATE.getSQL());
+			statement.setString(1, competition.getTheme());
+			statement.setString(2, (competition.isAutomatic() ? "Auto" : competition.getState().name()));
+			statement.setTimestamp(3, new Timestamp(competition.getStartDate()));
+			statement.setTimestamp(4, new Timestamp(competition.getEndDate()));
+			statement.setTimestamp(5, new Timestamp(competition.getVoteEndDate()));
+			statement.setString(6, competition.getVotingStrategy());
+			statement.setInt(7, competition.getMaxEntrants());
+			statement.setString(8, competition.getFirstPrize() != null ? competition.getFirstPrize().toDatabase() : null);
+			statement.setString(9, competition.getSecondPrize() != null ? competition.getSecondPrize().toDatabase() : null);
+			statement.setString(9, competition.getParticipationPrize() != null ? competition.getSecondPrize().toDatabase() : null);
+			statement.setInt(10, competition.getCompId());
+			statement.executeUpdate();
+			handler.close();
+
 	}
 	
 	/**
@@ -223,11 +221,12 @@ public class CompBackendManager {
 	 * @throws SQLException Thrown if an SQLException occurs in the database
 	 */
 	public Optional<Integer> getCompID(String serverId) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = manager.getPool().getConnection();
-			
-			ResultSet rs = handler.executeQuery(STATEMENT_SERVER_GET, serverId);
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_SERVER_GET.getSQL(), STATEMENT_SERVER_GET.returnsGeneratedKeysInt());
+			statement.setString(1,serverId);
+			ResultSet rs = statement.executeQuery();
 			if (rs.next()) {
 				int compId = rs.getInt("CompID");
 				if (rs.wasNull()) {
@@ -240,7 +239,7 @@ public class CompBackendManager {
 			}
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
@@ -254,14 +253,16 @@ public class CompBackendManager {
 	public void setComp(String serverId, Competition comp) throws SQLException {
 		Preconditions.checkArgument(comp.getCompId() >= 0, "That comp has not been added to the database");
 		
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = manager.getPool().getConnection();
-			
-			handler.executeUpdate(STATEMENT_SERVER_SET, serverId, comp.getCompId());
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_SERVER_SET.getSQL());
+			statement.setString(1,serverId);
+			statement.setInt(2,comp.getCompId());
+			statement.executeUpdate();
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
@@ -272,13 +273,12 @@ public class CompBackendManager {
 	 * @throws SQLException Thrown if an SQLException occurs in the database
 	 */
 	public Map<String, Optional<Integer>> getServerComps() throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = manager.getPool().getConnection();
-			
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_SERVER_GETALL.getSQL(), STATEMENT_SERVER_GETALL.returnsGeneratedKeysInt());
 			Map<String, Optional<Integer>> results = Maps.newHashMap();
-			
-			ResultSet rs = handler.executeQuery(STATEMENT_SERVER_GETALL);
+			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				String serverId = rs.getString("ServerID");
 				int compId = rs.getInt("CompID");
@@ -292,18 +292,20 @@ public class CompBackendManager {
 			return results;
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
 
 	public Collection<EntrantResult> loadResults(Competition comp, boolean winnersOnly) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
-
+			String sql;
+			PreparedStatement statement = handler.prepareStatement(winnersOnly ? STATEMENT_RESULT_GETALL_WINNERS.getSQL() : STATEMENT_RESULT_GETALL_COMP.getSQL());
+			statement.setInt(1,comp.getCompId());
 			List<EntrantResult> results = Lists.newArrayList();
-			try (ResultSet rs = handler.executeQuery(winnersOnly ? STATEMENT_RESULT_GETALL_WINNERS : STATEMENT_RESULT_GETALL_COMP, comp.getCompId())) {
+			try (ResultSet rs = statement.executeQuery()) {
 				while (rs.next()) {
 					try {
 						UUID playerId = UUID.fromString(rs.getString("UUID"));
@@ -314,21 +316,23 @@ public class CompBackendManager {
 					}
 				}
 			}
-
 			return results;
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
 
 	public EntrantResult getResult(Competition comp, UUID playerId) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
-
-			try (ResultSet rs = handler.executeQuery(STATEMENT_RESULT_GET, comp.getCompId(), playerId.toString())) {
+			String sql;
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_RESULT_GET.getSQL());
+			statement.setInt(1,comp.getCompId());
+			statement.setString(2,playerId.toString());
+			try (ResultSet rs = statement.executeQuery()) {
 				if (rs.next()) {
 					try {
 						return createEntrantResult(playerId, rs);
@@ -341,7 +345,7 @@ public class CompBackendManager {
 			return null;
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
@@ -372,7 +376,7 @@ public class CompBackendManager {
 	}
 
 	public void addResult(Competition comp, EntrantResult result) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
 			String prize;
@@ -381,19 +385,28 @@ public class CompBackendManager {
 			} else {
 				prize = null;
 			}
+			String sql;
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_RESULT_ADD.getSQL());
+			statement.setInt(1,comp.getCompId());
+			statement.setString(2,result.getPlayerId().toString());
+			statement.setString(3,result.getPlayerName());
+			statement.setInt(4,result.getRank().orElse(null));
+			statement.setString(5,result.getPlotId());
+			statement.setString(6,prize);
 
-			handler.executeUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orElse(null), result.getPlotId(), prize);
+			statement.executeUpdate();
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}
 
 	public void addResults(Competition comp, Iterable<EntrantResult> results) throws SQLException {
-		ConnectionHandler handler = null;
+		Connection handler = null;
 		try {
 			handler = getPool().getConnection();
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_RESULT_ADD.getSQL());
 			for (EntrantResult result : results) {
 				String prize;
 				if (result.getPrize().isPresent()) {
@@ -401,14 +414,18 @@ public class CompBackendManager {
 				} else {
 					prize = null;
 				}
-
-				handler.batchUpdate(STATEMENT_RESULT_ADD, comp.getCompId(), result.getPlayerId(), result.getPlayerName(), result.getRank().orElse(null), result.getPlotId(), prize);
+				statement.setInt(1,comp.getCompId());
+				statement.setString(2,result.getPlayerId().toString());
+				statement.setString(3,result.getPlayerName());
+				statement.setInt(4,result.getRank().orElse(null));
+				statement.setString(5,result.getPlotId());
+				statement.setString(6,prize);
+				statement.addBatch();
 			}
-
-			handler.executeBatch(STATEMENT_RESULT_ADD);
+			statement.executeBatch();
 		} finally {
 			if (handler != null) {
-				handler.release();
+				handler.close();
 			}
 		}
 	}

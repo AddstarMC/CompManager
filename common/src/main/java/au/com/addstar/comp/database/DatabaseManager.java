@@ -1,6 +1,8 @@
 package au.com.addstar.comp.database;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
@@ -10,9 +12,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class DatabaseManager {
 	private final Plugin plugin;
-	private ConnectionPool pool;
-	private BukkitTask expireTask;
-	
+	private HikariConnectionPool pool;
+
 	public DatabaseManager(Plugin plugin) {
 		this.plugin = plugin;
 	}
@@ -21,7 +22,7 @@ public class DatabaseManager {
 	 * Initializes the database connection pool and tests it
 	 * @throws IOException Thrown if the connection cannot be initialized
 	 */
-	public void initialize() throws IOException {
+	public void initialize(File saveDir) throws IOException {
 		ConfigurationSection config = plugin.getConfig().getConfigurationSection("database");
 		String url = String.format(
 				"jdbc:mysql://%s:%d/%s",
@@ -30,16 +31,14 @@ public class DatabaseManager {
 				config.getString("database", "comp")
 				);
 		
-		pool = new ConnectionPool(url, config.getString("username", "username"), config.getString("password", "password"));
-		
+		pool = new HikariConnectionPool(config,saveDir);
 		try {
-			ConnectionHandler connection = pool.getConnection();
-			connection.release();
+			Connection connection = pool.getConnection();
+			connection.close();
+			pool.saveProperties();
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}
-		
-		expireTask = Bukkit.getScheduler().runTaskTimer(plugin, new ExpireTask(), 600, 600); // 30 second delay
 	}
 	
 	/**
@@ -47,21 +46,14 @@ public class DatabaseManager {
 	 */
 	public void shutdown() {
 		pool.closeConnections();
-		expireTask.cancel();
 	}
 	
 	/**
 	 * Gets the connection pool
-	 * @return The ConnectionPool
+	 * @return The HikariConnectionPool
 	 */
-	public ConnectionPool getPool() {
+	public HikariConnectionPool getPool() {
 		return pool;
 	}
-	
-	private class ExpireTask implements Runnable {
-		@Override
-		public void run() {
-			pool.removeExpired();
-		}
-	}
+
 }

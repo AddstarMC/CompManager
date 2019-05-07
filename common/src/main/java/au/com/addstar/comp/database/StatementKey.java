@@ -27,7 +27,9 @@ public class StatementKey {
     public boolean returnsGeneratedKeys() {
         return returnGeneratedKeys;
     }
-    
+    public int returnsGeneratedKeysInt() {
+        return (returnGeneratedKeys)?Statement.RETURN_GENERATED_KEYS:Statement.NO_GENERATED_KEYS;
+    }
     public boolean isValid() {
         return valid;
     }
