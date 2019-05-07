@@ -108,7 +108,9 @@ public class LobbyPlugin extends JavaPlugin {
 			broadcastChannel = null;
 			getLogger().log(Level.INFO, "BungeeChat not found! No cross server messages");
 		}
-
+		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new CompPlaceHolder(this).register();
+		}
 		// Register tasks
 		// TODO: Make refresh interval configurable
 		Bukkit.getScheduler().runTaskTimer(this, new SignRefresher(signManager), 0, 200);

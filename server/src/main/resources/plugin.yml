@@ -2,10 +2,11 @@ name: CompManager
 description: This plugin is to go on all comp servers to handle running comps
 author: Schmoller
 version: ${plugin.version}
-api-version: 1.13
+api-version: ${spigot.api.version}
 
 main: au.com.addstar.comp.CompPlugin
 depend: [ProtocolLib, Monolith, PlotSquared]
+softdepend: [PlaceholderAPI]
 
 # TODO: standardise permissions
 permissions:

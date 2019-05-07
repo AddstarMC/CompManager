@@ -90,6 +90,9 @@ public class CompPlugin extends JavaPlugin {
 			Logger.getAnonymousLogger().warning("Disabling as PlotSqaured not available");
 			onDisable();
 		}
+		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new CompPlaceHolder(this).register();
+		}
 		compManager = new CompManager(new CompServerBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
 		confirmationManager = new ConfirmationManager();
 		
