@@ -54,19 +54,22 @@ public class CompDebugCommand implements ICommand {
 
 	@Override
 	public boolean onCommand(final CommandSender sender, String parent, String label, String[] args) throws BadArgumentException {
-		sender.sendMessage("Querying " + args[0]);
-		final ListenableFuture<String> future = redis.query(args[0], "entrant_count");
-		Futures.addCallback(future, new FutureCallback<String>() {
-			@Override
-			public void onSuccess(String result) {
-				sender.sendMessage("Query result: " + result);
-			}
-			
-			@Override
-			public void onFailure(@NotNull Throwable error) {
-				sender.sendMessage("Query errored: " + error);
-			}
-		});
+		if(args.length > 0 ) {
+			sender.sendMessage("Querying " + args[0]);
+			final ListenableFuture<String> future = redis.query(args[0], "entrant_count");
+			Futures.addCallback(future, new FutureCallback<String>() {
+				@Override
+				public void onSuccess(String result) {
+					sender.sendMessage("Query result: " + result);
+				}
+
+				@Override
+				public void onFailure(@NotNull Throwable error) {
+					sender.sendMessage("Query errored: " + error);
+				}
+			});
+		} else
+			return false;
 		
 		return true;
 	}

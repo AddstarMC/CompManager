@@ -6,12 +6,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Created for use for the Add5tar MC Minecraft server
@@ -33,48 +34,43 @@ public class HikariConnectionPool {
         HikariConfig config;
         if(!propertiesFile.exists()) {
             config = new HikariConfig();
-            config.setJdbcUrl(url);
             config.setDriverClassName("com.mysql.jdbc.Driver");
-            config.setUsername(section.getString("username", "username"));
-            config.setPassword(section.getString("password", "password"));
-            config.addDataSourceProperty("useSSL",false);
-            config.addDataSourceProperty("cachePrepStmts",true);
-            config.addDataSourceProperty("prepStmtCacheSize",250);
-            config.addDataSourceProperty("prepStmtCacheSqlLimit",2048);
-            config.addDataSourceProperty("useServerPrepStmts",true);
-            config.addDataSourceProperty("useLocalSessionState",true);
-            config.addDataSourceProperty("rewriteBatchedStatements",true);
-            config.addDataSourceProperty("cacheResultSetMetadata",true);
-            config.addDataSourceProperty("cacheServerConfiguration",true);
-            config.addDataSourceProperty("elideSetAutoCommits",true);
-            config.addDataSourceProperty("maintainTimeStats",true);
-            saveProperties();
+            Logger.getLogger("CompManager").info(
+                    "You should create a file to tune the connection for this database at: " +
+                            directory.getAbsolutePath()+
+                            "/hikari.properties");
+            Logger.getLogger("CompManager").info("Further info can be found at " +
+                    "https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration");
         }else{
-            config = new HikariConfig(propertiesFile.toString());
+            Logger.getLogger("CompManager").info("Using Hikari Properties file: "+propertiesFile.getAbsolutePath());
+            try {
+                config = new HikariConfig(propertiesFile.toString());
+            }catch (RuntimeException e){
+                Logger.getLogger("CompManager").warning(
+                        "Your Hikari properties file has errors and has been ignored: " +
+                                e.getMessage());
+                config = new HikariConfig();
+            }
         }
-        this.dataSource = new HikariDataSource(config);
-        try{
-            dataSource.getConnection();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void saveProperties(){
+        config.setUsername(section.getString("username", "username"));
+        config.setPassword(section.getString("password", "password"));
+        config.setJdbcUrl(url);
+        config.setPoolName("comp");
         try {
-            FileOutputStream out = new FileOutputStream(propertiesFile);
-            dataSource.getDataSourceProperties().store(out,"Hikari Properties");
-        }catch (IOException e){
-            e.printStackTrace();
+            this.dataSource = new HikariDataSource(config);
+        }catch (Exception e){
+            Logger.getLogger("CompManager").warning("Error initializing Datasource:" + e.getMessage());
         }
     }
 
     public Connection getConnection() throws SQLException {
+        if(dataSource == null) throw new SQLException("No Connection Available") ;
         return dataSource.getConnection();
     }
 
     public void closeConnections(){
-        dataSource.close();
+        if(dataSource != null)
+            dataSource.close();
     }
 
 

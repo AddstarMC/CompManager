@@ -24,18 +24,10 @@ public class DatabaseManager {
 	 */
 	public void initialize(File saveDir) throws IOException {
 		ConfigurationSection config = plugin.getConfig().getConfigurationSection("database");
-		String url = String.format(
-				"jdbc:mysql://%s:%d/%s",
-				config.getString("host", "localhost"),
-				config.getInt("port", 3306),
-				config.getString("database", "comp")
-				);
-		
 		pool = new HikariConnectionPool(config,saveDir);
 		try {
 			Connection connection = pool.getConnection();
 			connection.close();
-			pool.saveProperties();
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}

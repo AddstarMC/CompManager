@@ -83,7 +83,7 @@ public class CompManager {
 			}
 
 		} catch (SQLException e) {
-			plugin.getLogger().log(Level.SEVERE, "Unable to load competitions", e);
+			plugin.getLogger().log(Level.SEVERE, "Unable to load competitions: "+ e.getMessage());
 		}
 
 		// Reload the config
