@@ -81,13 +81,13 @@ public class CompManager {
 	public void reloadCurrentComp() {
 		try {
 
-			Optional<Integer> compID = backend.getCompID(Bukkit.getServer().getName());
+			Optional<Integer> compID = backend.getCompID(CompPlugin.getServerName());
 			if (compID.isPresent()) {
 				currentComp = backend.load(compID.get());
 				logger.info("Current Competition (ID " + compID.get() + "): " + currentComp.getTheme());
 			} else {
 				currentComp = null;
-				logger.info("Current Competition: None for Server:"+Bukkit.getServer().getName());
+				logger.info("Current Competition: None for Server:"+CompPlugin.getServerName());
 			}
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Failed to load the current competition for this server", e);

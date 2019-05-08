@@ -35,15 +35,17 @@ public class LobbyPlugin extends JavaPlugin {
 	private SignManager signManager;
 	private ConfirmationManager confirmationManager;
 	private Messages messages;
-
+	private static String serverId;
 	public PluginManager pm = null;
 
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
 		reloadConfig();
-
-		databaseManager = new DatabaseManager(this);
+		serverId = getConfig().getString("server-id","null");
+		if(serverId == "null"){
+			getLogger().log(Level.WARNING,"You have no server-id configured - please update config");
+		}		databaseManager = new DatabaseManager(this);
 		try {
 			databaseManager.initialize(this.getDataFolder());
 		} catch (IOException e) {
@@ -51,7 +53,7 @@ public class LobbyPlugin extends JavaPlugin {
 			return;
 		}
 
-		redisManager = new RedisManager(getConfig().getConfigurationSection("redis"));
+		redisManager = new RedisManager(getConfig().getConfigurationSection("redis"),LobbyPlugin.serverId);
 		try {
 			redisManager.initialize();
 		} catch (RedisException e) {

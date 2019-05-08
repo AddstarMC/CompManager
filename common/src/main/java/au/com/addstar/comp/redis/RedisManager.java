@@ -36,13 +36,14 @@ public class RedisManager {
 	private RedisPubSubAsyncCommands<String, String> subscribeConnection;
 	private RedisPubSubCommands<String, String> publishConnection;
 	private RedisHandler handler;
-	
+	private final String serverId;
 	private CommandReceiver commandReceiver;
 	
 	private long nextQueryID;
 	private final ListMultimap<String, WaitFuture> waitingFutures;
 	
-	public RedisManager(ConfigurationSection redisConfig) {
+	public RedisManager(ConfigurationSection redisConfig, String serverID) {
+		this.serverId = serverID;
 		this.redisConfig = redisConfig;
 		queryHandlers = Maps.newHashMap();
 		nextQueryID = 0;
@@ -62,7 +63,7 @@ public class RedisManager {
 		
 		handler = new RedisHandler();
 		subscribeConnection.addListener(handler);
-		subscribeConnection.psubscribe(RedisKey + ".*>" + Bukkit.getServer().getName());
+		subscribeConnection.psubscribe(RedisKey + ".*>" + serverId );
 		subscribeConnection.psubscribe(RedisBcastKey + ".*");
 		
 		// Create the connection for publishing
@@ -130,11 +131,11 @@ public class RedisManager {
 	}
 	
 	private void send(String targetId, String data) {
-		publishConnection.publish(String.format("%s.%s>%s", RedisKey, Bukkit.getServer().getName(), targetId), data);
+		publishConnection.publish(String.format("%s.%s>%s", RedisKey,serverId, targetId), data);
 	}
 	
 	private void broadcast(String data) {
-		publishConnection.publish(String.format("%s.%s", RedisBcastKey, Bukkit.getServer().getName()), data);
+		publishConnection.publish(String.format("%s.%s", RedisBcastKey, serverId), data);
 	}
 	
 	private void handleQuery(String serverId, long queryId, String command, String[] args) {
@@ -225,7 +226,7 @@ public class RedisManager {
 			}
 			
 			// Make sure we arent listening to ourselves
-			if (sourceId.equals(Bukkit.getServer().getName())) {
+			if (sourceId.equals(serverId)) {
 				return;
 			}
 			

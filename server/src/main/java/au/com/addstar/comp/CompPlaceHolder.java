@@ -32,6 +32,7 @@ public class CompPlaceHolder extends PlaceholderExpansion {
     public boolean persist(){
         return true;
     }
+
     @Override
     public String getPlugin() {
         return plugin.getName();

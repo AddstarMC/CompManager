@@ -9,6 +9,9 @@ redis:
   host: localhost
   port: 6379
   password: 
+#This Server id for the lobby this should be the same as the lobby-id
+server-id: null
 
 # The server ID for the competition lobby
 lobby-id: complobby
+

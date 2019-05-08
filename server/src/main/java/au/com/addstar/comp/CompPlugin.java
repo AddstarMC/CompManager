@@ -44,7 +44,7 @@ public class CompPlugin extends JavaPlugin {
 	public Messages messages;
 	private RemoteJoinManager remoteJoinManager;
 	private static HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
-
+	private static String serverName;
 
 	public static HashMap<Player, Hotbar> getCurrentHotbars()
 	{
@@ -52,11 +52,19 @@ public class CompPlugin extends JavaPlugin {
 	}
 
 
+	public static String getServerName() {
+		return serverName;
+	}
+
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
 		reloadConfig();
 		instance = this;
+		serverName = getConfig().getString("server-id","null");
+		if(serverName == "null"){
+			getLogger().log(Level.WARNING,"You have no server-id configured - please update config");
+		}
 		databaseManager = new DatabaseManager(this);
 		try {
 			databaseManager.initialize(this.getDataFolder());
@@ -65,7 +73,7 @@ public class CompPlugin extends JavaPlugin {
 			return;
 		}
 		
-		redisManager = new RedisManager(getConfig().getConfigurationSection("redis"));
+		redisManager = new RedisManager(getConfig().getConfigurationSection("redis"),CompPlugin.serverName);
 		try {
 			redisManager.initialize();
 		} catch (RedisException e) {
