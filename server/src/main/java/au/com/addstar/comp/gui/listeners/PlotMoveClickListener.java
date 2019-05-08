@@ -5,9 +5,8 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 
-import com.github.intellectualsites.plotsquared.plot.flag.Flag;
+import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
-import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -52,7 +51,7 @@ public class PlotMoveClickListener implements ButtonClickListener {
             player.sendMessage(messages.get("teleport.noPlot"));
         }
         if (tpPlot != null) {
-            tpPlot.teleportPlayer(PlotPlayer.from(player));
+            tpPlot.teleportPlayer(BukkitUtil.getPlayer(player));
             player.sendMessage(messages.get("teleport.next.plot"));
             if(CompPlugin.instance.getCompManager().getState() == CompState.Voting && CompPlugin.instance.getConfig().getBoolean("showOwnerNameWhenVoting",true)) {
                 player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()));

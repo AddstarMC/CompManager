@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import com.github.intellectualsites.plotsquared.api.PlotAPI;
+import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
 import com.github.intellectualsites.plotsquared.plot.object.PlotId;
@@ -137,7 +138,7 @@ public class P2Bridge {
 		plot.setSign(player.getName());
 		
 		if (player.isOnline() && teleport) {
-			PlotPlayer wrappedPlayer = PlotPlayer.wrap(player.getPlayer());
+			PlotPlayer wrappedPlayer = BukkitUtil.getPlayer(player.getPlayer());
 			plot.teleportPlayer(wrappedPlayer);
 		}
 		
