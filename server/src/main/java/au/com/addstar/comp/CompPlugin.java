@@ -23,6 +23,9 @@ import au.com.addstar.comp.commands.VoteCommand;
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.notifications.NotificationManager;
+import au.com.addstar.comp.placeholders.MVDWPlaceHolderExtension;
+import au.com.addstar.comp.placeholders.PAPIPlaceHolderExtension;
+import au.com.addstar.comp.placeholders.PlaceHolderHandler;
 import au.com.addstar.comp.query.*;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.redis.RedisQueryTimeoutTask;
@@ -45,6 +48,12 @@ public class CompPlugin extends JavaPlugin {
 	private RemoteJoinManager remoteJoinManager;
 	private static HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
 	private static String serverName;
+
+	public PlaceHolderHandler getPlaceHolderHandler() {
+		return placeHolderHandler;
+	}
+
+	private PlaceHolderHandler placeHolderHandler;
 
 	public static HashMap<Player, Hotbar> getCurrentHotbars()
 	{
@@ -98,8 +107,13 @@ public class CompPlugin extends JavaPlugin {
 			Logger.getAnonymousLogger().warning("Disabling as PlotSqaured not available");
 			onDisable();
 		}
+		placeHolderHandler = new PlaceHolderHandler(this);
 		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			new CompPlaceHolder(this).register();
+			new PAPIPlaceHolderExtension(this).register();
+		}
+
+		if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
+			new MVDWPlaceHolderExtension(this);
 		}
 		compManager = new CompManager(new CompServerBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
 		confirmationManager = new ConfirmationManager();
