@@ -16,12 +16,13 @@ public class MVDWPlaceHolderExtension implements PlaceholderReplacer {
     public MVDWPlaceHolderExtension(CompPlugin plugin) {
         handler = plugin.getPlaceHolderHandler();
         for(String s:PlaceHolderHandler.getPlaceholders()){
-            PlaceholderAPI.registerPlaceholder(plugin,s,this);
+            PlaceholderAPI.registerPlaceholder(plugin,PlaceHolderHandler.getIdentifier()+"_"+s,this);
         }
     }
 
     @Override
     public String onPlaceholderReplace(PlaceholderReplaceEvent placeholderReplaceEvent) {
-        return handler.getPlacHolderReplaceMent(placeholderReplaceEvent.getPlayer(),placeholderReplaceEvent.getPlaceholder());
+        String placeholdertrimmed = placeholderReplaceEvent.getPlaceholder().replace(PlaceHolderHandler.getIdentifier()+"_","");
+        return handler.getPlacHolderReplaceMent(placeholderReplaceEvent.getPlayer(),placeholdertrimmed);
     }
 }

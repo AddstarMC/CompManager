@@ -16,6 +16,12 @@ import java.util.List;
 public class PlaceHolderHandler {
     private CompPlugin plugin;
 
+    public static String getIdentifier() {
+        return identifier;
+    }
+
+    private static String identifier = "COMPMANAGER";
+
     public PlaceHolderHandler(CompPlugin plugin) {
         this.plugin = plugin;
     }

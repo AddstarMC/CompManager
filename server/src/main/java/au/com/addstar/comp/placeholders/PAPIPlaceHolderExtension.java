@@ -22,7 +22,7 @@ public class PAPIPlaceHolderExtension extends PlaceholderExpansion {
 
     @Override
     public String getIdentifier() {
-        return "COMPMANAGER";
+        return PlaceHolderHandler.getIdentifier();
     }
 
     @Override
