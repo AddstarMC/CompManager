@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.logging.Level;
 
 import static net.md_5.bungee.api.ChatMessageType.SYSTEM;
 
@@ -238,6 +239,7 @@ public class NotificationManager {
 		}catch (ExecutionException | InterruptedException e){
 			e.printStackTrace();
 		}
+		if(players != null) {
 			for (Player player : players) {
 				List<Notification> notifications = findApplicableNotifications(player);
 
@@ -254,6 +256,9 @@ public class NotificationManager {
 
 				sendMessage(player, toDisplay.formatMessage(compManager), broadcastLocation, broadcastDisplayTime);
 			}
+		}else{
+			CompPlugin.instance.getLogger().log(Level.WARNING,"Synchronous Call in Notifications returned null");
+		}
 		++broadcastIndex;
 		nextBroadcastTime = System.currentTimeMillis() + broadcastInterval;
 	}
