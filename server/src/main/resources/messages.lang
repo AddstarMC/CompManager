@@ -44,6 +44,7 @@ vote.denied.no-plot = &cSorry, you need to stand on a comp plot to vote
 vote.denied.no-owner = &cSorry, this plot is not owned. Please choose another plot
 vote.denied.revote = &cSorry, revoting is not permitted in this comp
 vote.done = &aYour vote has been accepted, thank you
+vote.fair = &aPlease vote fairly based on what you see in front of you.
 
 #Teleport Messages
 teleport.no.more.plots = &cSorry, there are no more plots to go to.

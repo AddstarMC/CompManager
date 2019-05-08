@@ -1,8 +1,11 @@
 package au.com.addstar.comp.gui.listeners;
 
 import au.com.addstar.comp.CompPlugin;
+import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
+
+import com.github.intellectualsites.plotsquared.plot.flag.Flag;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 
@@ -51,7 +54,14 @@ public class PlotMoveClickListener implements ButtonClickListener {
         if (tpPlot != null) {
             tpPlot.teleportPlayer(PlotPlayer.from(player));
             player.sendMessage(messages.get("teleport.next.plot"));
-            player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()).getName());
+            if(CompPlugin.instance.getCompManager().getState() == CompState.Voting && CompPlugin.instance.getConfig().getBoolean("showOwnerNameWhenVoting",true)) {
+                player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()));
+            }
+            if(CompPlugin.instance.getCompManager().getState() != CompState.Voting){
+                player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()));
+            } else {
+                player.sendMessage(messages.get("vote.fair"));
+            }
         }
     }
 
