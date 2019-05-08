@@ -357,6 +357,7 @@ public class NotificationManager {
 			case Subtitle:
 				int display = Math.toIntExact(displayTime);
 				Title subtitle = new Title.Builder().subtitle(component)
+                        .title(TextComponent.fromLegacyText(""))
 						.fadeIn(Title.DEFAULT_FADE_IN)
 						.stay(display)
 						.fadeOut(Title.DEFAULT_FADE_OUT)
