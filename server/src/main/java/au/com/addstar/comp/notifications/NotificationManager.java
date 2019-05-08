@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -250,7 +251,7 @@ public class NotificationManager {
 	 */
 	private void updateRefreshers() {
 		Iterator<Long> it = displayRefreshers.keySet().iterator();
-		
+		List<Long> expired = new ArrayList<>();
 		while (it.hasNext()) {
 			Long key = it.next();
 			
@@ -259,8 +260,11 @@ public class NotificationManager {
 			}
 			
 			if (System.currentTimeMillis() > key) {
-				it.remove();
+				expired.add(key);
 			}
+		}
+		for(Long key:expired){
+			displayRefreshers.removeAll(key);
 		}
 	}
 	
