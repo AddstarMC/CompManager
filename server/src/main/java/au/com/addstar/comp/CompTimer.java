@@ -2,6 +2,8 @@ package au.com.addstar.comp;
 
 import au.com.addstar.comp.notifications.NotificationManager;
 
+import org.jetbrains.annotations.Async;
+
 public class CompTimer implements Runnable {
 	private final CompManager compManager;
 	private final NotificationManager notifications;
@@ -13,8 +15,13 @@ public class CompTimer implements Runnable {
 		this.notifications = notifications;
 		lastState = CompState.Closed;
 	}
-	
+
+	/**
+	 * This is now called run on an asyc thread but the messages are sent synchronously
+	 *
+	 */
 	@Override
+	@Async.Execute
 	public void run() {
 		if (compManager.getCurrentComp() == null) {
 			return;
@@ -28,7 +35,6 @@ public class CompTimer implements Runnable {
 	
 	private void doStateNotifications(Competition comp) {
 		CompState state = comp.getState();
-		
 		if (state != lastState) {
 			notifications.broadcastStateChange(state);
 			compManager.notifyStateChange(lastState);

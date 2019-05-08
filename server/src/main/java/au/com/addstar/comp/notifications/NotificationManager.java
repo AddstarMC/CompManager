@@ -6,6 +6,7 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
 
 import au.com.addstar.comp.CompManager;
+import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.util.CompUtils;
 
@@ -20,13 +21,19 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Async;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
@@ -53,7 +60,7 @@ public class NotificationManager {
 	private Map<CompState, StateChangeNotification> stateStateChangeNotifications;
 	
 	// Map of end time to runnable
-	private TreeMultimap<Long, Runnable> displayRefreshers;
+	private final TreeMultimap<Long, Runnable> displayRefreshers;
 	
 	public NotificationManager(File notificationsFile, CompManager compManager) {
 		this.notificationsFile = notificationsFile;
@@ -215,9 +222,9 @@ public class NotificationManager {
 	/**
 	 * Sends out periodic broadcasts if the timer has elapsed
 	 */
+	@Async.Execute
 	public void doBroadcasts() {
 		updateRefreshers();
-		
 		if (System.currentTimeMillis() < nextBroadcastTime) {
 			return;
 		}
@@ -225,23 +232,28 @@ public class NotificationManager {
 		// Since notifications can have conditions, this makes notifications an almost
 		// per player experience so its easier to just determine what notifications each
 		// player can have and go from there
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			List<Notification> notifications = findApplicableNotifications(player);
-			
-			if (notifications.isEmpty()) {
-				continue;
-			}
-			
-			Notification toDisplay;
-			if (broadcastInSequence) {
-				toDisplay = notifications.get(broadcastIndex % notifications.size());
-			} else {
-				toDisplay = notifications.get(RandomUtils.nextInt(notifications.size()));
-			}
-			
-			sendMessage(player, toDisplay.formatMessage(compManager), broadcastLocation, broadcastDisplayTime);
+		Collection<? extends Player> players = null;
+		try {
+			players = Bukkit.getServer().getScheduler().callSyncMethod(CompPlugin.instance, Bukkit::getOnlinePlayers).get();
+		}catch (ExecutionException | InterruptedException e){
+			e.printStackTrace();
 		}
-		
+			for (Player player : players) {
+				List<Notification> notifications = findApplicableNotifications(player);
+
+				if (notifications.isEmpty()) {
+					continue;
+				}
+
+				Notification toDisplay;
+				if (broadcastInSequence) {
+					toDisplay = notifications.get(broadcastIndex % notifications.size());
+				} else {
+					toDisplay = notifications.get(RandomUtils.nextInt(notifications.size()));
+				}
+
+				sendMessage(player, toDisplay.formatMessage(compManager), broadcastLocation, broadcastDisplayTime);
+			}
 		++broadcastIndex;
 		nextBroadcastTime = System.currentTimeMillis() + broadcastInterval;
 	}
@@ -250,21 +262,23 @@ public class NotificationManager {
 	 * Periodically refresh action bar displays as they only stay for a small time
 	 */
 	private void updateRefreshers() {
-		Iterator<Long> it = displayRefreshers.keySet().iterator();
 		List<Long> expired = new ArrayList<>();
-		while (it.hasNext()) {
-			Long key = it.next();
-			
-			for (Runnable refresher : displayRefreshers.get(key)) {
-				refresher.run();
+		synchronized (displayRefreshers) {
+			Iterator<Long> it = displayRefreshers.keySet().iterator();
+			while (it.hasNext()) {
+				Long key = it.next();
+
+				for (Runnable refresher : displayRefreshers.get(key)) {
+					Bukkit.getServer().getScheduler().runTask(CompPlugin.instance,refresher);
+				}
+
+				if (System.currentTimeMillis() > key) {
+					expired.add(key);
+				}
 			}
-			
-			if (System.currentTimeMillis() > key) {
-				expired.add(key);
+			for (Long key : expired) {
+				displayRefreshers.removeAll(key);
 			}
-		}
-		for(Long key:expired){
-			displayRefreshers.removeAll(key);
 		}
 	}
 	
@@ -285,23 +299,29 @@ public class NotificationManager {
 	 * @param displayTime The time in ms to display the message for. Not applicable to Chat or SystemMessage targets
 	 * @param predicate A predicate to select players who will receive the broadcast
 	 */
+	@Async.Execute
 	public void broadcast(String message, DisplayTarget target, long displayTime, Predicate<? super Player> predicate) {
 		final BaseComponent[] component = TextComponent.fromLegacyText(message);
-
-		for (final Player player : Bukkit.getOnlinePlayers()) {
-			if (!predicate.test(player)) {
-				continue;
+		try {
+			for (final Player player : Bukkit.getScheduler().callSyncMethod(CompPlugin.instance, Bukkit::getOnlinePlayers).get()) {
+				if (!predicate.test(player)) {
+					continue;
+				}
+				sendMessage(player, component, target, displayTime);
 			}
-			sendMessage(player,component,target,displayTime);
+		}catch (ExecutionException | InterruptedException e){
+			e.printStackTrace();
 		}
 	}
 	private void refreshActionBar(Player player,BaseComponent[] component,long remainingtime){
 		long refreshTime = remainingtime - ActionBarDisplayTime;
 		if (refreshTime >= 50) {
-			displayRefreshers.put(System.currentTimeMillis() + refreshTime, () -> {
-				player.sendActionBar(TextComponent.toLegacyText(component));
-				refreshActionBar(player,component,refreshTime);
-			});
+			synchronized (displayRefreshers) {
+				displayRefreshers.put(System.currentTimeMillis() + refreshTime, () -> {
+					player.sendActionBar(TextComponent.toLegacyText(component));
+					refreshActionBar(player, component, refreshTime);
+				});
+			}
 		}
 	}
 	public void sendMessage(final Player player, String message, DisplayTarget target, long displayTime) {
@@ -316,7 +336,7 @@ public class NotificationManager {
          * @param displayTime The time in ms to display the message for. Not applicable to Chat or SystemMessage targets
          */
 	public void sendMessage(final Player player, BaseComponent[] component, DisplayTarget target, long displayTime) {
-
+		Bukkit.getServer().getScheduler().runTask(CompPlugin.instance,()->{
 		switch (target) {
 			case ActionBar:
 				player.sendActionBar(TextComponent.toLegacyText(component));
@@ -348,6 +368,7 @@ public class NotificationManager {
 				player.sendTitle(title);
 				break;
 		}
+		});
 	}
 
 	public void broadcastStateChange(CompState newState) {

@@ -132,7 +132,7 @@ public class CompPlugin extends JavaPlugin {
 			confirmationManager.expireConfirmations();
 			remoteJoinManager.expireHandlers();
 		}, 20, 20);
-		Bukkit.getScheduler().runTaskTimer(this, new CompTimer(compManager, notificationManager), 10, 10);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CompTimer(compManager, notificationManager), 10, 10);
 		Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
 		redisManager.setCommandReceiver(new CommandHandler(compManager));
 		
