@@ -8,24 +8,29 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created for use for the Add5tar MC Minecraft server
  * Created by narimm on 9/05/2019.
  */
 public class PlaceHolderHandler {
-    private static final String identifier = "COMPMANAGER";
+    private static final String identifier = "COMPMANAGER".toLowerCase();
     private final CompPlugin plugin;
 
     public PlaceHolderHandler(CompPlugin plugin) {
         this.plugin = plugin;
     }
 
-    static String getIdentifier() {
+    protected static String getIdentifier() {
         return identifier;
     }
 
-    static List<String> getPlaceholders(){
+    protected static List<String> getFullPlaceHolders(){
+        return getPlaceholders().stream().map(s -> identifier+"_"+s).collect(Collectors.toList());
+    }
+
+    protected static List<String> getPlaceholders(){
         List<String> r = new ArrayList<>();
         r.add("theme");
         r.add("description");
@@ -42,8 +47,16 @@ public class PlaceHolderHandler {
         return r;
     }
 
-    String  getPlacHolderReplaceMent(Player player,String s){
-        switch(s.toLowerCase()){
+    private String trim(String s){
+        if(s.toLowerCase().startsWith(identifier+"_")){
+            s = s.toLowerCase().replace(identifier+"_","");
+        }
+        return s;
+    }
+
+    protected String  getPlacHolderReplaceMent(Player player,String s){
+        String filtered = trim(s);
+        switch(filtered){
             case "theme":
                 return plugin.getCompManager().getCurrentComp().getTheme();
             case "description":

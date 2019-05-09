@@ -18,26 +18,25 @@ import javax.annotation.Nullable;
  * Created by narimm on 9/05/2019.
  */
 public class PlaceHolderHandler {
+    private final static String identifier = "COMPLOBBYMANAGER".toLowerCase();
     private final LobbyPlugin plugin;
     private @Nullable
     final Set<String> allServers;
-
-
-    static String getIdentifier() {
-        return identifier;
-    }
-
-    private final static String identifier = "COMPLOBBYMANAGER";
 
     public PlaceHolderHandler(LobbyPlugin plugin) {
         this.plugin = plugin;
         allServers = plugin.getManager().getAllOfflineServers();
     }
-    List<String> getFullPlaceHolders(){
+
+    static String getIdentifier() {
+        return identifier;
+    }
+
+    protected List<String> getFullPlaceHolders(){
         return getPlaceholders().stream().map(s -> identifier+"_"+s).collect(Collectors.toList());
     }
 
-    List<String> getPlaceholders(){
+    protected List<String> getPlaceholders(){
         List<String> r = new ArrayList<>();
         if(allServers != null)
         for(String server: allServers){
@@ -60,8 +59,8 @@ public class PlaceHolderHandler {
         return r;
     }
     private String trim(String s){
-        if(s.startsWith(identifier+"_")){
-            s = s.replace(identifier+"_","");
+        if(s.toLowerCase().startsWith(identifier+"_")){
+            s = s.toLowerCase().replace(identifier+"_","");
         }
         return s;
     }
@@ -85,7 +84,7 @@ public class PlaceHolderHandler {
         }
         else return o;
     }
-    String onPlaceholderRequest(Player player, String s) {
+    protected String onPlaceholderRequest(Player player, String s) {
         String serverID;
         try {
             serverID = getServerId(s);
@@ -94,9 +93,9 @@ public class PlaceHolderHandler {
             return null;
         }
         String filteredString = getPlaceHolderRaw(s);
-        if ("onlineservers".equals(filteredString.toLowerCase()))
+        if ("onlineservers".equals(filteredString))
             return plugin.getManager().getServerIds().toString();
-        if ("allservers".equals(filteredString.toLowerCase()))
+        if ("allservers".equals(filteredString))
             return allServers!=null?allServers.toString():null;
         if(plugin.getManager().getServer(serverID).isOnline()) {
             switch (filteredString) {
