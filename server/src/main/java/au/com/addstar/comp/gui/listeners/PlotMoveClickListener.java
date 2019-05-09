@@ -21,7 +21,7 @@ public class PlotMoveClickListener implements ButtonClickListener {
 
     private final P2Bridge bridge;
     private final Messages messages;
-    private boolean prev;
+    private final boolean prev;
 
     public PlotMoveClickListener(CompPlugin plugin) {
         this(plugin,false);

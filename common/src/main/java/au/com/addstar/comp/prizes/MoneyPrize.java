@@ -12,7 +12,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  * Represents a cash prize awarded through an economy plugin
  */
 public class MoneyPrize extends BasePrize {
-	private double amount;
+	private final double amount;
 	
 	public MoneyPrize(double amount) {
 		Preconditions.checkArgument(amount > 0);

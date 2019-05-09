@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class HotbarButton extends HotbarComponent {
 
-    private ArrayList<ButtonClickListener> listeners = new ArrayList<>();
+    private final ArrayList<ButtonClickListener> listeners = new ArrayList<>();
     private Icon icon;
     private String title = "Button";
     private Lore lore = new Lore("");

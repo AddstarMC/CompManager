@@ -27,13 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -269,12 +265,9 @@ public class NotificationManager {
 	private void updateRefreshers() {
 		List<Long> expired = new ArrayList<>();
 		synchronized (displayRefreshers) {
-			Iterator<Long> it = displayRefreshers.keySet().iterator();
-			while (it.hasNext()) {
-				Long key = it.next();
-
+			for (Long key : displayRefreshers.keySet()) {
 				for (Runnable refresher : displayRefreshers.get(key)) {
-					Bukkit.getServer().getScheduler().runTask(CompPlugin.instance,refresher);
+					Bukkit.getServer().getScheduler().runTask(CompPlugin.instance, refresher);
 				}
 
 				if (System.currentTimeMillis() > key) {

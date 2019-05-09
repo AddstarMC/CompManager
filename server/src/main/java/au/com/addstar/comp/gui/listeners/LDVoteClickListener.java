@@ -17,8 +17,8 @@ import java.util.UUID;
  */
 public class LDVoteClickListener implements ButtonClickListener {
 
-    private LDVote.Type type;
-    private Messages messages;
+    private final LDVote.Type type;
+    private final Messages messages;
 
     public LDVoteClickListener(LDVote.Type type) {
         this.type = type;
@@ -54,6 +54,7 @@ public class LDVoteClickListener implements ButtonClickListener {
                 return;
             }
         }
+        @SuppressWarnings("unchecked")
         VoteStorage<Vote> storage = (VoteStorage<Vote>)CompPlugin.instance.getCompManager().getVoteStorage();
         Vote vote;
         try {

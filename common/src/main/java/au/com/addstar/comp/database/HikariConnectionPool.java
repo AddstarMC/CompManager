@@ -6,12 +6,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -20,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class HikariConnectionPool {
     private HikariDataSource dataSource;
-    private File propertiesFile;
+    private final File propertiesFile;
 
     public HikariConnectionPool(ConfigurationSection section, File directory) {
 

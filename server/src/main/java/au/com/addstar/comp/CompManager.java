@@ -363,7 +363,7 @@ public class CompManager {
 	}
 	
 	// Plots reserved for players entering the comp (but not finished entering)
-	private Set<Plot> reservedPlots = Sets.newHashSet();
+	private final Set<Plot> reservedPlots = Sets.newHashSet();
 	
 	/**
 	 * Tries to enter a player into the current comp.

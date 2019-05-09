@@ -17,17 +17,17 @@ import java.util.Map;
 public class BroadcastReminder implements Runnable {
 	private final CompManager manager;
 
-	private String bungeeChatBroadcastChannel;
+	private final String bungeeChatBroadcastChannel;
 
 	/**
 	 * Map between compId and the last "Enter this comp" broadcast
 	 */
-	private Map<Integer, Long> lastRunningBroadcast = Maps.newHashMap();
+	private final Map<Integer, Long> lastRunningBroadcast = Maps.newHashMap();
 
 	/**
 	 * Map between compId and the last "Vote for this comp" broadcast
 	 */
-	private Map<Integer, Long> lastVotingBroadcast = Maps.newHashMap();
+	private final Map<Integer, Long> lastVotingBroadcast = Maps.newHashMap();
 
 	/**
 	 * Constructor
@@ -98,10 +98,10 @@ public class BroadcastReminder implements Runnable {
 	/**
 	 * Send a server-wide broadcast
 	 *
-	 * @param compId
-	 * @param endDate
-	 * @param lastBroadcastMap
-	 * @param broadcastMessage
+	 * @param compId The Id to report
+	 * @param endDate the end date
+	 * @param lastBroadcastMap last broadcast
+	 * @param broadcastMessage the message
 	 */
 	private void broadcastNow(
 			Integer compId,
@@ -222,8 +222,8 @@ public class BroadcastReminder implements Runnable {
 	/**
 	 * Convert the duration between two millisecond dates, then convert to minutes
 	 *
-	 * @param startDate
-	 * @param endDate
+	 * @param startDate THE START
+	 * @param endDate the end
 	 * @return Duration, in minutes
 	 */
 	private double timespanMinutes(long startDate, long endDate) {

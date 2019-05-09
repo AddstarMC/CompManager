@@ -77,13 +77,10 @@ public class WhitelistHandler {
 	 * @throws SQLException Thrown if an error occurs when querying the database
 	 */
 	public void add(UUID playerId) throws SQLException {
-		Connection handler = pool.getConnection();
-		try {
+		try (Connection handler = pool.getConnection()) {
 			PreparedStatement statement = handler.prepareStatement(STATEMENT_ADD.getSQL());
-			statement.setString(1,idToString(playerId));
+			statement.setString(1, idToString(playerId));
 			statement.executeUpdate();
-		} finally {
-			handler.close();
 		}
 	}
 	
@@ -102,13 +99,10 @@ public class WhitelistHandler {
 	 * @throws SQLException Thrown if an error occurs when querying the database
 	 */
 	public void remove(UUID playerId) throws SQLException {
-		Connection handler = pool.getConnection();
-		try {
+		try (Connection handler = pool.getConnection()) {
 			PreparedStatement statement = handler.prepareStatement(STATEMENT_REMOVE.getSQL());
-			statement.setString(1,idToString(playerId));
+			statement.setString(1, idToString(playerId));
 			statement.executeUpdate();
-		} finally {
-			handler.close();
 		}
 	}
 	

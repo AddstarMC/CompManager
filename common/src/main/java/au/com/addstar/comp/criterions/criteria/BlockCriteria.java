@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
  * Created by Narimm on 1/02/2017.
  */
 public class BlockCriteria{
-private int number;
+private final int number;
 private Material material;
 
 public BlockCriteria(int number, Block block) {

@@ -48,13 +48,11 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong reading the votes
 	 */
 	public <T extends Vote> Collection<T> loadVotes(UUID player, Competition comp, AbstractVoteProvider<T> provider) throws SQLException {
-		Connection handler = null;
-		try {
-			handler = getPool().getConnection();
+		try (Connection handler = getPool().getConnection()) {
 			String sql;
 			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_GETALL_PLAYER.getSQL());
-			statement.setInt(1,comp.getCompId());
-			statement.setString(2,player.toString());
+			statement.setInt(1, comp.getCompId());
+			statement.setString(2, player.toString());
 			ResultSet rs = statement.executeQuery();
 			List<T> votes = Lists.newArrayList();
 			while (rs.next()) {
@@ -84,10 +82,6 @@ public class CompServerBackendManager extends CompBackendManager {
 			}
 
 			return votes;
-		} finally {
-			if (handler != null) {
-				handler.close();
-			}
 		}
 	}
 
@@ -100,12 +94,10 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong reading the votes
 	 */
 	public <T extends Vote> SetMultimap<UUID, T> loadVotes(Competition comp, AbstractVoteProvider<T> provider) throws SQLException {
-		Connection handler = null;
-		try {
-			handler = getPool().getConnection();
+		try (Connection handler = getPool().getConnection()) {
 			String sql;
 			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_GETALL_COMP.getSQL());
-			statement.setInt(1,comp.getCompId());
+			statement.setInt(1, comp.getCompId());
 			try (ResultSet rs = statement.executeQuery()) {
 				SetMultimap<UUID, T> votes = HashMultimap.create();
 				while (rs.next()) {
@@ -145,10 +137,6 @@ public class CompServerBackendManager extends CompBackendManager {
 
 				return votes;
 			}
-		} finally {
-			if (handler != null) {
-				handler.close();
-			}
 		}
 	}
 
@@ -161,21 +149,15 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong writing the vote
 	 */
 	public void addVote(UUID voter, Vote vote, Competition comp) throws SQLException {
-		Connection handler = null;
-		try {
-			handler = getPool().getConnection();
+		try (Connection handler = getPool().getConnection()) {
 			String sql;
 			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_ADD.getSQL());
-			statement.setInt(1,comp.getCompId());
-			statement.setString(2,voter.toString());
-			statement.setString(3,vote.getPlot().toString());
-			statement.setString(4,vote.getPlotOwner().toString());
-			statement.setInt(5,vote.toNumber());
+			statement.setInt(1, comp.getCompId());
+			statement.setString(2, voter.toString());
+			statement.setString(3, vote.getPlot().toString());
+			statement.setString(4, vote.getPlotOwner().toString());
+			statement.setInt(5, vote.toNumber());
 			statement.executeUpdate();
-		} finally {
-			if (handler != null) {
-				handler.close();
-			}
 		}
 	}
 
@@ -187,19 +169,13 @@ public class CompServerBackendManager extends CompBackendManager {
 	 * @throws SQLException Thrown if something goes wrong clearing the vote
 	 */
 	public void removeVote(UUID voter, PlotId plot, Competition comp) throws SQLException {
-		Connection handler = null;
-		try {
-			handler = getPool().getConnection();
+		try (Connection handler = getPool().getConnection()) {
 			String sql;
 			PreparedStatement statement = handler.prepareStatement(STATEMENT_VOTE_REMOVE.getSQL());
-			statement.setInt(1,comp.getCompId());
-			statement.setString(2,voter.toString());
-			statement.setString(3,plot.toString());
+			statement.setInt(1, comp.getCompId());
+			statement.setString(2, voter.toString());
+			statement.setString(3, plot.toString());
 			statement.executeUpdate();
-		} finally {
-			if (handler != null) {
-				handler.close();
-			}
 		}
 	}
 }

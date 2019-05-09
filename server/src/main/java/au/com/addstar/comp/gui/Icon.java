@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public class Icon {
 
-    ItemStack itemStack;
+    final ItemStack itemStack;
 
     public Icon(ItemStack itemStack) {
         this.itemStack = itemStack.clone();

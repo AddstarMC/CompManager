@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.google.common.base.Strings;
@@ -30,7 +29,7 @@ public class RedisManager {
 	
 	private final ConfigurationSection redisConfig;
 	
-	private Map<String, RedisQueryHandler> queryHandlers;
+	private final Map<String, RedisQueryHandler> queryHandlers;
 	
 	private RedisClient client;
 	private RedisPubSubAsyncCommands<String, String> subscribeConnection;

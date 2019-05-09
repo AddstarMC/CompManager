@@ -11,22 +11,21 @@ import java.util.List;
 
 /**
  * Created for use for the Add5tar MC Minecraft server
- * Created by benjamincharlton on 9/05/2019.
+ * Created by narimm on 9/05/2019.
  */
 public class PlaceHolderHandler {
-    private CompPlugin plugin;
-
-    public static String getIdentifier() {
-        return identifier;
-    }
-
-    private static String identifier = "COMPMANAGER";
+    private static final String identifier = "COMPMANAGER";
+    private final CompPlugin plugin;
 
     public PlaceHolderHandler(CompPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public static List<String> getPlaceholders(){
+    static String getIdentifier() {
+        return identifier;
+    }
+
+    static List<String> getPlaceholders(){
         List<String> r = new ArrayList<>();
         r.add("theme");
         r.add("description");
@@ -43,7 +42,7 @@ public class PlaceHolderHandler {
         return r;
     }
 
-    public String  getPlacHolderReplaceMent(Player player,String s){
+    String  getPlacHolderReplaceMent(Player player,String s){
         switch(s.toLowerCase()){
             case "theme":
                 return plugin.getCompManager().getCurrentComp().getTheme();

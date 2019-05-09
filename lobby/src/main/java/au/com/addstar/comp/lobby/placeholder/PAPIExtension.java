@@ -1,6 +1,6 @@
-package au.com.addstar.comp.placeholders;
+package au.com.addstar.comp.lobby.placeholder;
 
-import au.com.addstar.comp.CompPlugin;
+import au.com.addstar.comp.lobby.LobbyPlugin;
 
 import org.bukkit.entity.Player;
 
@@ -12,13 +12,13 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
  * Created for the AddstarMC IT Project.
  * Created by Narimm on 7/05/2019.
  */
-public class PAPIPlaceHolderExtension extends PlaceholderExpansion {
+public class PAPIExtension extends PlaceholderExpansion {
 
-    public PAPIPlaceHolderExtension(CompPlugin plugin) {
+    public PAPIExtension(LobbyPlugin plugin) {
         this.plugin = plugin;
     }
 
-    private final CompPlugin plugin;
+    private final LobbyPlugin plugin;
 
     @Override
     public String getIdentifier() {
@@ -29,7 +29,6 @@ public class PAPIPlaceHolderExtension extends PlaceholderExpansion {
     public boolean persist(){
         return true;
     }
-
     @Override
     public String getPlugin() {
         return plugin.getName();
@@ -47,10 +46,10 @@ public class PAPIPlaceHolderExtension extends PlaceholderExpansion {
 
     @Override
     public List<String> getPlaceholders(){
-        return PlaceHolderHandler.getPlaceholders();
+        return plugin.getPlaceHolderHandler().getPlaceholders();
     }
     @Override
     public String onPlaceholderRequest(Player player, String s) {
-        return this.plugin.getPlaceHolderHandler().getPlacHolderReplaceMent(player,s);
+        return plugin.getPlaceHolderHandler().onPlaceholderRequest(player,s);
     }
 }

@@ -23,7 +23,7 @@ public class RemoteJoinManager implements RedisQueryHandler {
 	private final TreeMultimap<Long, UUID> expiryTime;
 	private final CompManager compManager;
 	
-	private long expiryLength;
+	private final long expiryLength;
 	
 	public RemoteJoinManager(CompManager compManager, long expiryLength) {
 		this.compManager = compManager;

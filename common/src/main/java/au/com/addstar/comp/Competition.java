@@ -15,7 +15,7 @@ public class Competition {
 	private CompState state;
 	
 	private String theme;
-	private List<BaseCriterion> criteria;
+	private final List<BaseCriterion> criteria;
 	
 	private long startDate;
 	private long endDate;

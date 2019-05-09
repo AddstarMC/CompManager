@@ -18,6 +18,9 @@ import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.lobby.commands.AgreeCommand;
 import au.com.addstar.comp.lobby.commands.CompAdminCommand;
+import au.com.addstar.comp.lobby.placeholder.PAPIExtension;
+import au.com.addstar.comp.lobby.placeholder.MVDWPlaceHolderExtension;
+import au.com.addstar.comp.lobby.placeholder.PlaceHolderHandler;
 import au.com.addstar.comp.lobby.signs.SignListener;
 import au.com.addstar.comp.lobby.signs.SignManager;
 import au.com.addstar.comp.lobby.signs.SignRefresher;
@@ -38,12 +41,18 @@ public class LobbyPlugin extends JavaPlugin {
 	private static String serverId;
 	public PluginManager pm = null;
 
+	public PlaceHolderHandler getPlaceHolderHandler() {
+		return placeHolderHandler;
+	}
+
+	private PlaceHolderHandler placeHolderHandler;
+
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
 		reloadConfig();
 		serverId = getConfig().getString("server-id","null");
-		if(serverId == "null"){
+		if(serverId.equals("null")){
 			getLogger().log(Level.WARNING,"You have no server-id configured - please update config");
 		}		databaseManager = new DatabaseManager(this);
 		try {
@@ -110,8 +119,13 @@ public class LobbyPlugin extends JavaPlugin {
 			broadcastChannel = null;
 			getLogger().log(Level.INFO, "BungeeChat not found! No cross server messages");
 		}
+		placeHolderHandler = new PlaceHolderHandler(this);
 		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			new CompPlaceHolder(this).register();
+			PAPIExtension holder = new PAPIExtension(this);
+			holder.register();
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
+			new MVDWPlaceHolderExtension(this);
 		}
 		// Register tasks
 		// TODO: Make refresh interval configurable

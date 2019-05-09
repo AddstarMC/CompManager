@@ -8,8 +8,8 @@ import com.google.common.base.Preconditions;
  * Represents a key prize awarded through the Treasures plugin
  */
 public class TreasureKeyPrize extends BasePrize {
-	private int count;
-	private String name;
+	private final int count;
+	private final String name;
 	
 	public TreasureKeyPrize(int keyCount, String keyName) {
 		Preconditions.checkArgument(keyCount > 0);

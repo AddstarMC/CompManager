@@ -1,6 +1,7 @@
 package au.com.addstar.comp;
 
 import au.com.addstar.comp.prizes.BasePrize;
+
 import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

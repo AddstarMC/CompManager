@@ -20,6 +20,8 @@ import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.redis.RedisManager;
 
+import javax.annotation.Nullable;
+
 public class CompManager {
 	private final CompBackendManager backend;
 	private final RedisManager redis;
@@ -31,7 +33,7 @@ public class CompManager {
 	 */
 	private ConfigurationSection broadcastSettings;
 
-	private Map<String, CompServer> servers;
+	private final Map<String, CompServer> servers;
 
 	public CompManager(CompBackendManager backend, RedisManager redis, Plugin plugin, Messages messages) {
 		this.backend = backend;
@@ -53,6 +55,16 @@ public class CompManager {
 		map.keySet().removeIf(key -> !keys.contains(key));
 	}
 
+	@Nullable
+	public Set<String> getAllOfflineServers(){
+		try {
+			Map<String, Optional<Integer>> map = backend.getServerComps();
+			return map.keySet();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	/**
 	 * Loads all competitions for each known server
 	 * Also reloads the config.yml file and messages.lang
@@ -154,8 +166,7 @@ public class CompManager {
 	 * @return Interval, in minutes
 	 */
 	public int getGlobalBroadcastRunningMin() {
-		int value = stringToInt(broadcastSettings, "global-broadcast-running-min", 90);
-		return value;
+		return stringToInt(broadcastSettings, "global-broadcast-running-min", 90);
 	}
 
 	/**
@@ -164,8 +175,7 @@ public class CompManager {
 	 * @return Interval, in minutes
 	 */
 	public int getGlobalBroadcastRunningMax() {
-		int value = stringToInt(broadcastSettings, "global-broadcast-running-max", 240);
-		return value;
+		return stringToInt(broadcastSettings, "global-broadcast-running-max", 240);
 	}
 
 	/**
@@ -174,8 +184,7 @@ public class CompManager {
 	 * @return Interval, in minutes
 	 */
 	public int getGlobalBroadcastVotingMin() {
-		int value = stringToInt(broadcastSettings, "global-broadcast-voting-min", 90);
-		return value;
+		return stringToInt(broadcastSettings, "global-broadcast-voting-min", 90);
 	}
 
 	/**
@@ -184,8 +193,7 @@ public class CompManager {
 	 * @return Interval, in minutes
 	 */
 	public int getGlobalBroadcastVotingMax() {
-		int value = stringToInt(broadcastSettings, "global-broadcast-voting-max", 180);
-		return value;
+		return stringToInt(broadcastSettings, "global-broadcast-voting-max", 180);
 	}
 
 	/**
@@ -196,8 +204,7 @@ public class CompManager {
 	 * @return The formatted string
 	 */
 	public String getMessage(String id, Object... arguments) {
-		String formattedMsg = messages.get(id, arguments);
-		return formattedMsg;
+		return messages.get(id, arguments);
 	}
 
 	/**
@@ -219,8 +226,7 @@ public class CompManager {
 			return defaultValue;
 
 		try {
-			int value = Integer.parseInt(valueText);
-			return value;
+			return Integer.parseInt(valueText);
 		} catch (NumberFormatException e) {
 			return defaultValue;
 		}

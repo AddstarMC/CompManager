@@ -63,7 +63,7 @@ public class Messages {
 		}
 	}
 	
-	private static Pattern tokenPattern = Pattern.compile("\\{([^\\}]*?)\\}");
+	private static final Pattern tokenPattern = Pattern.compile("\\{([^\\}]*?)\\}");
 	
 	/**
 	 * Gets a message and replaces arguments

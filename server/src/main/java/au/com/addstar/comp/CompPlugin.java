@@ -46,7 +46,7 @@ public class CompPlugin extends JavaPlugin {
 	private NotificationManager notificationManager;
 	public Messages messages;
 	private RemoteJoinManager remoteJoinManager;
-	private static HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
+	private static final HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
 	private static String serverName;
 
 	public PlaceHolderHandler getPlaceHolderHandler() {
@@ -71,7 +71,7 @@ public class CompPlugin extends JavaPlugin {
 		reloadConfig();
 		instance = this;
 		serverName = getConfig().getString("server-id","null");
-		if(serverName == "null"){
+		if(serverName.equals("null")){
 			getLogger().log(Level.WARNING,"You have no server-id configured - please update config");
 		}
 		databaseManager = new DatabaseManager(this);

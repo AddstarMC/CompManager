@@ -11,7 +11,7 @@ import be.maximvdw.placeholderapi.PlaceholderReplacer;
  * Created by benjamincharlton on 9/05/2019.
  */
 public class MVDWPlaceHolderExtension implements PlaceholderReplacer {
-    private PlaceHolderHandler handler;
+    private final PlaceHolderHandler handler;
 
     public MVDWPlaceHolderExtension(CompPlugin plugin) {
         handler = plugin.getPlaceHolderHandler();
@@ -23,6 +23,7 @@ public class MVDWPlaceHolderExtension implements PlaceholderReplacer {
     @Override
     public String onPlaceholderReplace(PlaceholderReplaceEvent placeholderReplaceEvent) {
         String placeholdertrimmed = placeholderReplaceEvent.getPlaceholder().replace(PlaceHolderHandler.getIdentifier()+"_","");
-        return handler.getPlacHolderReplaceMent(placeholderReplaceEvent.getPlayer(),placeholdertrimmed);
+        String results = handler.getPlacHolderReplaceMent(placeholderReplaceEvent.getPlayer(),placeholdertrimmed);
+        return results!=null?results:"UNKNOWN";
     }
 }

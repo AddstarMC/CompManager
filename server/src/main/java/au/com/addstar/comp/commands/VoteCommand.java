@@ -76,7 +76,7 @@ public class VoteCommand implements TabExecutor {
 				return true;
 			}
 		}
-
+		@SuppressWarnings("unchecked")
 		VoteStorage<Vote> storage = (VoteStorage<Vote>)manager.getVoteStorage();
 		Vote vote;
 		try {

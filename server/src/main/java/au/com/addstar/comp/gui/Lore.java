@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class Lore
 {
-    private String[] lore;
+    private final String[] lore;
 
     public static Lore fromString(String string)
     {
@@ -27,8 +27,7 @@ public class Lore
     {
         String[] arrayOfString;
         int j = (arrayOfString = this.lore).length;
-        ArrayList<String> loreList = new ArrayList<>(Arrays.asList(arrayOfString).subList(0, j));
-        return loreList;
+        return new ArrayList<>(Arrays.asList(arrayOfString).subList(0, j));
     }
 
     public String toString()

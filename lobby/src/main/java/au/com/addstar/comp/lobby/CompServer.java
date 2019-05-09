@@ -96,7 +96,6 @@ public class CompServer {
 	
 	/**
 	 * Reloads this servers comp info
-	 * @throws SQLException Thrown if an error occurs in the backend
 	 */
 	public void reload() {
 		try {

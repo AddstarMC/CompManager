@@ -18,11 +18,10 @@ public class BlockIncludeCriterion extends BaseCriterion {
 
     @Override
     public String describe() {
-        String builder = "Required Block: " +
+        return "Required Block: " +
                 blockCriteria.getMaterial().name() +
                 " atleast " +
                 blockCriteria.getNumber();
-        return builder;
     }
 
     @Override
