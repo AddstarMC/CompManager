@@ -76,6 +76,10 @@ public class VoteCommand implements TabExecutor {
 				return true;
 			}
 		}
+		if(!manager.Voter.test(player)){
+			player.sendMessage("vote.denied.requirements");
+			return true;
+		}
 		@SuppressWarnings("unchecked")
 		VoteStorage<Vote> storage = (VoteStorage<Vote>)manager.getVoteStorage();
 		Vote vote;

@@ -45,7 +45,9 @@ public class VoteStorage<T extends Vote> {
 	 */
 	public void recordVote(final Player player, final T vote) throws IllegalArgumentException {
 		Preconditions.checkState(manager.getCurrentComp() != null, "No comp is set");
-
+		if(!manager.Voter.test(player)){
+			throw new IllegalArgumentException("Player does not meet the requirements to Vote");
+		}
 		Set<T> theirVotes = playerVotes.get(player.getUniqueId());
 		for (T existing : theirVotes) {
 			if (existing.getPlot().equals(vote.getPlot())) {

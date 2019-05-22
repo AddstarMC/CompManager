@@ -38,12 +38,10 @@ public class CompPlugin extends JavaPlugin {
 
 	public static CompPlugin instance;
 	private DatabaseManager databaseManager;
-	private WhitelistHandler whitelistHandler;
 	private CompManager compManager;
 	private RedisManager redisManager;
 	private P2Bridge bridge;
 	private ConfirmationManager confirmationManager;
-	private NotificationManager notificationManager;
 	public Messages messages;
 	private RemoteJoinManager remoteJoinManager;
 	private static final HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
@@ -98,7 +96,7 @@ public class CompPlugin extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Failed to load messages", e);
 			return;
 		}
-		whitelistHandler = new WhitelistHandler(databaseManager.getPool());
+		WhitelistHandler whitelistHandler = new WhitelistHandler(databaseManager.getPool());
 		try{
 			PlotAPI api = new PlotAPI();
 			bridge = new P2Bridge(api);
@@ -122,7 +120,7 @@ public class CompPlugin extends JavaPlugin {
 		if (!notificationsFile.exists()) {
 			saveResource("notifications.yml", false);
 		}
-		notificationManager = new NotificationManager(notificationsFile, compManager);
+		NotificationManager notificationManager = new NotificationManager(notificationsFile, compManager);
 		try {
 			notificationManager.reload();
 		} catch (IOException e) {
