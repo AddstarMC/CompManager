@@ -54,6 +54,10 @@ public class LDVoteClickListener implements ButtonClickListener {
                 return;
             }
         }
+        if(!CompPlugin.instance.getCompManager().Voter.test(player)){
+            player.sendMessage("vote.denied.requirements");
+            return;
+        }
         @SuppressWarnings("unchecked")
         VoteStorage<Vote> storage = (VoteStorage<Vote>)CompPlugin.instance.getCompManager().getVoteStorage();
         Vote vote;

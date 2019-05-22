@@ -44,7 +44,11 @@ public class CompManager {
 	 * A predicate you can use to check if a player has not entered the comp 
 	 */
 	public final Predicate<Player> NonEntrant;
-	
+	/*
+	 * A predicate that checks if a player is whitelisted and can vote.
+	 */
+	public final Predicate<Player> Voter;
+
 	private final CompServerBackendManager backend;
 	private final P2Bridge bridge;
 	private final Logger logger;
@@ -68,7 +72,18 @@ public class CompManager {
 				return false;
 			}
 		};
-		
+		Voter = player -> {
+			if(currentComp !=null && currentComp.getState() == CompState.Voting) {
+				try{
+					return whitelist.isWhitelisted(player);
+				}catch (SQLException e){
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		};
 		NonEntrant = Entrant.negate();
 		
 		voteStorage = new VoteStorage<>(VotingStrategies.getDefault(), this);
@@ -413,7 +428,7 @@ public class CompManager {
 		
 		return new EnterHandlerImpl(currentComp, target, player);
 	}
-	
+
 	private class EnterHandlerImpl extends EnterHandler {
 		public EnterHandlerImpl(Competition comp, Plot plot, OfflinePlayer player) {
 			super(comp, plot, player);
