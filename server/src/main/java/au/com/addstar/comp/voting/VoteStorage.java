@@ -22,7 +22,7 @@ public class VoteStorage<T extends Vote> {
     private final SetMultimap<PlotId, T> votes;
     private final SetMultimap<UUID, T> playerVotes;
 
-	private final CompManager manager;
+    private final CompManager manager;
 
     public VoteStorage(AbstractVotingStrategy<T> strategy, CompManager manager) {
         Preconditions.checkNotNull(strategy);
