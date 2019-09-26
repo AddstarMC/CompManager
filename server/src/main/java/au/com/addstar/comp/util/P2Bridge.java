@@ -19,7 +19,6 @@ import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
 import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 
-
 public class P2Bridge {
 	private final PlotAPI api;
 	
@@ -141,8 +140,8 @@ public class P2Bridge {
 			PlotPlayer wrappedPlayer = BukkitUtil.getPlayer(player.getPlayer());
 			plot.teleportPlayer(wrappedPlayer);
 		}
-		
-		api.getPlotSquared().getPlotManager(plot).claimPlot(plot.getArea(), plot);
+
+		api.getPlotSquared().getPlotManager(plot).claimPlot(plot);
 	}
 	
 	/**

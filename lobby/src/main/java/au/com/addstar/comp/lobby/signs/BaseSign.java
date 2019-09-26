@@ -53,7 +53,7 @@ public abstract class BaseSign {
 	public abstract void refresh();
 	
 	private Sign getState() {
-		if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN) {
+		if (block.getType() == Material.OAK_WALL_SIGN || block.getType() == Material.OAK_SIGN) {
 			if (signState == null) {
 				signState = (Sign)block.getState();
 			}
