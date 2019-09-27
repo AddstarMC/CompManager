@@ -8,7 +8,7 @@
         <build.number />
         <plugin.version>${project.version}-${build.number}</plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot.api.version>1.13</spigot.api.version>
+        <spigot.api.version>1.14</spigot.api.version>
         <spigot.version>1.14.4-R0.1-SNAPSHOT</spigot.version>
     </properties>
     <scm>
@@ -61,9 +61,16 @@
         <repository>
             <id>addstar-repo</id>
             <url>https://maven.addstar.com.au/artifactory/all-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>
+        <repository>
+            <id>maven-central</id>
+            <url>http://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
@@ -82,14 +89,6 @@
             </snapshots>
         </repository>
         <repository>
-            <id>dmulloy2-releases</id>
-            <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>p2</id>
             <name>Api Repo</name>
             <url>http://ci.athion.net/job/PlotSquared-Breaking/ws/mvn/</url>
@@ -99,21 +98,28 @@
             <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
-            <id>maven-central</id>
-            <url>http://repo1.maven.org/maven2/</url>
+            <id>destroystokyo-repo</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>dmulloy2-releases</id>
+            <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
     </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>${spigot.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
             <version>${spigot.version}</version>
             <scope>provided</scope>
         </dependency>

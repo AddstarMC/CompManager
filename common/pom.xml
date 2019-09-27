@@ -6,6 +6,7 @@
 		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>CompManager-common</artifactId>
+    <packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
