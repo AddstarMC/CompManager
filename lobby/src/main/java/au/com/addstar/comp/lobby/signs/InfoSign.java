@@ -70,9 +70,7 @@ public class InfoSign extends BaseSign {
 			displayPlotsLeft(server);
 			break;
 		case PlotsUsedTotal:
-			// TOFIX: Disabled for now - This is broken!
-			// This call causes server lockups due to thread locking issues on the RedisManager
-			//displayPlotsUsedTotal(server);
+			displayPlotsUsedTotal(server);
 			break;
 		case TimeEnd:
 			displayTimeEnd(server);
