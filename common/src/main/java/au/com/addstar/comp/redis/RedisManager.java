@@ -174,10 +174,9 @@ public class RedisManager {
 					break;
 				}
 			}
-			
-			// Remove expired futures
-			timeoutOldQueries();
 		}
+		// Remove expired futures
+		timeoutOldQueries();
 	}
 	
 	/**
