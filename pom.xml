@@ -101,7 +101,7 @@
             <id>destroystokyo-repo</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
-        <repository>
+        <!--<repository>
             <id>dmulloy2-releases</id>
             <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
             <releases>
@@ -114,7 +114,7 @@
         <repository>
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>
+        </repository>-->
     </repositories>
     <dependencies>
         <dependency>
