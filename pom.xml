@@ -69,7 +69,7 @@
         </repository>
         <repository>
             <id>maven-central</id>
-            <url>http://repo1.maven.org/maven2/</url>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
@@ -79,7 +79,7 @@
         <repository>
             <id>vault-repo</id>
             <name>Public Releases</name>
-            <url>http://nexus.hc.to/content/repositories/pub_releases/</url>
+            <url>https://nexus.hc.to/content/repositories/pub_releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -89,7 +89,7 @@
         </repository>
         <repository>
             <id>dmulloy2-releases</id>
-            <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
+            <url>https://repo.dmulloy2.net/content/repositories/releases/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -99,7 +99,7 @@
         </repository>
         <repository>
             <id>dmulloy2-repo</id>
-            <url>http://repo.dmulloy2.net/content/groups/public/</url>
+            <url>https://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
         <repository>
             <id>IntellectualSites</id>
@@ -107,7 +107,7 @@
         </repository>
         <repository>
             <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
             <id>mvdw-software</id>
