@@ -1,14 +1,14 @@
 package au.com.addstar.comp;
 
-import au.com.addstar.comp.CompPlugin;
-import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.gui.Hotbar;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
 import au.com.addstar.comp.voting.VotingStrategies;
 
-import com.github.intellectualsites.plotsquared.bukkit.events.PlayerEnterPlotEvent;
-import com.github.intellectualsites.plotsquared.bukkit.events.PlayerLeavePlotEvent;
 
+import com.google.common.eventbus.Subscribe;
+import com.plotsquared.core.events.PlayerEnterPlotEvent;
+import com.plotsquared.core.events.PlayerLeavePlotEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,17 +59,18 @@ public class HotbarListener implements Listener {
         }
     }
 
-    @EventHandler
+    @Subscribe
     public void onPlotEntry(PlayerEnterPlotEvent e){
         if (CompPlugin.instance.getCompManager().getState() != CompState.Voting) {
             return;
         }
-        showHotBar(e.getPlayer());
+        Player player = Bukkit.getPlayer(e.getPlotPlayer().getUUID());
+        showHotBar(player);
     }
 
     private void showHotBar(Player player){
         if (!CompPlugin.getCurrentHotbars().containsKey(player)) {
-            AbstractVotingStrategy strategy = VotingStrategies.getStrategy(CompPlugin.instance.getCompManager().getCurrentComp().getVotingStrategy());
+            AbstractVotingStrategy<?> strategy = VotingStrategies.getStrategy(CompPlugin.instance.getCompManager().getCurrentComp().getVotingStrategy());
             if(strategy ==  null){
                 strategy = VotingStrategies.getDefault();
             }
@@ -85,8 +86,9 @@ public class HotbarListener implements Listener {
     }
 
     public void onPlotExit(PlayerLeavePlotEvent e){
-        if (CompPlugin.getCurrentHotbars().containsKey(e.getPlayer())) {
-            removePlayerHotbar(e.getPlayer());
+        Player player = Bukkit.getPlayer(e.getPlotPlayer().getUUID());
+        if (CompPlugin.getCurrentHotbars().containsKey(player)) {
+            removePlayerHotbar(player);
         }
     }
 

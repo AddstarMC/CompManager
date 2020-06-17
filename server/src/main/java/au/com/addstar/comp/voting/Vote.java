@@ -1,6 +1,7 @@
 package au.com.addstar.comp.voting;
 
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
+
+import com.plotsquared.core.plot.PlotId;
 
 import java.util.UUID;
 

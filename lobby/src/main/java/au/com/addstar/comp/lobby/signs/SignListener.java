@@ -20,15 +20,17 @@ public class SignListener implements Listener {
 		this.manager = manager;
 	}
 	
-	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=false)
+	@EventHandler(priority=EventPriority.LOW)
 	public void onClick(PlayerInteractEvent event) {
 		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
 		
 		Block block = event.getClickedBlock();
-		if (block.getType() != Material.OAK_WALL_SIGN && block.getType() != Material.OAK_SIGN)
-		{
+		if(block == null ) {
+			return;
+		}
+		if (block.getType() != Material.OAK_WALL_SIGN && block.getType() != Material.OAK_SIGN) {
 			return;
 		}
 		

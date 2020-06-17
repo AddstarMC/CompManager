@@ -2,14 +2,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>au.com.addstar</groupId>
     <artifactId>CompManager-parent</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <build.number />
         <plugin.version>${project.version}-${build.number}</plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spigot.api.version>1.14</spigot.api.version>
-        <spigot.version>1.14.4-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.15.2-R0.1-SNAPSHOT</spigot.version>
     </properties>
     <scm>
         <connection>scm:git:git@github.com:AddstarMC/CompManager.git</connection>
@@ -46,7 +46,6 @@
         <module>lobby</module>
         <module>common</module>
     </modules>
-
     <repositories>
         <repository>
             <id>addstar-release-repo</id>
@@ -89,19 +88,6 @@
             </snapshots>
         </repository>
         <repository>
-            <id>p2</id>
-            <name>Api Repo</name>
-            <url>http://ci.athion.net/job/PlotSquared-Breaking/ws/mvn/</url>
-        </repository>
-        <repository>
-            <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-        </repository>
-        <repository>
-            <id>destroystokyo-repo</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
-        </repository>
-        <!--<repository>
             <id>dmulloy2-releases</id>
             <url>http://repo.dmulloy2.net/content/repositories/releases/</url>
             <releases>
@@ -114,8 +100,22 @@
         <repository>
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
-        </repository>-->
+        </repository>
+        <repository>
+            <id>IntellectualSites</id>
+            <url>https://mvn.intellectualsites.com/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
+        <repository>
+            <id>mvdw-software</id>
+            <name>MVdW Public Repositories</name>
+            <url>http://repo.mvdw-software.be/content/groups/public/</url>
+        </repository>
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
@@ -126,7 +126,7 @@
         <dependency>
             <groupId>au.com.addstar</groupId>
             <artifactId>Monolith</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.6.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

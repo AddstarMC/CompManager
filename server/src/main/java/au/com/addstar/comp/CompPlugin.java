@@ -8,11 +8,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.com.addstar.comp.gui.Hotbar;
+import com.plotsquared.core.api.PlotAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.intellectualsites.plotsquared.api.PlotAPI;
 import com.lambdaworks.redis.RedisException;
 
 import au.com.addstar.comp.commands.AgreeCommand;
@@ -138,8 +138,12 @@ public class CompPlugin extends JavaPlugin {
         registerQueryHandlers();
 
         // Start listeners
-        Bukkit.getPluginManager().registerEvents(new EventListener(whitelistHandler, getLogger(), compManager, bridge, messages), this);
-        Bukkit.getPluginManager().registerEvents(new HotbarListener(this), this);
+        EventListener listener = new EventListener(whitelistHandler, getLogger(), compManager, bridge, messages);
+        Bukkit.getPluginManager().registerEvents(listener, this);
+        bridge.registerPlotListener(listener);
+        HotbarListener hbList = new HotbarListener(this);
+        Bukkit.getPluginManager().registerEvents(hbList, this);
+        bridge.registerPlotListener(hbList);
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             confirmationManager.expireConfirmations();
             remoteJoinManager.expireHandlers();

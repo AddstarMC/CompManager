@@ -9,6 +9,7 @@ import au.com.addstar.comp.gui.*;
 import au.com.addstar.comp.gui.listeners.ButtonClickListener;
 import au.com.addstar.comp.gui.listeners.LDVoteClickListener;
 import au.com.addstar.comp.gui.listeners.PlotMoveClickListener;
+import com.plotsquared.core.plot.PlotId;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 
@@ -22,7 +23,6 @@ import au.com.addstar.comp.voting.Placement;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.AbstractVotingStrategy;
 
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
 /**
  * The like / dislike strategy. Players can either like or dislike

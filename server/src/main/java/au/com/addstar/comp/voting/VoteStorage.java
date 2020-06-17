@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import au.com.addstar.comp.CompManager;
 import au.com.addstar.comp.CompPlugin;
+import com.plotsquared.core.plot.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -14,7 +15,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
 public class VoteStorage<T extends Vote> {
     private final AbstractVotingStrategy<T> strategy;

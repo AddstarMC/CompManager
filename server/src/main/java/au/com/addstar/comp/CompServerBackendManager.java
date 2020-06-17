@@ -8,8 +8,7 @@ import au.com.addstar.comp.voting.Vote;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
-
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
+import com.plotsquared.core.plot.PlotId;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,30 +58,33 @@ public class CompServerBackendManager extends CompBackendManager {
 				String rawPlotId = rs.getString("PlotID");
 				String rawPlotOwnerUUID = rs.getString("UUID");
 				int voteValue = rs.getInt("Vote");
-
-				PlotId plot = PlotId.fromString(rawPlotId);
-
-				UUID plotowner;
 				try {
-					plotowner = UUID.fromString(rawPlotOwnerUUID);
-				} catch (IllegalArgumentException e) {
-					// It's fine to have invalid plotowners stored (will happen when this change is first deployed)
-					plotowner = null;
-				}
-
-				T vote;
-				try {
-					vote = provider.loadVote(plot, plotowner, voteValue);
+					T vote = getVote(rawPlotId,rawPlotOwnerUUID,voteValue,provider);
+					votes.add(vote);
 				} catch (IllegalArgumentException e) {
 					// Drop invalid votes
 					continue;
 				}
 
-				votes.add(vote);
 			}
 
 			return votes;
 		}
+	}
+
+	private <T extends  Vote> T getVote(String rawPlotId, String rawPlotOwnerUUID, int voteValue,AbstractVoteProvider<T> provider) throws IllegalArgumentException{
+		PlotId plot = PlotId.fromString(rawPlotId);
+
+		UUID plotowner;
+		try {
+			plotowner = UUID.fromString(rawPlotOwnerUUID);
+		} catch (IllegalArgumentException e) {
+			// It's fine to have invalid plotowners stored (will happen when this change is first deployed)
+			plotowner = null;
+		}
+
+		T vote = provider.loadVote(plot, plotowner, voteValue);
+		return vote;
 	}
 
 	/**
@@ -113,26 +115,15 @@ public class CompServerBackendManager extends CompBackendManager {
 						// Drop invalid votes
 						continue;
 					}
-
-					PlotId plot = PlotId.fromString(rawPlotId);
-
-					UUID plotowner;
-					try {
-						plotowner = UUID.fromString(rawPlotOwnerUUID);
-					} catch (IllegalArgumentException e) {
-						// It's fine to have invalid plotowners stored (will happen when this change is first deployed)
-						plotowner = null;
-					}
-
 					T vote;
 					try {
-						vote = provider.loadVote(plot, plotowner, voteValue);
+						vote = getVote(rawPlotId,rawPlotOwnerUUID,voteValue,provider);
+						votes.put(id, vote);
 					} catch (IllegalArgumentException e) {
 						// Drop invalid votes
 						continue;
 					}
 
-					votes.put(id, vote);
 				}
 
 				return votes;

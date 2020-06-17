@@ -2,8 +2,8 @@ package au.com.addstar.comp.voting.likedislike;
 
 import au.com.addstar.comp.voting.Vote;
 
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
+import com.plotsquared.core.plot.PlotId;
 import org.bukkit.DyeColor;
 
 import java.util.UUID;

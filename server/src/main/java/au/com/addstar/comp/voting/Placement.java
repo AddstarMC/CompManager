@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
+import com.plotsquared.core.plot.PlotId;
 
 public class Placement {
 	private final Set<PlotId> plots;

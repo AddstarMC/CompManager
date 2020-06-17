@@ -138,12 +138,9 @@ public class CompServer {
 	 * @return A future that returns the number of entrants
 	 */
 	public ListenableFuture<Integer> getEntrantCount() {
-		//ListenableFuture<String> future = redis.query(serverId, "entrant_count");
-		//return Futures.transform(future, Integer::valueOf);
-
-		// The above code causes server lockups due to thread locking issues on the RedisManager
-		// TOFIX: Temporary hack to always return 0
-		return Futures.immediateFuture(0);
+		ListenableFuture<String> future = redis.query(serverId, "entrant_count");
+		
+		return Futures.transform(future, Integer::valueOf);
 	}
 	
 	/**

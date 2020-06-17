@@ -11,10 +11,10 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.util.CompUtils;
 
 import com.destroystokyo.paper.Title;
-import com.github.intellectualsites.plotsquared.configuration.ConfigurationSection;
-import com.github.intellectualsites.plotsquared.configuration.InvalidConfigurationException;
-import com.github.intellectualsites.plotsquared.configuration.file.YamlConfiguration;
 
+import com.plotsquared.core.configuration.ConfigurationSection;
+import com.plotsquared.core.configuration.InvalidConfigurationException;
+import com.plotsquared.core.configuration.file.YamlConfiguration;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 

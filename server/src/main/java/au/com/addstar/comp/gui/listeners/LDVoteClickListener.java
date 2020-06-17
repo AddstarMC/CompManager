@@ -5,8 +5,8 @@ import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.voting.Vote;
 import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.likedislike.LDVote;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
 
+import com.plotsquared.core.plot.Plot;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class LDVoteClickListener implements ButtonClickListener {
         } catch (Exception e) {
             player.sendMessage("Debug: plot.getOwners() access exception: " + e.getMessage());
 
-            UUID ownerDeprecated = plot.owner;
+            UUID ownerDeprecated = plot.getOwner();
 
             if (ownerDeprecated == null) {
                 player.sendMessage("Debug: ownerDeprecated == null");

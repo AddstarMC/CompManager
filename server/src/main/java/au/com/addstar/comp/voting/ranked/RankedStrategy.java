@@ -9,8 +9,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.TreeMultimap;
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
+import com.plotsquared.core.plot.PlotId;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -59,7 +59,7 @@ public class RankedStrategy extends AbstractVotingStrategy<RankedVote> {
 		return null;
 	}
 
-	private class RankedProvider extends AbstractVoteProvider<RankedVote> {
+	private static class RankedProvider extends AbstractVoteProvider<RankedVote> {
 		public RankedProvider(VoteStorage<RankedVote> storage) {
 			super(storage);
 		}

@@ -4,8 +4,13 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.eventbus.Subscribe;
+import com.plotsquared.core.events.PlayerClaimPlotEvent;
+import com.plotsquared.core.events.Result;
+import com.plotsquared.core.plot.Plot;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,10 +24,6 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
-
-import com.github.intellectualsites.plotsquared.bukkit.events.PlayerClaimPlotEvent;
-import com.github.intellectualsites.plotsquared.plot.object.Location;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
 
 public class EventListener implements Listener {
 	private final WhitelistHandler whitelist;
@@ -67,63 +68,66 @@ public class EventListener implements Listener {
 		if (plot == null) {
 			return;
 		}
-		
-		Location destination = plot.getHome();
-		
-		World world = Bukkit.getWorld(destination.getWorld());
-		if (world == null) {
-			logger.warning("Failed to teleport " + event.getPlayer().getName() + " to their plot. Invalid world " + destination.getWorld());
-			return;
-		}
-		
-		// Make it so they go to their plot
-		event.setSpawnLocation(
-			new org.bukkit.Location(
-				world, 
-				destination.getX() + 0.5, 
-				destination.getY(), 
-				destination.getZ() + 0.5, 
-				destination.getYaw(), 
-				destination.getPitch()
-			)
-		);
+		plot.getHome(location -> {
+
+			World world = Bukkit.getWorld(location.getWorld());
+			if (world == null) {
+				logger.warning("Failed to teleport " + event.getPlayer().getName() + " to their plot. Invalid world " + location.getWorld());
+				return;
+			}
+
+			// Make it so they go to their plot
+			event.setSpawnLocation(
+				new org.bukkit.Location(
+					world,
+					location.getX() + 0.5,
+					location.getY(),
+					location.getZ() + 0.5,
+					location.getYaw(),
+					location.getPitch()
+				)
+			);
+		});
 	}
 	
 	// Plot claim limitations
-	@EventHandler
+	@Subscribe
 	public void onPlayerClaim(PlayerClaimPlotEvent event) {
 		// Check comp is running
 		if (!manager.isCompRunning()) {
-			event.getPlayer().sendMessage(messages.get("join.denied.not-running"));
-			event.setCancelled(true);
+			event.getPlotPlayer().sendMessage(messages.get("join.denied.not-running"));
+			event.setEventResult(Result.DENY);
 			return;
 		}
 		
 		// Check if the player is whitelisted
 		boolean isWhitelisted = false;
 		try {
-			isWhitelisted = whitelist.isWhitelisted(event.getPlayer());
+			Player player = Bukkit.getPlayer(event.getPlotPlayer().getUUID());
+			if(player != null) {
+				isWhitelisted = whitelist.isWhitelisted(player);
+			}
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Failed to check whitelist.", e);
 		}
 		
 		if (!isWhitelisted) {
-			event.getPlayer().sendMessage(messages.get("join.denined.whitelist"));
-			event.setCancelled(true);
+			event.getPlotPlayer().sendMessage(messages.get("join.denined.whitelist"));
+			event.setEventResult(Result.DENY);
 			return;
 		}
 		
 		// Check for no other plots
-		if (bridge.getPlot(event.getPlayer().getUniqueId()) != null) {
-			event.getPlayer().sendMessage(messages.get("join.denied.already-entered"));
-			event.setCancelled(true);
+		if (bridge.getPlot(event.getPlotPlayer().getUUID()) != null) {
+			event.getPlotPlayer().sendMessage(messages.get("join.denied.already-entered"));
+			event.setEventResult(Result.DENY);
 			return;
 		}
 		
 		// Check the max size
 		if (manager.getCurrentComp().getMaxEntrants() - bridge.getUsedPlotCount() <= 1) {
-			event.getPlayer().sendMessage(messages.get("join.denined.full"));
-			event.setCancelled(true);
+			event.getPlotPlayer().sendMessage(messages.get("join.denined.full"));
+			event.setEventResult(Result.DENY);
 		}
 	}
 	

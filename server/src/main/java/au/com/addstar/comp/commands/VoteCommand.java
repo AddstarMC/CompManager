@@ -3,6 +3,7 @@ package au.com.addstar.comp.commands;
 import java.util.List;
 import java.util.UUID;
 
+import com.plotsquared.core.plot.Plot;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -18,7 +19,6 @@ import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.voting.Vote;
 import au.com.addstar.comp.voting.VoteStorage;
 
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
 
 public class VoteCommand implements TabExecutor {
     private final CompManager manager;
@@ -67,9 +67,7 @@ public class VoteCommand implements TabExecutor {
             }
         } catch (Exception e) {
             sender.sendMessage("Debug: plot.getOwners() access exception: " + e.getMessage());
-
-            UUID ownerDeprecated = plot.owner;
-
+            UUID ownerDeprecated = plot.getOwner();
             if (ownerDeprecated == null) {
                 sender.sendMessage("Debug: ownerDeprecated == null");
                 sender.sendMessage(messages.get("vote.denied.no-owner"));

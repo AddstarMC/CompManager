@@ -5,9 +5,8 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 
-import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
-
+import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.plot.Plot;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -51,16 +50,24 @@ public class PlotMoveClickListener implements ButtonClickListener {
             player.sendMessage(messages.get("teleport.noPlot"));
         }
         if (tpPlot != null) {
-            tpPlot.teleportPlayer(BukkitUtil.getPlayer(player));
-            player.sendMessage(messages.get("teleport.next.plot"));
-            if(CompPlugin.instance.getCompManager().getState() == CompState.Voting && CompPlugin.instance.getConfig().getBoolean("showOwnerNameWhenVoting",true)) {
-                player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()));
-            }
-            if(CompPlugin.instance.getCompManager().getState() != CompState.Voting){
-                player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(tpPlot.guessOwner()));
-            } else {
-                player.sendMessage(messages.get("vote.fair"));
-            }
+            final Plot finalPlot = tpPlot;
+            tpPlot.teleportPlayer(PlotPlayer.wrap(player), aBoolean -> {
+                if(aBoolean) {
+                    player.sendMessage(messages.get("teleport.next.plot"));
+                    if(CompPlugin.instance.getCompManager().getState() == CompState.Voting && CompPlugin.instance.getConfig().getBoolean("showOwnerNameWhenVoting",true)) {
+                        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(finalPlot.guessOwner()));
+                    }
+                    if(CompPlugin.instance.getCompManager().getState() != CompState.Voting){
+                        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(finalPlot.guessOwner()));
+                    } else {
+                        player.sendMessage(messages.get("vote.fair"));
+                    }
+                } else {
+                    player.sendMessage(messages.get("teleport.failed"));
+
+                }
+            });
+
         }
     }
 

@@ -18,9 +18,9 @@ import au.com.addstar.comp.voting.VoteStorage;
 import au.com.addstar.comp.voting.VotingStrategies;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
 
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
 
+import com.plotsquared.core.plot.Plot;
+import com.plotsquared.core.plot.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

@@ -1,7 +1,11 @@
 package au.com.addstar.comp.util;
 
 import java.util.*;
-
+import com.plotsquared.core.api.PlotAPI;
+import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.plot.Plot;
+import com.plotsquared.core.plot.PlotArea;
+import com.plotsquared.core.plot.PlotId;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -12,18 +16,17 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import com.github.intellectualsites.plotsquared.api.PlotAPI;
-import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
-import com.github.intellectualsites.plotsquared.plot.object.PlotArea;
-import com.github.intellectualsites.plotsquared.plot.object.PlotId;
-import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
+
 
 public class P2Bridge {
 	private final PlotAPI api;
 	
 	public P2Bridge(PlotAPI plugin) {
 		this.api = plugin;
+	}
+
+	public void registerPlotListener(Object listener) {
+		api.registerListener(listener);
 	}
 	
 	/**
@@ -59,7 +62,7 @@ public class P2Bridge {
 	 * @return The plot or null
 	 */
 	public Plot getPlotAt(Location location) {
-		com.github.intellectualsites.plotsquared.plot.object.Location wrappedLocation = new com.github.intellectualsites.plotsquared.plot.object.Location(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+		com.plotsquared.core.location.Location wrappedLocation = new com.plotsquared.core.location.Location (location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
 		PlotArea area = wrappedLocation.getPlotArea();
 		if (area == null) {
 			return null;
@@ -137,11 +140,14 @@ public class P2Bridge {
 		plot.setSign(player.getName());
 		
 		if (player.isOnline() && teleport) {
-			PlotPlayer wrappedPlayer = BukkitUtil.getPlayer(player.getPlayer());
-			plot.teleportPlayer(wrappedPlayer);
+			PlotPlayer wrappedPlayer = PlotPlayer.wrap(player);
+			plot.teleportPlayer(wrappedPlayer, aBoolean -> {
+				if(aBoolean) {
+					api.getPlotSquared().getPlotManager(plot).claimPlot(plot);
+				}
+			});
 		}
-
-		api.getPlotSquared().getPlotManager(plot).claimPlot(plot);
+		
 	}
 	
 	/**
