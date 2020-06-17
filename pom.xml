@@ -72,8 +72,8 @@
             <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public</url>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <!-- For Vault -->
         <repository>
