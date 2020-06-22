@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
@@ -72,61 +73,65 @@ public class CompManager {
 	 * @param loadConfigAndMessages True to reload the config and messages
 	 */
 	public void reload(Boolean loadConfigAndMessages) {
-		try {
-			Map<String, Optional<Integer>> map = backend.getServerComps();
-			retainAll(servers, map.keySet());
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Map<String, Optional<Integer>> map = backend.getServerComps();
+					retainAll(servers, map.keySet());
 
-			for (String serverId : map.keySet()) {
-				CompServer server = servers.get(serverId);
-				if (server == null) {
-					server = new CompServer(serverId, plugin, redis, backend);
-					servers.put(serverId, server);
-				}
+					for (String serverId : map.keySet()) {
+						CompServer server = servers.get(serverId);
+						if (server == null) {
+							server = new CompServer(serverId, plugin, redis, backend);
+							servers.put(serverId, server);
+						}
 
-				// Load in the competition object
-				Optional<Integer> compId = map.get(serverId);
-				server.currentComp = null;
-				if (compId.isPresent()) {
-					Competition comp = backend.load(compId.get());
-					if (comp != null) {
-						server.currentComp = comp;
+						// Load in the competition object
+						Optional<Integer> compId = map.get(serverId);
+						server.currentComp = null;
+						if (compId.isPresent()) {
+							Competition comp = backend.load(compId.get());
+							if (comp != null) {
+								server.currentComp = comp;
+							}
+						}
 					}
+
+				} catch (SQLException e) {
+					plugin.getLogger().log(Level.SEVERE, "Unable to load competitions: "+ e.getMessage());
+				}
+
+				// Reload the config
+				try {
+					if (loadConfigAndMessages) {
+						plugin.reloadConfig();
+						plugin.getLogger().log(Level.INFO, "Reloaded config.yml");
+					}
+				} catch (Exception e) {
+					plugin.getLogger().log(Level.SEVERE, "Unable to reload the config", e);
+				}
+
+				broadcastSettings = plugin.getConfig().getConfigurationSection("broadcast-settings");
+
+				// Log the broadcast settings
+				plugin.getLogger().log(Level.INFO, "Broadcast interval running: " +
+					getGlobalBroadcastRunningMin() + " to " + getGlobalBroadcastRunningMax() + " minutes");
+
+				plugin.getLogger().log(Level.INFO, "Broadcast interval voting: " +
+					getGlobalBroadcastVotingMin() + " to " + getGlobalBroadcastVotingMax() + " minutes");
+
+				// Reload the messages
+				try {
+					if (loadConfigAndMessages) {
+						messages.reload();
+						plugin.getLogger().log(Level.INFO, "Reloaded messages.lang");
+					}
+				} catch (IOException e) {
+					plugin.getLogger().log(Level.SEVERE, "Unable to reload messages", e);
 				}
 			}
-
-		} catch (SQLException e) {
-			plugin.getLogger().log(Level.SEVERE, "Unable to load competitions: "+ e.getMessage());
-		}
-
-		// Reload the config
-		try {
-			if (loadConfigAndMessages) {
-				plugin.reloadConfig();
-				plugin.getLogger().log(Level.INFO, "Reloaded config.yml");
-			}
-		} catch (Exception e) {
-			plugin.getLogger().log(Level.SEVERE, "Unable to reload the config", e);
-		}
-
-		broadcastSettings = plugin.getConfig().getConfigurationSection("broadcast-settings");
-
-		// Log the broadcast settings
-		plugin.getLogger().log(Level.INFO, "Broadcast interval running: " +
-				getGlobalBroadcastRunningMin() + " to " + getGlobalBroadcastRunningMax() + " minutes");
-
-		plugin.getLogger().log(Level.INFO, "Broadcast interval voting: " +
-				getGlobalBroadcastVotingMin() + " to " + getGlobalBroadcastVotingMax() + " minutes");
-
-		// Reload the messages
-		try {
-			if (loadConfigAndMessages) {
-				messages.reload();
-				plugin.getLogger().log(Level.INFO, "Reloaded messages.lang");
-			}
-		} catch (IOException e) {
-			plugin.getLogger().log(Level.SEVERE, "Unable to reload messages", e);
-		}
-
+		});
 	}
 
 	/**

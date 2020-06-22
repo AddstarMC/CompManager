@@ -4,7 +4,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,8 +41,10 @@ public class RedisManager {
 	private RedisHandler handler;
 	private final String serverId;
 	private CommandReceiver commandReceiver;
+	private final ExecutorService executors;
 	
 	private long nextQueryID;
+	private final Lock waitingLock = new ReentrantLock();
 	private final ListMultimap<String, WaitFuture> waitingFutures;
 	
 	public RedisManager(ConfigurationSection redisConfig, String serverID) {
@@ -47,6 +53,7 @@ public class RedisManager {
 		queryHandlers = Maps.newHashMap();
 		nextQueryID = 0;
 		waitingFutures = ArrayListMultimap.create();
+		executors = Executors.newCachedThreadPool();
 	}
 	
 	public void initialize() throws RedisException {
@@ -73,6 +80,7 @@ public class RedisManager {
 	/**
 	 * Sets the command receiver to receive inter-server commands sent
 	 * through {@link #sendCommand(String, String)}
+	 *
 	 * @param receiver The receiver object
 	 */
 	public void setCommandReceiver(CommandReceiver receiver) {
@@ -118,14 +126,17 @@ public class RedisManager {
 		// Prepare the data string
 		long queryId = nextQueryID++;
 		String data = String.format("q\01%d\01%s\01%s", queryId, command, StringUtils.join(args, '\01'));
-		
-		// Send it
+
 		WaitFuture future = new WaitFuture(queryId);
-		synchronized (waitingFutures) {
-			waitingFutures.put(serverId, future);
-		}
-		send(serverId, data);
-		
+		executors.submit(() -> {
+			waitingLock.lock();
+			try {
+				waitingFutures.put(serverId, future);
+			}finally {
+				waitingLock.unlock();
+			}
+				send(serverId, data);
+		});
 		return future;
 	}
 	
@@ -157,34 +168,38 @@ public class RedisManager {
 	}
 	
 	private void handleReply(String serverId, long queryId, String retVal, String error) {
-		synchronized (waitingFutures) {
-			List<WaitFuture> futures = waitingFutures.get(serverId);
-			
-			// Find and handle the correct future
-			for (WaitFuture future : futures) {
-				if (future.getQueryId() == queryId) {
-					// All done
-					if (retVal != null) {
-						future.set(retVal);
-					} else {
-						future.setException(new QueryException(error));
+				waitingLock.lock();
+				try {
+					List<WaitFuture> futures = waitingFutures.get(serverId);
+
+					// Find and handle the correct future
+					for (WaitFuture future : futures) {
+						if (future.getQueryId() == queryId) {
+							// All done
+							if (retVal != null) {
+								future.set(retVal);
+							} else {
+								future.setException(new QueryException(error));
+							}
+
+							futures.remove(future);
+							break;
+						}
 					}
-					
-					futures.remove(future);
-					break;
+				}finally {
+					waitingLock.unlock();
 				}
-			}
 			
 			// Remove expired futures
 			timeoutOldQueries();
-		}
 	}
 	
 	/**
 	 * Times out all old queries
 	 */
 	public void timeoutOldQueries() {
-		synchronized (waitingFutures) {
+		waitingLock.tryLock();
+		try {
 			Iterator<WaitFuture> it = waitingFutures.values().iterator();
 			while (it.hasNext()) {
 				WaitFuture future = it.next();
@@ -193,6 +208,8 @@ public class RedisManager {
 					it.remove();
 				}
 			}
+		}finally {
+			waitingLock.unlock();
 		}
 	}
 	

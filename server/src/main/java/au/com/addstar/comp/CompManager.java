@@ -89,11 +89,7 @@ public class CompManager {
         voteStorage = new VoteStorage<>(VotingStrategies.getDefault(), this);
     }
 
-    /**
-     * Loads the current comp from the database.
-     * This method will block waiting for the result
-     */
-    public void reloadCurrentComp() {
+    private Competition getCompetition(){
         try {
 
             Optional<Integer> compID = backend.getCompID(CompPlugin.getServerName());
@@ -107,45 +103,61 @@ public class CompManager {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Failed to load the current competition for this server", e);
         }
+        return currentComp;
+    }
 
-        if (currentComp != null) {
-            AbstractVotingStrategy<?> strategy;
-            String votingStrategyName = currentComp.getVotingStrategy();
+    private VoteStorage<? extends Vote> createVoteStorage(Competition competition){
+        AbstractVotingStrategy<?> strategy;
+        String votingStrategyName = competition.getVotingStrategy();
 
-            if (Strings.isNullOrEmpty(votingStrategyName)) {
-                logger.warning("Voting strategy not defined; using the default strategy");
+        if (Strings.isNullOrEmpty(votingStrategyName)) {
+            logger.warning("Voting strategy not defined; using the default strategy");
+            strategy = VotingStrategies.getDefault();
+        } else {
+            strategy = VotingStrategies.getStrategy(votingStrategyName);
+            if (strategy == null) {
+                logger.warning("Failed to find voting strategy " + votingStrategyName + ". Falling back to default strategy");
                 strategy = VotingStrategies.getDefault();
-            } else {
-                strategy = VotingStrategies.getStrategy(votingStrategyName);
-                if (strategy == null) {
-                    logger.warning("Failed to find voting strategy " + votingStrategyName + ". Falling back to default strategy");
-                    strategy = VotingStrategies.getDefault();
-                }
-            }
-
-            voteStorage = new VoteStorage<>(strategy, this);
-            try {
-                voteStorage.loadVotes();
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Failed to load votes for the current competition", e);
             }
         }
+        voteStorage = new VoteStorage<>(strategy, this);
+        return voteStorage;
+    }
+    /**
+     * Loads the current comp from the database.
+     * This method will block waiting for the result
+     */
+    public void reloadCurrentComp() {
+        Bukkit.getScheduler().runTaskAsynchronously(CompPlugin.instance, () -> {
+            currentComp = getCompetition();
+
+            if (currentComp != null) {
+                voteStorage = createVoteStorage(currentComp);
+                try {
+                    voteStorage.loadVotes();
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE, "Failed to load votes for the current competition", e);
+                }
+            }
+        });
     }
 
     /**
      * Pushes all changes to the backend and notifies the lobby
      */
     public void updateCurrentComp() {
-        if (currentComp == null) {
-            return;
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(CompPlugin.instance, () -> {
+            if (currentComp == null) {
+                return;
+            }
 
-        try {
-            backend.update(currentComp);
-            redis.broadcastCommand("reloadsender");
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Failed to update current comp", e);
-        }
+            try {
+                backend.update(currentComp);
+                redis.broadcastCommand("reloadsender");
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Failed to update current comp", e);
+            }
+        });
     }
 
     /**

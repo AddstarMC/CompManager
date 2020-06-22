@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -11,8 +13,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.Optional;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.Competition;
