@@ -11,6 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.google.common.base.Strings;
@@ -125,17 +126,20 @@ public class RedisManager {
 	public ListenableFuture<String> query(String serverId, String command, String... args) {
 		// Prepare the data string
 		long queryId = nextQueryID++;
-		String data = String.format("q\01%d\01%s\01%s", queryId, command, StringUtils.join(args, '\01'));
-
 		WaitFuture future = new WaitFuture(queryId);
 		executors.submit(() -> {
+
 			waitingLock.lock();
 			try {
-				waitingFutures.put(serverId, future);
+				if(!waitingFutures.put(serverId, future)){
+					Bukkit.getLogger().warning("Comp: could not store query for later reply");
+					return;
+				}
 			}finally {
 				waitingLock.unlock();
 			}
-				send(serverId, data);
+			String data = String.format("q\01%d\01%s\01%s", queryId, command, StringUtils.join(args, '\01'));
+			send(serverId, data);
 		});
 		return future;
 	}
@@ -171,7 +175,6 @@ public class RedisManager {
 				waitingLock.lock();
 				try {
 					List<WaitFuture> futures = waitingFutures.get(serverId);
-
 					// Find and handle the correct future
 					for (WaitFuture future : futures) {
 						if (future.getQueryId() == queryId) {
@@ -191,26 +194,37 @@ public class RedisManager {
 				}
 			
 			// Remove expired futures
+		try {
 			timeoutOldQueries();
+		}catch (InterruptedException e){
+			Bukkit.getLogger().warning("Comp: Could not remove old redis queries: exception");
+		}
 	}
 	
 	/**
 	 * Times out all old queries
 	 */
-	public void timeoutOldQueries() {
-		waitingLock.tryLock();
-		try {
-			Iterator<WaitFuture> it = waitingFutures.values().iterator();
-			while (it.hasNext()) {
-				WaitFuture future = it.next();
-				if (future.isOld()) {
-					future.setException(new QueryTimeoutException("Timeout"));
-					it.remove();
+	public void timeoutOldQueries() throws InterruptedException {
+
+			if (waitingLock.tryLock(50, TimeUnit.MILLISECONDS)) {
+				;
+				try {
+					Iterator<WaitFuture> it = waitingFutures.values().iterator();
+					while (it.hasNext()) {
+						WaitFuture future = it.next();
+						if (future.isOld()) {
+							future.setException(new QueryTimeoutException("Timeout"));
+							it.remove();
+						}
+					}
+				} finally {
+					waitingLock.unlock();
 				}
+			} else {
+				Bukkit.getLogger().warning("Comp: Could not remove old redis queries: no lock");
+
 			}
-		}finally {
-			waitingLock.unlock();
-		}
+
 	}
 	
 	private void handleCommand(String sourceId, String command) {
