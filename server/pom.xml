@@ -17,9 +17,19 @@
 		<!-- PlotSquared API -->
 		<dependency>
 			<groupId>com.plotsquared</groupId>
-			<artifactId>PlotSquared</artifactId>
+			<artifactId>PlotSquared-Bukkit</artifactId>
 			<version>5.11.1</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spigotmc</groupId>
+					<artifactId>spigot-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
