@@ -44,7 +44,7 @@ public class RedisManager {
 	private final ExecutorService executors;
 	
 	private long nextQueryID;
-	private final Lock waitingLock = new ReentrantLock();
+	private final ReentrantLock waitingLock = new ReentrantLock();
 	private final ListMultimap<String, WaitFuture> waitingFutures;
 	
 	public RedisManager(ConfigurationSection redisConfig, String serverID) {
@@ -209,7 +209,10 @@ public class RedisManager {
 				}
 			}
 		}finally {
-			waitingLock.unlock();
+			// Required to solve the "IllegalMonitorStateException" when calling unlock
+			if (waitingLock.isLocked() && waitingLock.isHeldByCurrentThread()) {
+				waitingLock.unlock();
+			}
 		}
 	}
 	
