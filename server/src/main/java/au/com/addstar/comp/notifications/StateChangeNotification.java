@@ -6,7 +6,7 @@ import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.util.CompUtils;
 
 import com.plotsquared.core.configuration.ConfigurationSection;
-import org.apache.commons.lang.time.DurationFormatUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 
 import java.text.SimpleDateFormat;

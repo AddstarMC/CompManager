@@ -18,7 +18,7 @@ import com.plotsquared.core.configuration.file.YamlConfiguration;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Async;
@@ -247,7 +247,7 @@ public class NotificationManager {
 				if (broadcastInSequence) {
 					toDisplay = notifications.get(broadcastIndex % notifications.size());
 				} else {
-					toDisplay = notifications.get(RandomUtils.nextInt(notifications.size()));
+					toDisplay = notifications.get(RandomUtils.nextInt(0, notifications.size()));
 				}
 
 				sendMessage(player, toDisplay.formatMessage(compManager), broadcastLocation, broadcastDisplayTime);

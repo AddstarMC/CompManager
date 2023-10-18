@@ -1,6 +1,8 @@
 package au.com.addstar.comp.lobby.signs;
 
-import org.apache.commons.lang.WordUtils;
+import au.com.addstar.comp.lobby.LobbyPlugin;
+import org.apache.commons.lang3.text.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -70,12 +72,12 @@ public class VisitSign extends BaseSign {
 		} else {
 			countFuture = Futures.immediateFuture(0);
 		}
-		
+
 		Futures.addCallback(countFuture, new FutureCallback<Integer>() {
 			@Override
 			public void onSuccess(Integer count) {
 				clear();
-				
+
 				// Display the theme over the first and second lines
 				String theme = comp.getTheme();
 				String[] lines = WordUtils.wrap(theme, 15, "\001", true).split("\001");
@@ -118,7 +120,7 @@ public class VisitSign extends BaseSign {
 				setLine(3, "");
 				update();
 			}
-		});
+		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 	
 	@Override

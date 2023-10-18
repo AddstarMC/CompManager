@@ -2,7 +2,9 @@ package au.com.addstar.comp.lobby.signs;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.WordUtils;
+import au.com.addstar.comp.lobby.LobbyPlugin;
+import org.apache.commons.lang3.text.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -91,7 +93,7 @@ public class JoinSign extends BaseSign {
 					error.printStackTrace();
 				}
 			}
-		});
+		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 	
 	private void handlePlayerJoin(Confirmable enterHandler, Player player) {
@@ -210,7 +212,7 @@ public class JoinSign extends BaseSign {
 				setLine(3, "");
 				update();
 			}
-		});
+		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 	
 	@Override

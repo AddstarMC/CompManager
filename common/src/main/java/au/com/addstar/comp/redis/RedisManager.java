@@ -1,16 +1,12 @@
 package au.com.addstar.comp.redis;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.google.common.base.Strings;
@@ -198,20 +194,21 @@ public class RedisManager {
 	 * Times out all old queries
 	 */
 	public void timeoutOldQueries() {
-		waitingLock.tryLock();
-		try {
-			Iterator<WaitFuture> it = waitingFutures.values().iterator();
-			while (it.hasNext()) {
-				WaitFuture future = it.next();
-				if (future.isOld()) {
-					future.setException(new QueryTimeoutException("Timeout"));
-					it.remove();
+		if (waitingLock.tryLock()) {
+			try {
+				Iterator<WaitFuture> it = waitingFutures.values().iterator();
+				while (it.hasNext()) {
+					WaitFuture future = it.next();
+					if (future.isOld()) {
+						future.setException(new QueryTimeoutException("Timeout"));
+						it.remove();
+					}
 				}
-			}
-		}finally {
-			// Required to solve the "IllegalMonitorStateException" when calling unlock
-			if (waitingLock.isLocked() && waitingLock.isHeldByCurrentThread()) {
-				waitingLock.unlock();
+			} finally {
+				// Required to solve the "IllegalMonitorStateException" when calling unlock
+				if (waitingLock.isLocked() && waitingLock.isHeldByCurrentThread()) {
+					waitingLock.unlock();
+				}
 			}
 		}
 	}

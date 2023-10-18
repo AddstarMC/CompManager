@@ -5,6 +5,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.eventbus.Subscribe;
+import com.plotsquared.core.configuration.caption.Caption;
+import com.plotsquared.core.configuration.caption.CaptionHolder;
+import com.plotsquared.core.configuration.caption.CaptionUtility;
+import com.plotsquared.core.configuration.caption.StaticCaption;
 import com.plotsquared.core.events.PlayerClaimPlotEvent;
 import com.plotsquared.core.events.Result;
 import com.plotsquared.core.plot.Plot;
@@ -18,8 +22,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
-
-
 
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
@@ -70,7 +72,7 @@ public class EventListener implements Listener {
 		}
 		plot.getHome(location -> {
 
-			World world = Bukkit.getWorld(location.getWorld());
+			World world = Bukkit.getWorld(location.getWorldName());
 			if (world == null) {
 				logger.warning("Failed to teleport " + event.getPlayer().getName() + " to their plot. Invalid world " + location.getWorld());
 				return;
@@ -95,7 +97,7 @@ public class EventListener implements Listener {
 	public void onPlayerClaim(PlayerClaimPlotEvent event) {
 		// Check comp is running
 		if (!manager.isCompRunning()) {
-			event.getPlotPlayer().sendMessage(messages.get("join.denied.not-running"));
+			event.getPlotPlayer().sendMessage(StaticCaption.of(messages.get("join.denied.not-running")));
 			event.setEventResult(Result.DENY);
 			return;
 		}
@@ -112,21 +114,21 @@ public class EventListener implements Listener {
 		}
 		
 		if (!isWhitelisted) {
-			event.getPlotPlayer().sendMessage(messages.get("join.denined.whitelist"));
+			event.getPlotPlayer().sendMessage(StaticCaption.of(messages.get("join.denined.whitelist")));
 			event.setEventResult(Result.DENY);
 			return;
 		}
 		
 		// Check for no other plots
 		if (bridge.getPlot(event.getPlotPlayer().getUUID()) != null) {
-			event.getPlotPlayer().sendMessage(messages.get("join.denied.already-entered"));
+			event.getPlotPlayer().sendMessage(StaticCaption.of(messages.get("join.denied.already-entered")));
 			event.setEventResult(Result.DENY);
 			return;
 		}
 		
 		// Check the max size
 		if (manager.getCurrentComp().getMaxEntrants() - bridge.getUsedPlotCount() <= 1) {
-			event.getPlotPlayer().sendMessage(messages.get("join.denined.full"));
+			event.getPlotPlayer().sendMessage(StaticCaption.of(messages.get("join.denined.full")));
 			event.setEventResult(Result.DENY);
 		}
 	}

@@ -1,5 +1,7 @@
 package au.com.addstar.comp.lobby.signs;
 
+import au.com.addstar.comp.lobby.LobbyPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -113,7 +115,7 @@ public class InfoSign extends BaseSign {
 				}
 				update();
 			}
-		});
+		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 	
 	private void displayPlotsUsedTotal(final CompServer server) {
@@ -139,7 +141,7 @@ public class InfoSign extends BaseSign {
 				}
 				update();
 			}
-		});
+		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 	
 	private void displayTimeEnd(CompServer server) {

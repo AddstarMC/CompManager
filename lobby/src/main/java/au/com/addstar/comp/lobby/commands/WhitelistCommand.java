@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.List;
 
+import au.com.addstar.comp.lobby.LobbyPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -84,7 +85,7 @@ final class WhitelistCommand implements ICommand {
 		
 		// Parse the player
 		ListenableFuture<PlayerDefinition> future = Lookup.lookupPlayerName(args[1]);
-		Futures.addCallback(future, handler);
+		Futures.addCallback(future, handler, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 		
 		return true;
 	}

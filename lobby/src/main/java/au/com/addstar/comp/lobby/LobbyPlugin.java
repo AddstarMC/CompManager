@@ -31,6 +31,7 @@ import au.com.addstar.comp.whitelist.WhitelistHandler;
 
 @SuppressWarnings("unused")
 public class LobbyPlugin extends JavaPlugin {
+	public static LobbyPlugin instance;
 	private DatabaseManager databaseManager;
 	private WhitelistHandler whitelistHandler;
 	private CompManager compManager;
@@ -49,6 +50,7 @@ public class LobbyPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		instance = this;
 		saveDefaultConfig();
 		reloadConfig();
 		serverId = getConfig().getString("server-id","null");

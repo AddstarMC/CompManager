@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import au.com.addstar.comp.gui.Hotbar;
-import com.plotsquared.core.api.PlotAPI;
+import com.plotsquared.core.PlotAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;

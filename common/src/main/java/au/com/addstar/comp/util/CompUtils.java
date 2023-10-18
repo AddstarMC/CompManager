@@ -5,9 +5,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.time.DurationFormatUtils;
-
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 public final class CompUtils {
 	private CompUtils() {}

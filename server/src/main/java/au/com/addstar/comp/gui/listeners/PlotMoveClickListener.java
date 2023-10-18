@@ -51,14 +51,14 @@ public class PlotMoveClickListener implements ButtonClickListener {
         }
         if (tpPlot != null) {
             final Plot finalPlot = tpPlot;
-            tpPlot.teleportPlayer(PlotPlayer.wrap(player), aBoolean -> {
+            tpPlot.teleportPlayer(PlotPlayer.from((Player) player), aBoolean -> {
                 if(aBoolean) {
                     player.sendMessage(messages.get("teleport.next.plot"));
                     if(CompPlugin.instance.getCompManager().getState() == CompState.Voting && CompPlugin.instance.getConfig().getBoolean("showOwnerNameWhenVoting",true)) {
-                        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(finalPlot.guessOwner()));
+                        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(finalPlot.getOwner()));
                     }
                     if(CompPlugin.instance.getCompManager().getState() != CompState.Voting){
-                        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(finalPlot.guessOwner()));
+                        player.sendMessage("Owned by " + Bukkit.getOfflinePlayer(finalPlot.getOwner()));
                     } else {
                         player.sendMessage(messages.get("vote.fair"));
                     }

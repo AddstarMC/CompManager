@@ -1,7 +1,8 @@
 package au.com.addstar.comp.util;
 
 import java.util.*;
-import com.plotsquared.core.api.PlotAPI;
+
+import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
@@ -15,8 +16,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
-
 
 public class P2Bridge {
 	private final PlotAPI api;
@@ -62,12 +61,15 @@ public class P2Bridge {
 	 * @return The plot or null
 	 */
 	public Plot getPlotAt(Location location) {
-		com.plotsquared.core.location.Location wrappedLocation = new com.plotsquared.core.location.Location (location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-		PlotArea area = wrappedLocation.getPlotArea();
-		if (area == null) {
-			return null;
+		com.plotsquared.core.location.Location wrappedLocation = com.plotsquared.core.location.Location.at(
+				location.getWorld().getName(), location.getBlockX(), location.getBlockX(), location.getBlockZ());
+		Plot plot = Plot.getPlot(wrappedLocation);
+		if (plot != null) {
+			PlotArea area = plot.getArea();
+			if (area != null)
+				return area.getPlot(wrappedLocation);
 		}
-		return area.getPlot(wrappedLocation);
+		return null;
 	}
 
 	public Plot getPlot(PlotId plotId) {
@@ -133,21 +135,22 @@ public class P2Bridge {
 	 * @throws IllegalArgumentException Thrown if the plot already has an owner
 	 */
 	public void claim(Plot plot, OfflinePlayer player, boolean teleport) throws IllegalArgumentException {
+		Bukkit.getLogger().info("[DEBUG] P2Bridge.claim() called for plot: " + plot.getId());
+		Bukkit.getLogger().info("[DEBUG] Player: " + player.getName() + " (" + player.getUniqueId() + ")");
 		Preconditions.checkArgument(!plot.hasOwner());
 		Preconditions.checkState(Bukkit.isPrimaryThread(), "This must be done on the server thread");
-		
-		plot.create(player.getUniqueId(), false);
-		plot.setSign(player.getName());
-		
+
+		// Assign the plot to the offline player, before they join the comp server
+		plot.setOwner(player.getUniqueId());
+
 		if (player.isOnline() && teleport) {
-			PlotPlayer wrappedPlayer = PlotPlayer.wrap(player);
+			PlotPlayer wrappedPlayer = api.wrapPlayer(player.getUniqueId());
 			plot.teleportPlayer(wrappedPlayer, aBoolean -> {
 				if(aBoolean) {
-					api.getPlotSquared().getPlotManager(plot).claimPlot(plot);
+					plot.claim(wrappedPlayer, teleport, null, true, true);
 				}
 			});
 		}
-		
 	}
 	
 	/**
@@ -259,8 +262,7 @@ public class P2Bridge {
 			}
 			
 			++plotCount;
-			
-			PlotId id = new PlotId(x, z);
+			PlotId id = PlotId.of(x, z);
 			Plot plot = area.getPlotAbs(id);
 			
 			// Move to next

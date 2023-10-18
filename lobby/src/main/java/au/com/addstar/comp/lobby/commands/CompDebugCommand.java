@@ -3,6 +3,8 @@ package au.com.addstar.comp.lobby.commands;
 import java.util.EnumSet;
 import java.util.List;
 
+import au.com.addstar.comp.lobby.LobbyPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +69,7 @@ public class CompDebugCommand implements ICommand {
 				public void onFailure(@NotNull Throwable error) {
 					sender.sendMessage("Query errored: " + error);
 				}
-			});
+			}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 		} else
 			return false;
 		

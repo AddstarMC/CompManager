@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -121,7 +122,7 @@ public class CompServer {
 	public ListenableFuture<Boolean> isEntrant(UUID playerId) {
 		ListenableFuture<String> future = redis.query(serverId, "is_entrant", playerId.toString());
 		
-		return Futures.transform(future, Boolean::valueOf);
+		return Futures.transform(future, Boolean::valueOf, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 	
 	/**
@@ -140,7 +141,7 @@ public class CompServer {
 	public ListenableFuture<Integer> getEntrantCount() {
 		ListenableFuture<String> future = redis.query(serverId, "entrant_count");
 		
-		return Futures.transform(future, Integer::valueOf);
+		return Futures.transform(future, Integer::valueOf, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 	
 	/**
@@ -175,7 +176,7 @@ public class CompServer {
 		ListenableFuture<String> rawFuture = redis.query(serverId, "join_begin", player.getUniqueId().toString());
 		
 		RemoteEnterFuture future = new RemoteEnterFuture(this, player.getUniqueId(), redis, messages);
-		Futures.addCallback(rawFuture, future);
+		Futures.addCallback(rawFuture, future, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 		
 		return future;
 	}

@@ -2,6 +2,7 @@ package au.com.addstar.comp.lobby.entry;
 
 import java.util.UUID;
 
+import au.com.addstar.comp.lobby.LobbyPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +57,7 @@ public class RemoteEnterHandler implements Confirmable {
 			public void onFailure(@NotNull Throwable throwable) {
 				throwable.printStackTrace();
 			}
-		});
+		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}
 
 	@Override
