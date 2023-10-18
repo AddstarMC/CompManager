@@ -2,6 +2,7 @@ package au.com.addstar.comp.lobby.signs;
 
 import java.io.IOException;
 
+import com.destroystokyo.paper.MaterialTags;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -30,7 +31,7 @@ public class SignListener implements Listener {
 		if(block == null ) {
 			return;
 		}
-		if (block.getType() != Material.OAK_WALL_SIGN && block.getType() != Material.OAK_SIGN) {
+		if (!MaterialTags.SIGNS.isTagged(block.getType())) {
 			return;
 		}
 		

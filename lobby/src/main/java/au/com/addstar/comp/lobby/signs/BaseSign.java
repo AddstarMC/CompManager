@@ -1,5 +1,6 @@
 package au.com.addstar.comp.lobby.signs;
 
+import com.destroystokyo.paper.MaterialTags;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -53,7 +54,7 @@ public abstract class BaseSign {
 	public abstract void refresh();
 	
 	private Sign getState() {
-		if (block.getType() == Material.OAK_WALL_SIGN || block.getType() == Material.OAK_SIGN) {
+		if (MaterialTags.SIGNS.isTagged(block.getType())) {
 			if (signState == null) {
 				signState = (Sign)block.getState();
 			}
