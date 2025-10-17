@@ -18,7 +18,14 @@ public abstract class BasePrize {
 	 */
 	private static final Pattern keyPattern = Pattern.compile("(\\d+) ([^ ]+) keys?", Pattern.CASE_INSENSITIVE);
 
-	/**
+    /**
+     * Pattern for matching strings like:
+     *  1 StarGem
+     *  2 StarGems
+     */
+    private static final Pattern stargemPattern = Pattern.compile("(\\d+) stargems?", Pattern.CASE_INSENSITIVE);
+
+    /**
 	 * Awards the prize to the given player
 	 * @param player The player to award
 	 * @return True if the player was able to receive the prize
@@ -55,15 +62,22 @@ public abstract class BasePrize {
 	public static BasePrize parsePrize(String input) throws IllegalArgumentException {
 		if (input.startsWith("$")) {
 			return new MoneyPrize(input);
-		} else {
+		}
+        else if (input.toLowerCase().contains(" stargem")) {
+            Matcher gemMatcher = stargemPattern.matcher(input);
+            if (gemMatcher.find()) {
+                int gemCount = Integer.parseInt(gemMatcher.group(1));
+                return new StarGemPrize(gemCount);
+            }
+        }
+        else if (input.toLowerCase().contains(" key")) {
 			Matcher keyMatcher = keyPattern.matcher(input);
 			if (keyMatcher.find()) {
-				int keyCount = Integer.parseInt(keyMatcher.group(1));
-				String keyType = keyMatcher.group(2);
-				return new TreasureKeyPrize(keyCount, keyType);
-			} else {
-				throw new IllegalArgumentException("Unknown prize type");
-			}
-		}
+                int keyCount = Integer.parseInt(keyMatcher.group(1));
+                String keyType = keyMatcher.group(2);
+                return new TreasureKeyPrize(keyCount, keyType);
+            }
+        }
+        throw new IllegalArgumentException("Unknown prize type");
 	}
 }
