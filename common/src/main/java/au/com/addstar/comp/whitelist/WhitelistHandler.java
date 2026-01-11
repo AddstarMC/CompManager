@@ -49,15 +49,12 @@ public class WhitelistHandler {
 	 * @throw SQLException Thrown if an SQLException occurs when querying the database
 	 */
 	public boolean isWhitelisted(UUID playerId) throws SQLException {
-		Connection handler = pool.getConnection();
-		PreparedStatement statement = handler.prepareStatement(STATEMENT_GET.getSQL());
-		statement.setString(1,idToString(playerId));
-		try {
+		try (Connection handler = pool.getConnection();
+				PreparedStatement statement = handler.prepareStatement(STATEMENT_GET.getSQL())) {
+			statement.setString(1, idToString(playerId));
 			try (ResultSet result = statement.executeQuery()) {
 				return result.next();
 			}
-		} finally {
-			handler.close();
 		}
 	}
 	

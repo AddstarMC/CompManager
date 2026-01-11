@@ -189,7 +189,7 @@ public class CompBackendManager {
 	 */
 	public void update(Competition competition) throws SQLException {
 		Preconditions.checkArgument(competition.getCompId() >= 0);
-			Connection handler = manager.getPool().getConnection();
+		try (Connection handler = manager.getPool().getConnection()) {
 			PreparedStatement statement = handler.prepareStatement(STATEMENT_UPDATE.getSQL());
 			statement.setString(1, competition.getTheme());
 			statement.setString(2, (competition.isAutomatic() ? "Auto" : competition.getState().name()));
@@ -203,8 +203,7 @@ public class CompBackendManager {
 			statement.setString(10, competition.getParticipationPrize() != null ? competition.getParticipationPrize().toDatabase() : null);
 			statement.setInt(11, competition.getCompId());
 			statement.executeUpdate();
-			handler.close();
-
+		}
 	}
 	
 	/**

@@ -23,9 +23,8 @@ public class DatabaseManager {
 	public void initialize(File saveDir) throws IOException {
 		ConfigurationSection config = plugin.getConfig().getConfigurationSection("database");
 		pool = new HikariConnectionPool(config,saveDir);
-		try {
-			Connection connection = pool.getConnection();
-			connection.close();
+		try (Connection connection = pool.getConnection()) {
+			// Connection test - connection is automatically closed
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}
