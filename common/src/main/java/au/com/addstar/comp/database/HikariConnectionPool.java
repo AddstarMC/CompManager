@@ -30,6 +30,7 @@ public class HikariConnectionPool {
         HikariConfig config;
         if(!propertiesFile.exists()) {
             config = new HikariConfig();
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
             Logger.getLogger("CompManager").info(
                     "You should create a file to tune the connection for this database at: " +
                             directory.getAbsolutePath()+
