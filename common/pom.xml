@@ -9,9 +9,9 @@
     <packaging>jar</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>com.comphenix.protocol</groupId>
-			<artifactId>ProtocolLib-API</artifactId>
-			<version>4.4.0</version>
+			<groupId>net.dmulloy2</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>5.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

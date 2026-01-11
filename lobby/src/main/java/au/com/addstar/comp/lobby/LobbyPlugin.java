@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import au.com.addstar.bc.BungeeChat;
+//import au.com.addstar.bc.BungeeChat;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
@@ -19,7 +19,7 @@ import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.lobby.commands.AgreeCommand;
 import au.com.addstar.comp.lobby.commands.CompAdminCommand;
 import au.com.addstar.comp.lobby.placeholder.PAPIExtension;
-import au.com.addstar.comp.lobby.placeholder.MVDWPlaceHolderExtension;
+//import au.com.addstar.comp.lobby.placeholder.MVDWPlaceHolderExtension;
 import au.com.addstar.comp.lobby.placeholder.PlaceHolderHandler;
 import au.com.addstar.comp.lobby.signs.SignListener;
 import au.com.addstar.comp.lobby.signs.SignManager;
@@ -114,27 +114,24 @@ public class LobbyPlugin extends JavaPlugin {
 		ConfigurationSection broadcastSettings = getConfig().getConfigurationSection("broadcast-settings");
 
 		Plugin p = pm.getPlugin("BungeeChatBukkit");
-		if (p instanceof BungeeChat) {
-			broadcastChannel = broadcastSettings.getString("broadcast-channel", "CompBCast");
-			getLogger().log(Level.INFO, "BungeeChat found, using channel " + broadcastChannel);
-		} else {
-			broadcastChannel = null;
-			getLogger().log(Level.INFO, "BungeeChat not found! No cross server messages");
-		}
+//		if (p instanceof BungeeChat) {
+//			broadcastChannel = broadcastSettings.getString("broadcast-channel", "CompBCast");
+//			getLogger().log(Level.INFO, "BungeeChat found, using channel " + broadcastChannel);
+//		} else {
+//			broadcastChannel = null;
+//			getLogger().log(Level.INFO, "BungeeChat not found! No cross server messages");
+//		}
 		placeHolderHandler = new PlaceHolderHandler(this);
 		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			PAPIExtension holder = new PAPIExtension(this);
 			holder.register();
-		}
-		if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
-			new MVDWPlaceHolderExtension(this);
 		}
 		// Register tasks
 		// TODO: Make refresh interval configurable
 		Bukkit.getScheduler().runTaskTimer(this, new SignRefresher(signManager), 0, 200);
 		Bukkit.getScheduler().runTaskTimer(this, new ServerStatusUpdater(compManager), 200, 200);
 		Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
-		Bukkit.getScheduler().runTaskTimer(this, new BroadcastReminder(compManager, broadcastChannel), 20, 20);
+//		Bukkit.getScheduler().runTaskTimer(this, new BroadcastReminder(compManager, broadcastChannel), 20, 20);
 		Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 	}
 

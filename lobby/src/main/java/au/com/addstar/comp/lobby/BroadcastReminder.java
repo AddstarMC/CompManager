@@ -1,6 +1,6 @@
 package au.com.addstar.comp.lobby;
 
-import au.com.addstar.bc.BungeeChat;
+//import au.com.addstar.bc.BungeeChat;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.util.CompUtils;
 
@@ -124,10 +124,10 @@ public class BroadcastReminder implements Runnable {
 		// Broadcast locally
 		Bukkit.getServer().broadcastMessage(msg);
 
-		if (!Strings.isNullOrEmpty(bungeeChatBroadcastChannel)) {
-			// Also broadcast globally using BungeeChat
-			BungeeChat.mirrorChat(msg, bungeeChatBroadcastChannel);
-		}
+//		if (!Strings.isNullOrEmpty(bungeeChatBroadcastChannel)) {
+//			// Also broadcast globally using BungeeChat
+//			BungeeChat.mirrorChat(msg, bungeeChatBroadcastChannel);
+//		}
 
 	}
 

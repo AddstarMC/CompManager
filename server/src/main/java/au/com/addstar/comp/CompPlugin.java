@@ -23,7 +23,7 @@ import au.com.addstar.comp.commands.VoteCommand;
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.notifications.NotificationManager;
-import au.com.addstar.comp.placeholders.MVDWPlaceHolderExtension;
+//import au.com.addstar.comp.placeholders.MVDWPlaceHolderExtension;
 import au.com.addstar.comp.placeholders.PAPIPlaceHolderExtension;
 import au.com.addstar.comp.placeholders.PlaceHolderHandler;
 import au.com.addstar.comp.query.*;
@@ -110,9 +110,9 @@ public class CompPlugin extends JavaPlugin {
             new PAPIPlaceHolderExtension(this).register();
         }
 
-        if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
-            new MVDWPlaceHolderExtension(this);
-        }
+//        if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
+//            new MVDWPlaceHolderExtension(this);
+//        }
         compManager = new CompManager(new CompServerBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
         confirmationManager = new ConfirmationManager();
 

@@ -14,11 +14,11 @@
 		</repository>
 		<repository>
 			<id>addstar-release-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-release-local</url>
+			<url>https://maven.addstar.com.au/artifactory/ext-release-local</url>
 		</repository>
 		<repository>
 			<id>addstar-snapshot-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
+			<url>https://maven.addstar.com.au/artifactory/ext-snapshot-local</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -31,13 +31,6 @@
 			<artifactId>CompManager-common</artifactId>
 			<version>0.0.4-SNAPSHOT</version>
 			<scope>compile</scope>
-		</dependency>
-		<!-- Used for Proxy-wide broadcast -->
-		<dependency>
-			<groupId>au.com.addstar</groupId>
-			<artifactId>BungeeChat-Bukkit</artifactId>
-			<version>1.3.0-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	
