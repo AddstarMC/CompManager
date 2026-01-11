@@ -4,3 +4,5 @@
 */dependency-reduced-pom.xml
 
 **/target/*
+
+pom.xml.versionsBackup

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>au.com.addstar</groupId>
     <artifactId>CompManager-parent</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <build.number />
