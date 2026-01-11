@@ -55,7 +55,7 @@ public class CompBackendManager {
 	
 	static {
 		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
-		STATEMENT_ADD = new StatementKey("INSERT INTO " + TABLE_COMP + " (Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize) VALUES (?,?,?,?,?,?,?,?)", true);
+		STATEMENT_ADD = new StatementKey("INSERT INTO " + TABLE_COMP + " (Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize) VALUES (?,?,?,?,?,?,?,?,?,?)", true);
 		STATEMENT_UPDATE = new StatementKey("UPDATE " + TABLE_COMP + " SET Theme=?, State=?, StartDate=?, EndDate=?, VoteEnd=?, VoteType=?, MaxEntrants=?, FirstPrize=?, SecondPrize=?, DefaultPrize=? WHERE ID=?");
 		
 		STATEMENT_CRITERIA_LOAD = new StatementKey("SELECT CriteriaID, Name, Description, Type, Data FROM " + TABLE_CRITERIA + " WHERE CompID=?");
@@ -65,7 +65,7 @@ public class CompBackendManager {
 		
 		STATEMENT_SERVER_GET = new StatementKey("SELECT CompID FROM " + TABLE_SERVER + " WHERE ServerID=?");
 		STATEMENT_SERVER_GETALL = new StatementKey("SELECT ServerID, CompID FROM " + TABLE_SERVER + " WHERE CompID IS NOT NULL");
-		STATEMENT_SERVER_SET = new StatementKey("REPLACE INTO CompID (ServerID, CompID) VALUES (?,?)");
+		STATEMENT_SERVER_SET = new StatementKey("REPLACE INTO " + TABLE_SERVER + " (ServerID, CompID) VALUES (?,?)");
 
 		STATEMENT_RESULT_ADD = new StatementKey("INSERT INTO " + TABLE_RESULTS + " (CompID, UUID, Name, Rank, PlotID, Prize, Claimed) VALUES (?, ?, ?, ?, ?, ?, 0)");
 		STATEMENT_RESULT_UPDATE_CLAIMED = new StatementKey("UPDATE " + TABLE_RESULTS + " SET Claimed=? WHERE CompID=? AND UUID=?");
@@ -200,8 +200,8 @@ public class CompBackendManager {
 			statement.setInt(7, competition.getMaxEntrants());
 			statement.setString(8, competition.getFirstPrize() != null ? competition.getFirstPrize().toDatabase() : null);
 			statement.setString(9, competition.getSecondPrize() != null ? competition.getSecondPrize().toDatabase() : null);
-			statement.setString(9, competition.getParticipationPrize() != null ? competition.getSecondPrize().toDatabase() : null);
-			statement.setInt(10, competition.getCompId());
+			statement.setString(10, competition.getParticipationPrize() != null ? competition.getParticipationPrize().toDatabase() : null);
+			statement.setInt(11, competition.getCompId());
 			statement.executeUpdate();
 			handler.close();
 
@@ -358,7 +358,11 @@ public class CompBackendManager {
 		statement.setInt(1, comp.getCompId());
 		statement.setString(2, result.getPlayerId().toString());
 		statement.setString(3, result.getPlayerName());
-		statement.setInt(4, result.getRank().orElse(null));
+		if (result.getRank().isPresent()) {
+			statement.setInt(4, result.getRank().get());
+		} else {
+			statement.setNull(4, java.sql.Types.INTEGER);
+		}
 		statement.setString(5, result.getPlotId());
 		statement.setString(6, prize);
 	}
