@@ -135,8 +135,8 @@ public class P2Bridge {
 	 * @throws IllegalArgumentException Thrown if the plot already has an owner
 	 */
 	public void claim(Plot plot, OfflinePlayer player, boolean teleport) throws IllegalArgumentException {
-		Bukkit.getLogger().info("[DEBUG] P2Bridge.claim() called for plot: " + plot.getId());
-		Bukkit.getLogger().info("[DEBUG] Player: " + player.getName() + " (" + player.getUniqueId() + ")");
+		Bukkit.getLogger().fine("[DEBUG] P2Bridge.claim() called for plot: " + plot.getId());
+		Bukkit.getLogger().fine("[DEBUG] Player: " + player.getName() + " (" + player.getUniqueId() + ")");
 		Preconditions.checkArgument(!plot.hasOwner());
 		Preconditions.checkState(Bukkit.isPrimaryThread(), "This must be done on the server thread");
 

@@ -66,10 +66,8 @@ public class VoteCommand implements TabExecutor {
                 return true;
             }
         } catch (Exception e) {
-            sender.sendMessage("Debug: plot.getOwners() access exception: " + e.getMessage());
             UUID ownerDeprecated = plot.getOwner();
             if (ownerDeprecated == null) {
-                sender.sendMessage("Debug: ownerDeprecated == null");
                 sender.sendMessage(messages.get("vote.denied.no-owner"));
                 return true;
             }

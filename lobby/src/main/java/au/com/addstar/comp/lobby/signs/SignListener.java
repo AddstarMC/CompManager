@@ -57,7 +57,7 @@ public class SignListener implements Listener {
 					try {
 						manager.save();
 					} catch (IOException e) {
-						e.printStackTrace();
+						org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.SEVERE, "Failed to save sign configuration", e);
 					}
 				}
 			} else {

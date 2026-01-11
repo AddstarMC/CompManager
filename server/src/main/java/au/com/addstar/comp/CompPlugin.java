@@ -101,7 +101,7 @@ public class CompPlugin extends JavaPlugin {
             PlotAPI api = new PlotAPI();
             bridge = new P2Bridge(api);
         }catch (Exception e){
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, "Failed to initialize PlotSquared bridge", e);
             Logger.getAnonymousLogger().warning("Disabling as PlotSqaured not available");
             onDisable();
         }

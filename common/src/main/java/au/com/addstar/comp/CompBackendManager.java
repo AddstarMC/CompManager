@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -92,7 +94,7 @@ public class CompBackendManager {
 		try {
 			return BasePrize.parsePrize(input);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Logger.getLogger("CompManager").log(Level.WARNING, "Failed to parse prize", e);
 			return null;
 		}
 	}

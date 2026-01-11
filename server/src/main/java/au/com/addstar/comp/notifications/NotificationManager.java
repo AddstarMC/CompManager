@@ -233,7 +233,7 @@ public class NotificationManager {
 		try {
 			players = Bukkit.getServer().getScheduler().callSyncMethod(CompPlugin.instance, Bukkit::getOnlinePlayers).get();
 		}catch (ExecutionException | InterruptedException e){
-			e.printStackTrace();
+			CompPlugin.instance.getLogger().log(Level.WARNING, "Failed to get online players for notifications", e);
 		}
 		if(players != null) {
 			for (Player player : players) {
@@ -308,7 +308,7 @@ public class NotificationManager {
 				sendMessage(player, component, target, displayTime);
 			}
 		}catch (ExecutionException | InterruptedException e){
-			e.printStackTrace();
+			CompPlugin.instance.getLogger().log(Level.WARNING, "Failed to send notifications to players", e);
 		}
 	}
 	private void refreshActionBar(Player player,BaseComponent[] component,long remainingtime){

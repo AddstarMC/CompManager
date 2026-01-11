@@ -62,7 +62,7 @@ public class CompManager {
 			Map<String, Optional<Integer>> map = backend.getServerComps();
 			return map.keySet();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			plugin.getLogger().log(Level.SEVERE, "Failed to get all offline servers", e);
 		}
 		return null;
 	}

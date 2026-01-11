@@ -89,7 +89,7 @@ public class PlaceHolderHandler {
         try {
             serverID = getServerId(s);
         }catch (IllegalArgumentException e){
-            e.printStackTrace();
+            plugin.getLogger().log(java.util.logging.Level.WARNING, "Invalid placeholder request", e);
             return null;
         }
         String filteredString = getPlaceHolderRaw(s);

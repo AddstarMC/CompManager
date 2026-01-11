@@ -44,12 +44,9 @@ public class LDVoteClickListener implements ButtonClickListener {
                 return;
             }
         } catch (Exception e) {
-            player.sendMessage("Debug: plot.getOwners() access exception: " + e.getMessage());
-
             UUID ownerDeprecated = plot.getOwner();
 
             if (ownerDeprecated == null) {
-                player.sendMessage("Debug: ownerDeprecated == null");
                 player.sendMessage(messages.get("vote.denied.no-owner"));
                 return;
             }

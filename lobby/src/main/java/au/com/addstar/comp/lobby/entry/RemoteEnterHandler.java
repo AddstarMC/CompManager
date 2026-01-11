@@ -55,7 +55,7 @@ public class RemoteEnterHandler implements Confirmable {
 			}
 			@Override
 			public void onFailure(@NotNull Throwable throwable) {
-				throwable.printStackTrace();
+				LobbyPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Failed to join player to server", throwable);
 			}
 		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));
 	}

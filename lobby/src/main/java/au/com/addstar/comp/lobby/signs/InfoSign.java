@@ -111,7 +111,7 @@ public class InfoSign extends BaseSign {
 					setOfflineText();
 				} else {
 					setLine(1, "Error");
-					error.printStackTrace();
+					LobbyPlugin.instance.getLogger().log(java.util.logging.Level.WARNING, "Failed to get server state for info sign", error);
 				}
 				update();
 			}
@@ -137,7 +137,7 @@ public class InfoSign extends BaseSign {
 					setOfflineText();
 				} else {
 					setLine(1, "Error");
-					error.printStackTrace();
+					LobbyPlugin.instance.getLogger().log(java.util.logging.Level.WARNING, "Failed to get plots used total for info sign", error);
 				}
 				update();
 			}

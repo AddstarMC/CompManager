@@ -88,7 +88,7 @@ public class SignManager {
 		try {
 			save();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Bukkit.getLogger().log(java.util.logging.Level.SEVERE, "Failed to save sign configuration", e);
 		}
 		return true;
 	}

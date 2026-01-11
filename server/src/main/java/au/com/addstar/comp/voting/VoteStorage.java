@@ -69,8 +69,7 @@ public class VoteStorage<T extends Vote> {
             try {
                 manager.getBackend().addVote(player.getUniqueId(), vote, manager.getCurrentComp());
             } catch (SQLException e) {
-                System.err.println("[CompManager] Failed to add vote to database:");
-                e.printStackTrace();
+                CompPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Failed to add vote to database", e);
             }
         });
     }

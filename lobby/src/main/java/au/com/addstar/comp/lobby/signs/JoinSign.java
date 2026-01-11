@@ -89,8 +89,7 @@ public class JoinSign extends BaseSign {
 					}
 				} else {
 					player.sendMessage(ChatColor.RED + "Sorry, something went wrong. Please try again later.");
-					System.err.println("Failed to join " + player.getName() + " into the comp on " + server.getId() + ":");
-					error.printStackTrace();
+					LobbyPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Failed to join " + player.getName() + " into the comp on " + server.getId(), error);
 				}
 			}
 		}, Bukkit.getScheduler().getMainThreadExecutor(LobbyPlugin.instance));

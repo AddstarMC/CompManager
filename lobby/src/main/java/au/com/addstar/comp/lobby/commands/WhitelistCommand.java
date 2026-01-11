@@ -131,8 +131,7 @@ final class WhitelistCommand implements ICommand {
 		@Override
 		public void onFailure(@NotNull Throwable error) {
 			sender.sendMessage(ChatColor.RED + "Unable to lookup player: " + error.getMessage());
-			System.err.println("Failed to lookup player:");
-			error.printStackTrace();
+			LobbyPlugin.instance.getLogger().log(java.util.logging.Level.WARNING, "Failed to lookup player", error);
 		}
 	}
 	
@@ -151,8 +150,7 @@ final class WhitelistCommand implements ICommand {
 				sender.sendMessage(ChatColor.GREEN + player.getName() + " has been added to the whitelist");
 			} catch (SQLException e) {
 				sender.sendMessage(ChatColor.RED + "An error occured writing to the whitelist");
-				System.err.println("Failed to add " + player.getName() + " to the comp whitelist:");
-				e.printStackTrace();
+				LobbyPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Failed to add " + player.getName() + " to the comp whitelist", e);
 			}
 		}
 	}
@@ -172,8 +170,7 @@ final class WhitelistCommand implements ICommand {
 				sender.sendMessage(ChatColor.GREEN + player.getName() + " has been removed from the whitelist");
 			} catch (SQLException e) {
 				sender.sendMessage(ChatColor.RED + "An error occured writing to the whitelist");
-				System.err.println("Failed to remove " + player.getName() + " from the comp whitelist:");
-				e.printStackTrace();
+				LobbyPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Failed to remove " + player.getName() + " from the comp whitelist", e);
 			}
 		}
 	}
@@ -196,8 +193,7 @@ final class WhitelistCommand implements ICommand {
 				}
 			} catch (SQLException e) {
 				sender.sendMessage(ChatColor.RED + "An error occured reading from the whitelist");
-				System.err.println("Failed to check the comp whitelist:");
-				e.printStackTrace();
+				LobbyPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Failed to check the comp whitelist", e);
 			}
 		}
 	}

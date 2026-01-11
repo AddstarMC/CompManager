@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import au.com.addstar.comp.CompManager;
+import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.notifications.NotificationManager;
 import au.com.addstar.monolith.command.BadArgumentException;
 import au.com.addstar.monolith.command.CommandSenderType;
@@ -61,7 +62,7 @@ public class ReloadCommand implements ICommand {
 		try {
 			notificationManager.reload();
 		} catch (IOException e) {
-			e.printStackTrace();
+			CompPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Failed to reload notifications", e);
 			sender.sendMessage(ChatColor.RED + "Failed to reload notifications. Check console");
 		}
 		
