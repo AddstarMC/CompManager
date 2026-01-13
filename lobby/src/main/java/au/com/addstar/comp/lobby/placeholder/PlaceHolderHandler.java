@@ -3,6 +3,7 @@ package au.com.addstar.comp.lobby.placeholder;
 import au.com.addstar.comp.lobby.LobbyPlugin;
 import au.com.addstar.comp.lobby.CompServer;
 import au.com.addstar.comp.criterions.BaseCriterion;
+import au.com.addstar.comp.util.CompUtils;
 
 import org.bukkit.entity.Player;
 
@@ -47,6 +48,9 @@ public class PlaceHolderHandler {
             r.add("startTime"+suffix);
             r.add("endTime"+suffix);
             r.add("voteendtime"+suffix);
+            r.add("timeuntilstart"+suffix);
+            r.add("timeuntilend"+suffix);
+            r.add("timeuntilvoteend"+suffix);
             r.add("state"+suffix);
             r.add("running"+suffix);
             r.add("fullstatus"+suffix);
@@ -118,6 +122,12 @@ public class PlaceHolderHandler {
                     return formatDate(plugin.getManager().getServer(serverID).getCurrentComp().getEndDate());
                 case "voteend":
                     return formatDate(plugin.getManager().getServer(serverID).getCurrentComp().getVoteEndDate());
+                case "timeuntilstart":
+                    return CompUtils.formatTimeRemaining(plugin.getManager().getServer(serverID).getCurrentComp().getStartDate() - System.currentTimeMillis());
+                case "timeuntilend":
+                    return CompUtils.formatTimeRemaining(plugin.getManager().getServer(serverID).getCurrentComp().getEndDate() - System.currentTimeMillis());
+                case "timeuntilvoteend":
+                    return CompUtils.formatTimeRemaining(plugin.getManager().getServer(serverID).getCurrentComp().getVoteEndDate() - System.currentTimeMillis());
                 case "state":
                     return plugin.getManager().getServer(serverID).getCurrentComp().getState().toString();
                 case "firstprize":

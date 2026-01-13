@@ -2,6 +2,7 @@ package au.com.addstar.comp.placeholders;
 
 import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.criterions.BaseCriterion;
+import au.com.addstar.comp.util.CompUtils;
 
 import org.bukkit.entity.Player;
 
@@ -37,6 +38,9 @@ public class PlaceHolderHandler {
         r.add("startTime");
         r.add("endTime");
         r.add("voteendtime");
+        r.add("timeuntilstart");
+        r.add("timeuntilend");
+        r.add("timeuntilvoteend");
         r.add("state");
         r.add("running");
         r.add("fullstatus");
@@ -77,6 +81,15 @@ public class PlaceHolderHandler {
             case "voteend":
                 date = new Date(plugin.getCompManager().getCurrentComp().getVoteEndDate());
                 return DateFormat.getDateTimeInstance().format(date);
+            case "timeuntilstart":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                return CompUtils.formatTimeRemaining(plugin.getCompManager().getCurrentComp().getStartDate() - System.currentTimeMillis());
+            case "timeuntilend":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                return CompUtils.formatTimeRemaining(plugin.getCompManager().getCurrentComp().getEndDate() - System.currentTimeMillis());
+            case "timeuntilvoteend":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                return CompUtils.formatTimeRemaining(plugin.getCompManager().getCurrentComp().getVoteEndDate() - System.currentTimeMillis());
             case "state":
                 return plugin.getCompManager().getCurrentComp().getState().toString();
             case "running":

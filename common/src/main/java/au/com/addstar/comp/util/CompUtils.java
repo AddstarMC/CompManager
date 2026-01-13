@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Preconditions;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 
 public final class CompUtils {
 	private CompUtils() {}
@@ -66,8 +65,6 @@ public final class CompUtils {
 	}
 	
 	private static final SimpleDateFormat endFormat = new SimpleDateFormat("d MMM h:ma");
-	private static final String TIME_LEFT_FORMAT_LONG = "d'd 'H'h'";
-	private static final String TIME_LEFT_FORMAT_SHORT = "H'h 'm'm'";
 	
 	/**
 	 * Formats a time in ms as 'd MMM h:ma'
@@ -79,15 +76,45 @@ public final class CompUtils {
 	}
 	
 	/**
-	 * Formats the time remaining like either '2d 3h' or '1h 10m'
-	 * @param remaining The number of ms remaining
-	 * @return The formatted string
+	 * Formats the time remaining until a target time as a human-readable string.
+	 * Formats as: "Xd" for days, "Xh Ym" for hours, "Xm Ys" for minutes, or "Xs" for seconds.
+	 * Only shows the largest two units.
+	 * @param remaining The number of ms remaining (can be negative, will return "0s")
+	 * @return Formatted time string (e.g., "2d 5h", "17h 13m", "5m 20s", "23s") or "0s" if time has passed
 	 */
 	public static String formatTimeRemaining(long remaining) {
-		if (Math.abs(remaining) < TimeUnit.DAYS.toMillis(1)) {
-			return DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_SHORT);
+		if (remaining <= 0) {
+			return "0s";
+		}
+		
+		long seconds = remaining / 1000;
+		long minutes = seconds / 60;
+		long hours = minutes / 60;
+		long days = hours / 24;
+		
+		if (days >= 1) {
+			long remainingHours = hours % 24;
+			if (remainingHours > 0) {
+				return days + "d " + remainingHours + "h";
+			} else {
+				return days + "d";
+			}
+		} else if (hours >= 1) {
+			long remainingMinutes = minutes % 60;
+			if (remainingMinutes > 0) {
+				return hours + "h " + remainingMinutes + "m";
+			} else {
+				return hours + "h";
+			}
+		} else if (minutes >= 1) {
+			long remainingSeconds = seconds % 60;
+			if (remainingSeconds > 0) {
+				return minutes + "m " + remainingSeconds + "s";
+			} else {
+				return minutes + "m";
+			}
 		} else {
-			return DurationFormatUtils.formatDuration(remaining, TIME_LEFT_FORMAT_LONG);
+			return seconds + "s";
 		}
 	}
 }
