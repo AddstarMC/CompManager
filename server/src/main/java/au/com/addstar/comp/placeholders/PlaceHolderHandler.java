@@ -33,7 +33,6 @@ public class PlaceHolderHandler {
     protected static List<String> getPlaceholders(){
         List<String> r = new ArrayList<>();
         r.add("theme");
-        r.add("description");
         r.add("startTime");
         r.add("endTime");
         r.add("voteendtime");
@@ -58,8 +57,6 @@ public class PlaceHolderHandler {
         String filtered = trim(s);
         switch(filtered){
             case "theme":
-                return plugin.getCompManager().getCurrentComp().getTheme();
-            case "description":
                 return plugin.getCompManager().getCurrentComp().getTheme();
             case "starttime":
                 Date date = new Date(plugin.getCompManager().getCurrentComp().getStartDate());

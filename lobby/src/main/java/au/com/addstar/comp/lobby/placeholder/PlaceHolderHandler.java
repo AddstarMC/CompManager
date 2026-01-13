@@ -42,7 +42,6 @@ public class PlaceHolderHandler {
         for(String server: allServers){
             String suffix = "_"+server;
             r.add("theme"+suffix);
-            r.add("description"+suffix);
             r.add("startTime"+suffix);
             r.add("endTime"+suffix);
             r.add("voteendtime"+suffix);
