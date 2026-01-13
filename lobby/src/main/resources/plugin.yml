@@ -6,7 +6,7 @@ api-version: 1.13
 
 main: au.com.addstar.comp.lobby.LobbyPlugin
 depend: [ProtocolLib, Monolith]
-softdepend: [BungeeChatBukkit]
+softdepend: [BungeeChatBukkit, PlaceholderAPI]
 
 permissions:
   comp.admin:
