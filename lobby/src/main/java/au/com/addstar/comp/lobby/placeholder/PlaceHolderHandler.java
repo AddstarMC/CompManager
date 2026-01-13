@@ -229,7 +229,7 @@ public class PlaceHolderHandler {
     /**
      * Handles indexed criteria placeholders: criteria_<serverid>_<index>_name or criteria_<serverid>_<index>_description
      * @param placeholder The placeholder string (e.g., "criteria_serverid_0_name")
-     * @return The criteria name or description, or null if invalid
+     * @return The criteria name or description, or empty string if index is out of bounds, or null if invalid format
      */
     private String getCriteriaPlaceholder(String placeholder) {
         String[] parts = placeholder.split("_");
@@ -247,7 +247,7 @@ public class PlaceHolderHandler {
         
         CompServer server = plugin.getManager().getServer(serverId);
         if (!server.isOnline() || server.getCurrentComp() == null) {
-            return null;
+            return "";
         }
         
         try {
@@ -258,7 +258,8 @@ public class PlaceHolderHandler {
             
             List<BaseCriterion> criteria = server.getCurrentComp().getCriteria();
             if (index < 0 || index >= criteria.size()) {
-                return null;
+                // Return empty string for out-of-bounds indices
+                return "";
             }
             
             BaseCriterion criterion = criteria.get(index);
@@ -285,7 +286,7 @@ public class PlaceHolderHandler {
     private String getHasEntered(Player player, String serverId) {
         CompServer server = plugin.getManager().getServer(serverId);
         if (!server.isOnline() || server.getCurrentComp() == null) {
-            return null;
+            return "false";
         }
         
         EntrantResult result = getCachedResult(server.getCurrentComp(), player.getUniqueId());
@@ -298,14 +299,14 @@ public class PlaceHolderHandler {
     private String getPrize(Player player, String serverId) {
         CompServer server = plugin.getManager().getServer(serverId);
         if (!server.isOnline() || server.getCurrentComp() == null) {
-            return null;
+            return "None";
         }
         
         EntrantResult result = getCachedResult(server.getCurrentComp(), player.getUniqueId());
         if (result != null && result.getPrize().isPresent()) {
             return result.getPrize().get().toHumanReadable();
         }
-        return null;
+        return "None";
     }
     
     /**
@@ -314,14 +315,14 @@ public class PlaceHolderHandler {
     private String getPrizeClaimed(Player player, String serverId) {
         CompServer server = plugin.getManager().getServer(serverId);
         if (!server.isOnline() || server.getCurrentComp() == null) {
-            return null;
+            return "false";
         }
         
         EntrantResult result = getCachedResult(server.getCurrentComp(), player.getUniqueId());
         if (result != null) {
             return Boolean.toString(result.isPrizeClaimed());
         }
-        return null;
+        return "false";
     }
     
     /**
@@ -340,7 +341,7 @@ public class PlaceHolderHandler {
     private String getSpotsRemaining(String serverId) {
         CompServer server = plugin.getManager().getServer(serverId);
         if (!server.isOnline() || server.getCurrentComp() == null) {
-            return null;
+            return "0";
         }
         
         int maxEntrants = server.getCurrentComp().getMaxEntrants();
@@ -354,7 +355,7 @@ public class PlaceHolderHandler {
     private String getMaxEntrants(String serverId) {
         CompServer server = plugin.getManager().getServer(serverId);
         if (!server.isOnline() || server.getCurrentComp() == null) {
-            return null;
+            return "0";
         }
         
         return Integer.toString(server.getCurrentComp().getMaxEntrants());
@@ -366,7 +367,7 @@ public class PlaceHolderHandler {
     private String getEntrants(String serverId) {
         CompServer server = plugin.getManager().getServer(serverId);
         if (!server.isOnline() || server.getCurrentComp() == null) {
-            return null;
+            return "0";
         }
         
         return Integer.toString(getCachedEntrantCount(server.getCurrentComp()));

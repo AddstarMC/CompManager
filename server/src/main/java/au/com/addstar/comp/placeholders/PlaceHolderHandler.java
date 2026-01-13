@@ -92,13 +92,13 @@ public class PlaceHolderHandler {
                 date = new Date(plugin.getCompManager().getCurrentComp().getVoteEndDate());
                 return DateFormat.getDateTimeInstance().format(date);
             case "timeuntilstart":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "";
                 return CompUtils.formatTimeRemaining(plugin.getCompManager().getCurrentComp().getStartDate() - System.currentTimeMillis());
             case "timeuntilend":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "";
                 return CompUtils.formatTimeRemaining(plugin.getCompManager().getCurrentComp().getEndDate() - System.currentTimeMillis());
             case "timeuntilvoteend":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "";
                 return CompUtils.formatTimeRemaining(plugin.getCompManager().getCurrentComp().getVoteEndDate() - System.currentTimeMillis());
             case "state":
                 return plugin.getCompManager().getCurrentComp().getState().toString();
@@ -115,10 +115,10 @@ public class PlaceHolderHandler {
             case "criteria":
                 return plugin.getCompManager().getCurrentComp().getCriteria().toString();
             case "hasentered":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "false";
                 return Boolean.toString(plugin.getCompManager().hasEntered(player));
             case "prize":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "None";
                 try {
                     EntrantResult result = plugin.getCompManager().getBackend().getResult(
                         plugin.getCompManager().getCurrentComp(), player.getUniqueId());
@@ -128,9 +128,9 @@ public class PlaceHolderHandler {
                 } catch (SQLException e) {
                     plugin.getLogger().log(Level.WARNING, "Failed to get prize for " + player.getName(), e);
                 }
-                return null;
+                return "None";
             case "prizeclaimed":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "false";
                 try {
                     EntrantResult result = plugin.getCompManager().getBackend().getResult(
                         plugin.getCompManager().getCurrentComp(), player.getUniqueId());
@@ -140,7 +140,7 @@ public class PlaceHolderHandler {
                 } catch (SQLException e) {
                     plugin.getLogger().log(Level.WARNING, "Failed to get prize claimed status for " + player.getName(), e);
                 }
-                return null;
+                return "false";
             case "iswhitelisted":
                 try {
                     return Boolean.toString(plugin.getCompManager().getWhitelist().isWhitelisted(player));
@@ -149,12 +149,12 @@ public class PlaceHolderHandler {
                     return "false";
                 }
             case "spotsremaining":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "0";
                 int maxEntrants = plugin.getCompManager().getCurrentComp().getMaxEntrants();
                 int currentEntrants = plugin.getBridge().getUsedPlotCount();
                 return Integer.toString(Math.max(0, maxEntrants - currentEntrants));
             case "maxentrants":
-                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                if (plugin.getCompManager().getCurrentComp() == null) return "0";
                 return Integer.toString(plugin.getCompManager().getCurrentComp().getMaxEntrants());
             case "entrants":
                 return Integer.toString(plugin.getBridge().getUsedPlotCount());
@@ -166,11 +166,11 @@ public class PlaceHolderHandler {
     /**
      * Handles indexed criteria placeholders: criteria_<index>_name or criteria_<index>_description
      * @param placeholder The placeholder string (e.g., "criteria_0_name")
-     * @return The criteria name or description, or null if invalid
+     * @return The criteria name or description, or empty string if index is out of bounds, or null if invalid format
      */
     private String getCriteriaPlaceholder(String placeholder) {
         if (plugin.getCompManager().getCurrentComp() == null) {
-            return null;
+            return "";
         }
         
         String[] parts = placeholder.split("_");
@@ -184,7 +184,8 @@ public class PlaceHolderHandler {
             
             List<BaseCriterion> criteria = plugin.getCompManager().getCurrentComp().getCriteria();
             if (index < 0 || index >= criteria.size()) {
-                return null;
+                // Return empty string for out-of-bounds indices (useful for holograms showing up to N criteria)
+                return "";
             }
             
             BaseCriterion criterion = criteria.get(index);
