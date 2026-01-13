@@ -51,6 +51,6 @@ public class PAPIPlaceHolderExtension extends PlaceholderExpansion {
     }
     @Override
     public String onPlaceholderRequest(Player player, String s) {
-        return this.plugin.getPlaceHolderHandler().getPlacHolderReplaceMent(player,s);
+        return this.plugin.getPlaceHolderHandler().getPlaceHolderReplacement(player,s);
     }
 }

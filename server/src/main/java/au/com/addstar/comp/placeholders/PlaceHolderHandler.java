@@ -54,7 +54,7 @@ public class PlaceHolderHandler {
         return s;
     }
 
-    protected String  getPlacHolderReplaceMent(Player player,String s){
+    protected String getPlaceHolderReplacement(Player player, String s){
         String filtered = trim(s);
         switch(filtered){
             case "theme":
