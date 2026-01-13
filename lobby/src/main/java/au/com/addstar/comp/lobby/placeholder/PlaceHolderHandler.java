@@ -1,6 +1,8 @@
 package au.com.addstar.comp.lobby.placeholder;
 
 import au.com.addstar.comp.lobby.LobbyPlugin;
+import au.com.addstar.comp.lobby.CompServer;
+import au.com.addstar.comp.criterions.BaseCriterion;
 
 import org.bukkit.entity.Player;
 
@@ -84,6 +86,16 @@ public class PlaceHolderHandler {
         else return o;
     }
     protected String onPlaceholderRequest(Player player, String s) {
+        String trimmed = trim(s);
+        
+        // Handle indexed criteria placeholders: criteria_<serverid>_<index>_name or criteria_<serverid>_<index>_description
+        if (trimmed.startsWith("criteria_")) {
+            String criteriaValue = getCriteriaPlaceholder(trimmed);
+            if (criteriaValue != null) {
+                return criteriaValue;
+            }
+        }
+        
         String serverID;
         try {
             serverID = getServerId(s);
@@ -122,6 +134,54 @@ public class PlaceHolderHandler {
         }else {
             return plugin.getManager().getMessage("state.offline");
         }
+    }
+    
+    /**
+     * Handles indexed criteria placeholders: criteria_<serverid>_<index>_name or criteria_<serverid>_<index>_description
+     * @param placeholder The placeholder string (e.g., "criteria_serverid_0_name")
+     * @return The criteria name or description, or null if invalid
+     */
+    private String getCriteriaPlaceholder(String placeholder) {
+        String[] parts = placeholder.split("_");
+        // Format: criteria_<serverid>_<index>_<field>
+        // So we need at least 4 parts: criteria, serverid, index, field
+        if (parts.length < 4 || !parts[0].equals("criteria")) {
+            return null;
+        }
+        
+        // Extract server ID (parts[1])
+        String serverId = parts[1];
+        if (allServers == null || !allServers.contains(serverId)) {
+            return null;
+        }
+        
+        CompServer server = plugin.getManager().getServer(serverId);
+        if (!server.isOnline() || server.getCurrentComp() == null) {
+            return null;
+        }
+        
+        try {
+            // Extract index (parts[2])
+            int index = Integer.parseInt(parts[2]);
+            // Extract field (parts[3])
+            String field = parts[3];
+            
+            List<BaseCriterion> criteria = server.getCurrentComp().getCriteria();
+            if (index < 0 || index >= criteria.size()) {
+                return null;
+            }
+            
+            BaseCriterion criterion = criteria.get(index);
+            if ("name".equals(field)) {
+                return criterion.getName();
+            } else if ("description".equals(field)) {
+                return criterion.getDescription();
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        
+        return null;
     }
 
     private String formatDate(Long date){

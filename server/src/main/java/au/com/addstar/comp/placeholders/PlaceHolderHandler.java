@@ -1,6 +1,7 @@
 package au.com.addstar.comp.placeholders;
 
 import au.com.addstar.comp.CompPlugin;
+import au.com.addstar.comp.criterions.BaseCriterion;
 
 import org.bukkit.entity.Player;
 
@@ -55,6 +56,15 @@ public class PlaceHolderHandler {
 
     protected String getPlaceHolderReplacement(Player player, String s){
         String filtered = trim(s);
+        
+        // Handle indexed criteria placeholders: criteria_<index>_name or criteria_<index>_description
+        if (filtered.startsWith("criteria_")) {
+            String criteriaValue = getCriteriaPlaceholder(filtered);
+            if (criteriaValue != null) {
+                return criteriaValue;
+            }
+        }
+        
         switch(filtered){
             case "theme":
                 return plugin.getCompManager().getCurrentComp().getTheme();
@@ -84,6 +94,43 @@ public class PlaceHolderHandler {
             default:
                 return null;
         }
+    }
+    
+    /**
+     * Handles indexed criteria placeholders: criteria_<index>_name or criteria_<index>_description
+     * @param placeholder The placeholder string (e.g., "criteria_0_name")
+     * @return The criteria name or description, or null if invalid
+     */
+    private String getCriteriaPlaceholder(String placeholder) {
+        if (plugin.getCompManager().getCurrentComp() == null) {
+            return null;
+        }
+        
+        String[] parts = placeholder.split("_");
+        if (parts.length != 3 || !parts[0].equals("criteria")) {
+            return null;
+        }
+        
+        try {
+            int index = Integer.parseInt(parts[1]);
+            String field = parts[2];
+            
+            List<BaseCriterion> criteria = plugin.getCompManager().getCurrentComp().getCriteria();
+            if (index < 0 || index >= criteria.size()) {
+                return null;
+            }
+            
+            BaseCriterion criterion = criteria.get(index);
+            if ("name".equals(field)) {
+                return criterion.getName();
+            } else if ("description".equals(field)) {
+                return criterion.getDescription();
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        
+        return null;
     }
 
 }
