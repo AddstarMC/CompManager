@@ -274,6 +274,10 @@ public class CompManager {
         return backend;
     }
 
+    public WhitelistHandler getWhitelist() {
+        return whitelist;
+    }
+
     /**
      * Completes a competition by tallying votes, awarding winners, and performing any and all post
      * comp actions

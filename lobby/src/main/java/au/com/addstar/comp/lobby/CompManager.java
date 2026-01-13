@@ -202,6 +202,14 @@ public class CompManager {
 	}
 
 	/**
+	 * Gets the backend manager for database operations
+	 * @return The CompBackendManager
+	 */
+	public CompBackendManager getBackend() {
+		return backend;
+	}
+
+	/**
 	 * Gets a message and replaces arguments
 	 *
 	 * @param id        The id in the message file

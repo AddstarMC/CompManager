@@ -1,15 +1,18 @@
 package au.com.addstar.comp.placeholders;
 
 import au.com.addstar.comp.CompPlugin;
+import au.com.addstar.comp.EntrantResult;
 import au.com.addstar.comp.criterions.BaseCriterion;
 import au.com.addstar.comp.util.CompUtils;
 
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +51,13 @@ public class PlaceHolderHandler {
         r.add("secondprize");
         r.add("participationprize");
         r.add("criteria");
+        r.add("hasentered");
+        r.add("prize");
+        r.add("prizeclaimed");
+        r.add("iswhitelisted");
+        r.add("spotsremaining");
+        r.add("maxentrants");
+        r.add("entrants");
         return r;
     }
 
@@ -104,6 +114,50 @@ public class PlaceHolderHandler {
                 return plugin.getCompManager().getCurrentComp().getParticipationPrize().toHumanReadable();
             case "criteria":
                 return plugin.getCompManager().getCurrentComp().getCriteria().toString();
+            case "hasentered":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                return Boolean.toString(plugin.getCompManager().hasEntered(player));
+            case "prize":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                try {
+                    EntrantResult result = plugin.getCompManager().getBackend().getResult(
+                        plugin.getCompManager().getCurrentComp(), player.getUniqueId());
+                    if (result != null && result.getPrize().isPresent()) {
+                        return result.getPrize().get().toHumanReadable();
+                    }
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to get prize for " + player.getName(), e);
+                }
+                return null;
+            case "prizeclaimed":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                try {
+                    EntrantResult result = plugin.getCompManager().getBackend().getResult(
+                        plugin.getCompManager().getCurrentComp(), player.getUniqueId());
+                    if (result != null) {
+                        return Boolean.toString(result.isPrizeClaimed());
+                    }
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to get prize claimed status for " + player.getName(), e);
+                }
+                return null;
+            case "iswhitelisted":
+                try {
+                    return Boolean.toString(plugin.getCompManager().getWhitelist().isWhitelisted(player));
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to check whitelist status for " + player.getName(), e);
+                    return "false";
+                }
+            case "spotsremaining":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                int maxEntrants = plugin.getCompManager().getCurrentComp().getMaxEntrants();
+                int currentEntrants = plugin.getBridge().getUsedPlotCount();
+                return Integer.toString(Math.max(0, maxEntrants - currentEntrants));
+            case "maxentrants":
+                if (plugin.getCompManager().getCurrentComp() == null) return null;
+                return Integer.toString(plugin.getCompManager().getCurrentComp().getMaxEntrants());
+            case "entrants":
+                return Integer.toString(plugin.getBridge().getUsedPlotCount());
             default:
                 return null;
         }
