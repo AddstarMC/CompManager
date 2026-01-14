@@ -25,13 +25,13 @@ import au.com.addstar.comp.util.CompUtils;
  * Service for creating competition dialogs using PaperMC's Dialog API.
  */
 public class CompetitionDialogService {
-	
+
 	public CompetitionDialogService() {
 	}
-	
+
 	/**
 	 * Creates a dialog for a competition with Join and View options.
-	 * 
+	 *
 	 * @param comp The competition to display
 	 * @param server The competition server
 	 * @param joinService The join service to use for join callbacks
@@ -39,24 +39,24 @@ public class CompetitionDialogService {
 	 * @param player The player who will see the dialog
 	 * @return The created dialog
 	 */
-	public Dialog createCompetitionDialog(Competition comp, CompServer server, 
-	                                      CompetitionJoinService joinService, 
-	                                      CompetitionViewService viewService, 
+	public Dialog createCompetitionDialog(Competition comp, CompServer server,
+	                                      CompetitionJoinService joinService,
+	                                      CompetitionViewService viewService,
 	                                      Player player) {
 		// Build dialog body with competition information
 		List<DialogBody> bodyParts = new ArrayList<>();
-		
+
 		// Theme
 		bodyParts.add(DialogBody.plainMessage(
 			Component.text("Theme: ", NamedTextColor.GRAY)
 				.append(Component.text(comp.getTheme(), NamedTextColor.YELLOW, TextDecoration.BOLD))
 		));
-		
+
 		// Prizes
 		if (comp.getFirstPrize() != null) {
 			String firstPrize = comp.getFirstPrize().toHumanReadable();
 			String secondPrize = comp.getSecondPrize() != null ? comp.getSecondPrize().toHumanReadable() : "none";
-			
+
 			bodyParts.add(DialogBody.plainMessage(Component.empty()));
 			bodyParts.add(DialogBody.plainMessage(
 				Component.text("Prizes:", NamedTextColor.GRAY)
@@ -70,7 +70,7 @@ public class CompetitionDialogService {
 					.append(Component.text(secondPrize, NamedTextColor.GOLD))
 			));
 		}
-		
+
 		// End date and time remaining
 		long timeRemaining = comp.getEndDate() - System.currentTimeMillis();
 		bodyParts.add(DialogBody.plainMessage(Component.empty()));
@@ -82,7 +82,7 @@ public class CompetitionDialogService {
 			Component.text("Time remaining: ", NamedTextColor.GRAY)
 				.append(Component.text(CompUtils.formatTimeRemaining(timeRemaining), NamedTextColor.YELLOW))
 		));
-		
+
 		// Criteria
 		if (!comp.getCriteria().isEmpty()) {
 			bodyParts.add(DialogBody.plainMessage(Component.empty()));
@@ -90,28 +90,21 @@ public class CompetitionDialogService {
 				Component.text("Criteria:", NamedTextColor.GRAY)
 			));
 			for (BaseCriterion criterion : comp.getCriteria()) {
-				bodyParts.add(DialogBody.plainMessage(
-					Component.text("  • ", NamedTextColor.GRAY)
-						.append(Component.text(criterion.getName(), NamedTextColor.YELLOW))
-				));
-				bodyParts.add(DialogBody.plainMessage(
-					Component.text("    ", NamedTextColor.GRAY)
-						.append(Component.text(criterion.getDescription(), NamedTextColor.WHITE))
-				));
+				bodyParts.add(DialogBody.plainMessage(Component.text(criterion.getName(), NamedTextColor.YELLOW)
+						.append(Component.text(("\n" + criterion.getDescription()), NamedTextColor.WHITE))
+                ));
 			}
 		}
-		
+
 		// Explanatory text
 		bodyParts.add(DialogBody.plainMessage(Component.empty()));
 		bodyParts.add(DialogBody.plainMessage(
 			Component.text("Join: ", NamedTextColor.GREEN)
 				.append(Component.text("Participate and get a plot", NamedTextColor.WHITE))
-		));
-		bodyParts.add(DialogBody.plainMessage(
-			Component.text("View: ", NamedTextColor.AQUA)
+				.append(Component.text("\nView: ", NamedTextColor.AQUA))
 				.append(Component.text("Explore without joining", NamedTextColor.WHITE))
 		));
-		
+
 		// Create callbacks for buttons
 		DialogAction joinAction = DialogAction.customClick(
 			(view, audience) -> {
@@ -124,7 +117,7 @@ public class CompetitionDialogService {
 				.uses(1)
 				.build()
 		);
-		
+
 		DialogAction viewAction = DialogAction.customClick(
 			(view, audience) -> {
 				if (audience instanceof Player targetPlayer) {
@@ -140,7 +133,7 @@ public class CompetitionDialogService {
 				.uses(1)
 				.build()
 		);
-		
+
 		// Create buttons
 		ActionButton joinButton = ActionButton.create(
 			Component.text("Join", NamedTextColor.GREEN, TextDecoration.BOLD),
@@ -148,14 +141,14 @@ public class CompetitionDialogService {
 			100,
 			joinAction
 		);
-		
+
 		ActionButton viewButton = ActionButton.create(
 			Component.text("View", NamedTextColor.AQUA, TextDecoration.BOLD),
 			Component.text("View this competition without joining", NamedTextColor.GRAY),
 			100,
 			viewAction
 		);
-		
+
 		// Build and return dialog
 		return Dialog.create(builder -> builder.empty()
 			.base(DialogBase.builder(Component.text(comp.getTheme(), NamedTextColor.GOLD, TextDecoration.BOLD))
