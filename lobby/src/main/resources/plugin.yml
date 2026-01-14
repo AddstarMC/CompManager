@@ -6,7 +6,7 @@ api-version: 1.21
 
 main: au.com.addstar.comp.lobby.LobbyPlugin
 depend: [ProtocolLib, Monolith]
-softdepend: [BungeeChatBukkit, PlaceholderAPI]
+softdepend: [BungeeChatBukkit, PlaceholderAPI, ViaVersion]
 
 permissions:
   comp.admin:
@@ -30,6 +30,10 @@ permissions:
   comp.view:
     default: false
   comp.view.others:
+    default: OP
+  comp.dialog:
+    default: false
+  comp.dialog.others:
     default: OP
 
 commands:

@@ -97,7 +97,7 @@ public class LobbyPlugin extends JavaPlugin {
 		}
 
 		// Register commands
-		new CompAdminCommand(whitelistHandler, compManager, redisManager, signManager, messages, confirmationManager).registerAs(getCommand("compadmin"));
+		new CompAdminCommand(whitelistHandler, compManager, redisManager, signManager, messages, confirmationManager, this).registerAs(getCommand("compadmin"));
 		new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
 
 		// Register listeners
