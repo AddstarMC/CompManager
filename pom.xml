@@ -8,8 +8,8 @@
         <build.number />
         <plugin.version>${project.version}-${build.number}</plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot.api.version>1.21.4</spigot.api.version>
-        <spigot.version>1.21.4-R0.1-SNAPSHOT</spigot.version>
+        <spigot.api.version>1.21.10</spigot.api.version>
+        <spigot.version>1.21.10-R0.1-SNAPSHOT</spigot.version>
     </properties>
     <scm>
         <connection>scm:git:git@github.com:AddstarMC/CompManager.git</connection>
