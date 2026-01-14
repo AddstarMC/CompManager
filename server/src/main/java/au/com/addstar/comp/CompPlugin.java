@@ -46,6 +46,7 @@ public class CompPlugin extends JavaPlugin {
     private ConfirmationManager confirmationManager;
     public Messages messages;
     private RemoteJoinManager remoteJoinManager;
+    private PlotBackupService plotBackupService;
     private static final HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
     private static String serverName;
 
@@ -134,7 +135,7 @@ public class CompPlugin extends JavaPlugin {
         // Create plot backup service
         boolean backupEmptyPlots = getConfig().getBoolean("backup.backup-empty-plots", true);
         int progressInterval = getConfig().getInt("backup.backup-progress-interval", 10);
-        PlotBackupService plotBackupService = new PlotBackupService(bridge, this, getLogger(), backupEmptyPlots, progressInterval);
+        plotBackupService = new PlotBackupService(bridge, this, getLogger(), backupEmptyPlots, progressInterval);
 
         // Register commands
         new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager, plotBackupService).registerAs(getCommand("compadmin"));
@@ -157,7 +158,7 @@ public class CompPlugin extends JavaPlugin {
         }, 20, 20);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CompTimer(compManager, notificationManager), 10, 10);
         Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
-        redisManager.setCommandReceiver(new CommandHandler(compManager));
+        redisManager.setCommandReceiver(new CommandHandler(compManager, plotBackupService));
 
         // Load the comp
         compManager.reloadCurrentComp();
@@ -169,6 +170,7 @@ public class CompPlugin extends JavaPlugin {
         redisManager.registerQueryHandler(new QueryIsEntrant(bridge), "is_entrant");
         redisManager.registerQueryHandler(new QueryPing(), "ping");
         redisManager.registerQueryHandler(remoteJoinManager, "join_begin", "join_confirm", "join_abort");
+        redisManager.registerQueryHandler(new au.com.addstar.comp.query.QueryBackupStatus(plotBackupService), "backup_status");
     }
 
     @Override
