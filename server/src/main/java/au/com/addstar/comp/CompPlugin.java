@@ -178,6 +178,16 @@ public class CompPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Check if backup is in progress during shutdown
+        if (plotBackupService != null && plotBackupService.isBackupInProgress()) {
+            getLogger().log(Level.SEVERE, "========================================");
+            getLogger().log(Level.SEVERE, "PLOT BACKUP WAS IN PROGRESS DURING SHUTDOWN!");
+            getLogger().log(Level.SEVERE, "The backup will NOT continue automatically on server start.");
+            getLogger().log(Level.SEVERE, "Please verify the competition ID is still the same and");
+            getLogger().log(Level.SEVERE, "manually perform a backup if you want plots saved to schematics.");
+            getLogger().log(Level.SEVERE, "========================================");
+        }
+        
         databaseManager.shutdown();
     }
 
