@@ -23,6 +23,14 @@ permissions:
     default: OP
   comp.admin.state:
     default: OP
+  comp.join:
+    default: false
+  comp.join.others:
+    default: OP
+  comp.view:
+    default: false
+  comp.view.others:
+    default: OP
 
 commands:
   compadmin:
