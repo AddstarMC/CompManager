@@ -24,8 +24,8 @@ import au.com.addstar.monolith.command.ICommand;
  * Usage: /compadmin dialog <serverId|compId> [playerName]
  */
 public class DialogCommand implements ICommand {
-	private static final String PERMISSION_DIALOG = "comp.dialog";
-	private static final String PERMISSION_DIALOG_OTHERS = "comp.dialog.others";
+	private static final String PERMISSION_DIALOG = "comp.admin.dialog";
+	private static final String PERMISSION_DIALOG_OTHERS = "comp.admin.dialog.others";
 	private static final int MIN_PROTOCOL_VERSION = 771; // Minecraft 1.21.6
 	
 	private final CompManager manager;

@@ -23,17 +23,17 @@ permissions:
     default: OP
   comp.admin.state:
     default: OP
-  comp.join:
+  comp.admin.join:
     default: false
-  comp.join.others:
+  comp.admin.join.others:
     default: OP
-  comp.view:
+  comp.admin.view:
     default: false
-  comp.view.others:
+  comp.admin.view.others:
     default: OP
-  comp.dialog:
+  comp.admin.dialog:
     default: false
-  comp.dialog.others:
+  comp.admin.dialog.others:
     default: OP
 
 commands:

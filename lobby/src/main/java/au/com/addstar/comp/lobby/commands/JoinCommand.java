@@ -21,8 +21,8 @@ import au.com.addstar.monolith.command.ICommand;
  * Usage: /comp join <serverId|compId> [playerName]
  */
 public class JoinCommand implements ICommand {
-	private static final String PERMISSION_JOIN = "comp.join";
-	private static final String PERMISSION_JOIN_OTHERS = "comp.join.others";
+	private static final String PERMISSION_JOIN = "comp.admin.join";
+	private static final String PERMISSION_JOIN_OTHERS = "comp.admin.join.others";
 	
 	private final CompManager manager;
 	private final CompetitionJoinService joinService;

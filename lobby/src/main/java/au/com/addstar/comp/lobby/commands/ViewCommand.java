@@ -22,8 +22,8 @@ import au.com.addstar.monolith.command.ICommand;
  * Alias: visit
  */
 public class ViewCommand implements ICommand {
-	private static final String PERMISSION_VIEW = "comp.view";
-	private static final String PERMISSION_VIEW_OTHERS = "comp.view.others";
+	private static final String PERMISSION_VIEW = "comp.admin.view";
+	private static final String PERMISSION_VIEW_OTHERS = "comp.admin.view.others";
 	
 	private final CompManager manager;
 	private final CompetitionViewService viewService;
