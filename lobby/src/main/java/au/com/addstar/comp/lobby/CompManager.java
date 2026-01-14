@@ -156,6 +156,49 @@ public class CompManager {
 	}
 
 	/**
+	 * Finds a server by competition ID.
+	 * Searches through all known servers to find one with the specified competition.
+	 *
+	 * @param compId The competition ID to search for
+	 * @return The server hosting the competition, or null if not found
+	 */
+	@Nullable
+	public CompServer findServerByCompId(int compId) {
+		for (CompServer server : servers.values()) {
+			Competition comp = server.getCurrentComp();
+			if (comp != null && comp.getCompId() == compId) {
+				return server;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Finds a server by either server ID or competition ID.
+	 * First attempts to find by server ID, then falls back to competition ID if the identifier is numeric.
+	 *
+	 * @param identifier The server ID (string) or competition ID (numeric string)
+	 * @return The server if found, or null
+	 */
+	@Nullable
+	public CompServer findServerByIdentifier(String identifier) {
+		// First try as server ID
+		CompServer server = getServer(identifier);
+		if (server != null) {
+			return server;
+		}
+
+		// Try parsing as competition ID
+		try {
+			int compId = Integer.parseInt(identifier);
+			return findServerByCompId(compId);
+		} catch (NumberFormatException e) {
+			// Not a valid number, return null
+			return null;
+		}
+	}
+
+	/**
 	 * Gets all known servers. The servers must have checked in for them to be
 	 * present in this set.
 	 *
