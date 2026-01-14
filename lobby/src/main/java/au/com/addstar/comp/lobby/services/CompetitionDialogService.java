@@ -141,21 +141,29 @@ public class CompetitionDialogService {
 			100,
 			joinAction
 		);
-
+		
 		ActionButton viewButton = ActionButton.create(
 			Component.text("View", NamedTextColor.AQUA, TextDecoration.BOLD),
 			Component.text("View this competition without joining", NamedTextColor.GRAY),
 			100,
 			viewAction
 		);
-
+		
+		// Cancel button with null action - closes dialog without doing anything
+		ActionButton cancelButton = ActionButton.create(
+			Component.text("Cancel", NamedTextColor.GRAY),
+			Component.text("Close this dialog", NamedTextColor.GRAY),
+			100,
+			null  // null action just closes the dialog
+		);
+		
 		// Build and return dialog
 		return Dialog.create(builder -> builder.empty()
 			.base(DialogBase.builder(Component.text(comp.getTheme(), NamedTextColor.GOLD, TextDecoration.BOLD))
 				.body(bodyParts)
 				.canCloseWithEscape(true)
 				.build())
-			.type(DialogType.confirmation(joinButton, viewButton))
+			.type(DialogType.multiAction(List.of(joinButton, viewButton, cancelButton)).build())
 		);
 	}
 }
