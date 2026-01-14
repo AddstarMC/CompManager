@@ -16,10 +16,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.lambdaworks.redis.RedisException;
 
 import au.com.addstar.comp.commands.AgreeCommand;
+import au.com.addstar.comp.commands.BackupCommand;
 import au.com.addstar.comp.commands.CompAdminCommand;
 import au.com.addstar.comp.commands.CompInfoCommand;
 import au.com.addstar.comp.commands.JoinCommand;
 import au.com.addstar.comp.commands.VoteCommand;
+import au.com.addstar.comp.services.PlotBackupService;
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.notifications.NotificationManager;
@@ -129,8 +131,13 @@ public class CompPlugin extends JavaPlugin {
         }
         remoteJoinManager = new RemoteJoinManager(compManager, TimeUnit.SECONDS.toMillis(30)); // TODO: Configurable timeout
 
+        // Create plot backup service
+        boolean backupEmptyPlots = getConfig().getBoolean("backup.backup-empty-plots", true);
+        int progressInterval = getConfig().getInt("backup.backup-progress-interval", 10);
+        PlotBackupService plotBackupService = new PlotBackupService(bridge, this, getLogger(), backupEmptyPlots, progressInterval);
+
         // Register commands
-        new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager).registerAs(getCommand("compadmin"));
+        new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager, plotBackupService).registerAs(getCommand("compadmin"));
         new JoinCommand(compManager, confirmationManager, messages).registerAs(getCommand("compjoin"));
         new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
         new CompInfoCommand(compManager, messages).registerAs(getCommand("compinfo"));

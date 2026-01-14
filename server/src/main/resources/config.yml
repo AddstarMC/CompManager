@@ -15,3 +15,9 @@ server-id: null
 # The server ID for the competition lobby
 lobby-id: complobby
 
+# Plot backup settings
+backup:
+  # Whether to backup empty plots (plots with no blocks)
+  backup-empty-plots: true
+  # Log progress every N plots (0 to disable progress logging)
+  backup-progress-interval: 10
