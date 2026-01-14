@@ -46,8 +46,9 @@ public class JoinCommand implements ICommand {
 
 	@Override
 	public String getPermission() {
-		// Permission is checked dynamically based on whether playerName is provided
-		return PERMISSION_JOIN;
+		// Return null to bypass Monolith's permission check
+		// All permission checks are handled in onCommand()
+		return null;
 	}
 
 	@Override
@@ -79,8 +80,8 @@ public class JoinCommand implements ICommand {
 		boolean joiningOthers = args.length >= 2;
 		
 		if (joiningOthers) {
-			// Joining another player - requires comp.join.others permission
-			if (!sender.hasPermission(PERMISSION_JOIN_OTHERS)) {
+			// Joining another player
+			if (!(sender instanceof org.bukkit.command.ConsoleCommandSender) && !sender.isOp() && !sender.hasPermission(PERMISSION_JOIN_OTHERS)) {
 				sender.sendMessage(ChatColor.RED + "You don't have permission to join other players.");
 				return true;
 			}
@@ -92,8 +93,8 @@ public class JoinCommand implements ICommand {
 				return true;
 			}
 		} else {
-			// Joining self - requires comp.join permission and must be a player
-			if (!sender.hasPermission(PERMISSION_JOIN)) {
+			// Joining self
+			if (!(sender instanceof org.bukkit.command.ConsoleCommandSender) && !sender.isOp() && !sender.hasPermission(PERMISSION_JOIN)) {
 				sender.sendMessage(ChatColor.RED + "You don't have permission to join competitions.");
 				return true;
 			}

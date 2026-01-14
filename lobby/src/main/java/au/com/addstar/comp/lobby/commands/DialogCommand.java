@@ -58,8 +58,9 @@ public class DialogCommand implements ICommand {
 
 	@Override
 	public String getPermission() {
-		// Permission is checked dynamically based on whether playerName is provided
-		return PERMISSION_DIALOG;
+		// Return null to bypass Monolith's permission check
+		// All permission checks are handled in onCommand()
+		return null;
 	}
 
 	@Override
@@ -91,8 +92,8 @@ public class DialogCommand implements ICommand {
 		boolean showingOthers = args.length >= 2;
 		
 		if (showingOthers) {
-			// Showing dialog to another player - requires comp.dialog.others permission
-			if (!sender.hasPermission(PERMISSION_DIALOG_OTHERS)) {
+			// Showing dialog to another player
+			if (!(sender instanceof org.bukkit.command.ConsoleCommandSender) && !sender.isOp() && !sender.hasPermission(PERMISSION_DIALOG_OTHERS)) {
 				sender.sendMessage(ChatColor.RED + "You don't have permission to show the competition dialog to other players.");
 				return true;
 			}
@@ -104,8 +105,8 @@ public class DialogCommand implements ICommand {
 				return true;
 			}
 		} else {
-			// Showing dialog to self - requires comp.dialog permission and must be a player
-			if (!sender.hasPermission(PERMISSION_DIALOG)) {
+			// Showing dialog to self
+			if (!(sender instanceof org.bukkit.command.ConsoleCommandSender) && !sender.isOp() && !sender.hasPermission(PERMISSION_DIALOG)) {
 				sender.sendMessage(ChatColor.RED + "You don't have permission to run this command");
 				return true;
 			}

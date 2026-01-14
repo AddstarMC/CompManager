@@ -47,8 +47,9 @@ public class ViewCommand implements ICommand {
 
 	@Override
 	public String getPermission() {
-		// Permission is checked dynamically based on whether playerName is provided
-		return PERMISSION_VIEW;
+		// Return null to bypass Monolith's permission check
+		// All permission checks are handled in onCommand()
+		return null;
 	}
 
 	@Override
@@ -80,8 +81,8 @@ public class ViewCommand implements ICommand {
 		boolean viewingOthers = args.length >= 2;
 		
 		if (viewingOthers) {
-			// Viewing for another player - requires comp.view.others permission
-			if (!sender.hasPermission(PERMISSION_VIEW_OTHERS)) {
+			// Viewing for another player
+			if (!(sender instanceof org.bukkit.command.ConsoleCommandSender) && !sender.isOp() && !sender.hasPermission(PERMISSION_VIEW_OTHERS)) {
 				sender.sendMessage(ChatColor.RED + "You don't have permission to send other players to view a competition");
 				return true;
 			}
@@ -93,8 +94,8 @@ public class ViewCommand implements ICommand {
 				return true;
 			}
 		} else {
-			// Viewing self - requires comp.view permission and must be a player
-			if (!sender.hasPermission(PERMISSION_VIEW)) {
+			// Viewing self
+			if (!(sender instanceof org.bukkit.command.ConsoleCommandSender) && !sender.isOp() && !sender.hasPermission(PERMISSION_VIEW)) {
 				sender.sendMessage(ChatColor.RED + "You don't have permission to view competitions.");
 				return true;
 			}
