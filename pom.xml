@@ -77,15 +77,8 @@
         </repository>
         <!-- For Vault -->
         <repository>
-            <id>vault-repo</id>
-            <name>Public Releases</name>
-            <url>https://nexus.hc.to/content/repositories/pub_releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
         <repository>
             <id>EngineHub</id>
@@ -94,16 +87,6 @@
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/releases</url>
-        </repository>
-        <repository>
-            <id>mvdw-software</id>
-            <name>MVdW Public Repositories</name>
-            <url>https://repo.mvdw-software.be/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>mvnrepository</id>
-            <name>mvnrepository</name>
-            <url>https://mvnrepository.com/artifact/</url>
         </repository>
     </repositories>
 
@@ -132,18 +115,6 @@
             <version>7.2.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>be.maximvdw</groupId>-->
-<!--            <artifactId>MVdWPlaceholderAPI</artifactId>-->
-<!--            <version>3.0.0-SNAPSHOT</version>-->
-<!--            <scope>provided</scope>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.spigotmc</groupId>-->
-<!--                    <artifactId>spigot</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
