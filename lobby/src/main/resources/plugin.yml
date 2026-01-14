@@ -35,6 +35,8 @@ permissions:
     default: false
   comp.admin.dialog.others:
     default: OP
+  comp.admin.backup:
+    default: OP
 
 commands:
   compadmin:
