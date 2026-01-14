@@ -7,6 +7,7 @@ import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
 import com.plotsquared.core.plot.PlotId;
+import com.plotsquared.core.util.SchematicHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -96,6 +97,24 @@ public class P2Bridge {
 		}
 		
 		return plots;
+	}
+	
+	/**
+	 * Gets all plots that have owners.
+	 * This is an alias for {@link #getUsedPlots()} provided for clarity in backup contexts.
+	 * @return A list of all owned plots
+	 */
+	public List<Plot> getAllOwnedPlots() {
+		return getUsedPlots();
+	}
+	
+	/**
+	 * Gets the PlotSquared SchematicHandler instance.
+	 * This provides access to schematic export and import functionality.
+	 * @return The SchematicHandler manager instance
+	 */
+	public SchematicHandler getSchematicHandler() {
+		return SchematicHandler.manager;
 	}
 	
 	/**
