@@ -3,6 +3,9 @@ package au.com.addstar.comp.lobby.commands;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import com.viaversion.viaversion.api.ViaAPI;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +22,7 @@ import au.com.addstar.monolith.command.BadArgumentException;
 import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
 
+import com.viaversion.viaversion.api.Via;
 /**
  * Command for showing competition dialogs with Join/View options.
  * Usage: /compadmin dialog <serverId|compId> [playerName]
@@ -182,17 +186,11 @@ public class DialogCommand implements ICommand {
 				return true;
 			}
 			
-			// Use reflection to access ViaVersion API (soft dependency)
-			Class<?> viaClass = Class.forName("com.viaversion.viaversion.api.Via");
-			Object viaAPI = viaClass.getMethod("getAPI").invoke(null);
-			Class<?> viaAPIClass = viaAPI.getClass();
-			int playerVersion = (Integer) viaAPIClass.getMethod("getPlayerVersion", Player.class).invoke(viaAPI, player);
-			
+			@SuppressWarnings("unchecked")
+			int playerVersion = ((ViaAPI<Player>) Via.getAPI()).getPlayerVersion(player);
+
 			// Check if version meets minimum requirement (771 = 1.21.6)
 			return playerVersion >= MIN_PROTOCOL_VERSION;
-		} catch (ClassNotFoundException e) {
-			// ViaVersion classes not found, assume compatible version
-			return true;
 		} catch (Exception e) {
 			// If ViaVersion API fails for any reason, assume compatible version
 			// This allows the feature to work even if ViaVersion has issues

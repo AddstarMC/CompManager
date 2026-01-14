@@ -88,6 +88,10 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/releases</url>
         </repository>
+        <repository>
+            <id>viaversion-repo</id>
+            <url>https://repo.viaversion.com</url>
+        </repository>
     </repositories>
 
     <dependencies>
