@@ -57,6 +57,7 @@ public class CompManager {
 
     private Competition currentComp;
     private VoteStorage<? extends Vote> voteStorage;
+    private au.com.addstar.comp.services.PlotBackupService plotBackupService;
 
     public CompManager(CompServerBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, RedisManager redis, Logger logger) {
         this.backend = backend;
@@ -124,10 +125,25 @@ public class CompManager {
         return voteStorage;
     }
     /**
+     * Sets the plot backup service for reload blocking during backups.
+     * @param backupService The backup service instance
+     */
+    public void setPlotBackupService(au.com.addstar.comp.services.PlotBackupService backupService) {
+        this.plotBackupService = backupService;
+    }
+
+    /**
      * Loads the current comp from the database.
-     * This method will block waiting for the result
+     * This method will block waiting for the result.
+     * Will not reload if a plot backup is currently in progress.
      */
     public void reloadCurrentComp() {
+        // Check if backup is in progress
+        if (plotBackupService != null && plotBackupService.isBackupInProgress()) {
+            logger.warning("[CompManager] Reload blocked: plot backup is currently in progress. Please wait for backup to complete.");
+            return;
+        }
+        
         Bukkit.getScheduler().runTaskAsynchronously(CompPlugin.instance, () -> {
             currentComp = getCompetition();
 

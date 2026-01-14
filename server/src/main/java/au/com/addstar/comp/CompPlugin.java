@@ -136,6 +136,9 @@ public class CompPlugin extends JavaPlugin {
         boolean backupEmptyPlots = getConfig().getBoolean("backup.backup-empty-plots", true);
         int progressInterval = getConfig().getInt("backup.backup-progress-interval", 10);
         plotBackupService = new PlotBackupService(bridge, this, getLogger(), backupEmptyPlots, progressInterval);
+        
+        // Set backup service in CompManager for reload blocking
+        compManager.setPlotBackupService(plotBackupService);
 
         // Register commands
         new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager, plotBackupService).registerAs(getCommand("compadmin"));
