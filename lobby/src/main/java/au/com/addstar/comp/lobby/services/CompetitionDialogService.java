@@ -48,7 +48,7 @@ public class CompetitionDialogService {
 
 		// Theme
 		bodyParts.add(DialogBody.plainMessage(
-			Component.text("Theme: ", NamedTextColor.GRAY)
+			Component.text("Theme:\n", NamedTextColor.WHITE, TextDecoration.BOLD)
 				.append(Component.text(comp.getTheme(), NamedTextColor.YELLOW, TextDecoration.BOLD))
 		));
 
@@ -59,15 +59,14 @@ public class CompetitionDialogService {
 
 			bodyParts.add(DialogBody.plainMessage(Component.empty()));
 			bodyParts.add(DialogBody.plainMessage(
-				Component.text("Prizes:", NamedTextColor.GRAY)
+				Component.text("Prizes:", NamedTextColor.WHITE, TextDecoration.BOLD)
 			));
 			bodyParts.add(DialogBody.plainMessage(
-				Component.text("  First: ", NamedTextColor.GRAY)
+				Component.text("First: ", NamedTextColor.GRAY)
 					.append(Component.text(firstPrize, NamedTextColor.GOLD))
-			));
-			bodyParts.add(DialogBody.plainMessage(
-				Component.text("  Second: ", NamedTextColor.GRAY)
-					.append(Component.text(secondPrize, NamedTextColor.GOLD))
+						.append(Component.text("\nSecond: ", NamedTextColor.GRAY))
+						.append(Component.text(secondPrize, NamedTextColor.GOLD))
+
 			));
 		}
 
@@ -77,17 +76,15 @@ public class CompetitionDialogService {
 		bodyParts.add(DialogBody.plainMessage(
 			Component.text("Ends: ", NamedTextColor.GRAY)
 				.append(Component.text(CompUtils.formatDate(comp.getEndDate()), NamedTextColor.YELLOW))
-		));
-		bodyParts.add(DialogBody.plainMessage(
-			Component.text("Time remaining: ", NamedTextColor.GRAY)
-				.append(Component.text(CompUtils.formatTimeRemaining(timeRemaining), NamedTextColor.YELLOW))
+					.append(Component.text("\nTime remaining: ", NamedTextColor.GRAY))
+					.append(Component.text(CompUtils.formatTimeRemaining(timeRemaining), NamedTextColor.YELLOW))
 		));
 
 		// Criteria
 		if (!comp.getCriteria().isEmpty()) {
 			bodyParts.add(DialogBody.plainMessage(Component.empty()));
 			bodyParts.add(DialogBody.plainMessage(
-				Component.text("Criteria:", NamedTextColor.GRAY)
+				Component.text("Criteria:", NamedTextColor.WHITE, TextDecoration.BOLD)
 			));
 			for (BaseCriterion criterion : comp.getCriteria()) {
 				bodyParts.add(DialogBody.plainMessage(Component.text(criterion.getName(), NamedTextColor.YELLOW)
@@ -151,8 +148,8 @@ public class CompetitionDialogService {
 		
 		// Cancel button with null action - closes dialog without doing anything
 		ActionButton cancelButton = ActionButton.create(
-			Component.text("Cancel", NamedTextColor.GRAY),
-			Component.text("Close this dialog", NamedTextColor.GRAY),
+			Component.text("Cancel", NamedTextColor.WHITE),
+			Component.text("Close this dialog", NamedTextColor.WHITE),
 			100,
 			null  // null action just closes the dialog
 		);
