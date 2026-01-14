@@ -14,10 +14,10 @@ import au.com.addstar.comp.CompPlugin;
 import au.com.addstar.comp.services.PlotBackupService;
 import au.com.addstar.comp.services.PlotBackupService.BackupProgressCallback;
 import au.com.addstar.comp.services.PlotBackupService.BackupResult;
+import au.com.addstar.comp.util.Messages;
 import au.com.addstar.monolith.command.BadArgumentException;
 import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
-import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,10 +26,12 @@ import org.jetbrains.annotations.NotNull;
 public class BackupCommand implements ICommand {
 	private final CompManager manager;
 	private final PlotBackupService backupService;
+	private final Messages messages;
 	
-	public BackupCommand(CompManager manager, PlotBackupService backupService) {
+	public BackupCommand(CompManager manager, PlotBackupService backupService, Messages messages) {
 		this.manager = manager;
 		this.backupService = backupService;
+		this.messages = messages;
 	}
 	
 	@Override
@@ -66,14 +68,14 @@ public class BackupCommand implements ICommand {
 	public boolean onCommand(CommandSender sender, String parent, String label, String[] args) throws BadArgumentException {
 		// Check if backup is already in progress
 		if (backupService.isBackupInProgress()) {
-			sender.sendMessage(ChatColor.RED + "A backup is already in progress. Please wait for it to complete.");
+			sender.sendMessage(messages.get("backup.in-progress"));
 			return true;
 		}
 		
 		// Check if competition exists
 		au.com.addstar.comp.Competition comp = manager.getCurrentComp();
 		if (comp == null) {
-			sender.sendMessage(ChatColor.RED + "There is no active competition on this server.");
+			sender.sendMessage(messages.get("backup.no-competition"));
 			return true;
 		}
 		
@@ -81,13 +83,18 @@ public class BackupCommand implements ICommand {
 		BackupProgressCallback progressCallback = new BackupProgressCallback() {
 			@Override
 			public void onProgress(int completed, int total, int successful, int failed) {
-				sender.sendMessage(ChatColor.GOLD + String.format("Backup progress: %d/%d plots processed (%d successful, %d failed)",
-					completed, total, successful, failed));
+				sender.sendMessage(messages.get("backup.progress")
+					.replace("{completed}", String.valueOf(completed))
+					.replace("{total}", String.valueOf(total))
+					.replace("{successful}", String.valueOf(successful))
+					.replace("{failed}", String.valueOf(failed)));
 			}
 		};
 		
 		// Start backup
-		sender.sendMessage(ChatColor.GOLD + "Starting plot backup for competition: " + comp.getTheme() + " (ID: " + comp.getCompId() + ")");
+		sender.sendMessage(messages.get("backup.starting")
+			.replace("{theme}", comp.getTheme())
+			.replace("{compId}", String.valueOf(comp.getCompId())));
 		
 		ListenableFuture<BackupResult> future = backupService.backupPlots(comp, progressCallback, null);
 		
@@ -97,19 +104,15 @@ public class BackupCommand implements ICommand {
 				// Format success message
 				String message;
 				if (result.getFailedBackups() == 0) {
-					message = ChatColor.GREEN + String.format(
-						"Backup completed successfully! %d plots backed up to: %s",
-						result.getSuccessfulBackups(),
-						result.getArchiveDirectory().getAbsolutePath()
-					);
+					message = messages.get("backup.success")
+						.replace("{count}", String.valueOf(result.getSuccessfulBackups()))
+						.replace("{path}", result.getArchiveDirectory().getAbsolutePath());
 				} else {
-					message = ChatColor.YELLOW + String.format(
-						"Backup completed with some failures. %d successful, %d failed out of %d total. Files saved to: %s",
-						result.getSuccessfulBackups(),
-						result.getFailedBackups(),
-						result.getTotalPlots(),
-						result.getArchiveDirectory().getAbsolutePath()
-					);
+					message = messages.get("backup.partial")
+						.replace("{successful}", String.valueOf(result.getSuccessfulBackups()))
+						.replace("{failed}", String.valueOf(result.getFailedBackups()))
+						.replace("{total}", String.valueOf(result.getTotalPlots()))
+						.replace("{path}", result.getArchiveDirectory().getAbsolutePath());
 				}
 				sender.sendMessage(message);
 			}
@@ -117,12 +120,11 @@ public class BackupCommand implements ICommand {
 			@Override
 			public void onFailure(@NotNull Throwable error) {
 				String errorMessage;
-				if (error instanceof IllegalStateException) {
-					errorMessage = ChatColor.RED + "Backup failed: " + error.getMessage();
-				} else if (error instanceof IllegalArgumentException) {
-					errorMessage = ChatColor.RED + "Backup failed: " + error.getMessage();
+				if (error instanceof IllegalStateException || error instanceof IllegalArgumentException) {
+					errorMessage = messages.get("backup.failed")
+						.replace("{error}", error.getMessage());
 				} else {
-					errorMessage = ChatColor.RED + "Backup failed due to an unexpected error. Check console for details.";
+					errorMessage = messages.get("backup.failed.unexpected");
 					CompPlugin.instance.getLogger().log(java.util.logging.Level.SEVERE, "Backup failed", error);
 				}
 				sender.sendMessage(errorMessage);

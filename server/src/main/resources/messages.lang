@@ -52,3 +52,13 @@ teleport.no.more.plots = &cSorry, there are no more plots to go to.
 teleport.next.plot = &aYou have been teleported to the next plot.
 teleport.failed = &cSorry, teleporting failed.
 teleport.noPlot = &cSorry, you must stand in a plot to tp.
+
+# Backup messages
+backup.in-progress=&cA backup is already in progress. Please wait for it to complete.
+backup.no-competition=&cThere is no active competition on this server.
+backup.starting=&6Starting plot backup for competition: &e{theme} &7(ID: &e{compId}&7)
+backup.progress=&6Backup progress: &e{completed}&7/&e{total} &7plots processed (&a{successful} &7successful, &c{failed} &7failed)
+backup.success=&aBackup completed successfully! &e{count} &aplots backed up to: &7{path}
+backup.partial=&eBackup completed with some failures. &a{successful} &7successful, &c{failed} &7failed out of &e{total} &7total. Files saved to: &7{path}
+backup.failed=&cBackup failed: &7{error}
+backup.failed.unexpected=&cBackup failed due to an unexpected error. Check console for details.

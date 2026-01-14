@@ -259,38 +259,39 @@ public class PlotBackupService {
 		// Find unique filename (handle duplicates)
 		File targetFile = findUniqueFile(archiveDir, baseFilename);
 		
-		try {
-			// Get CompoundTag from PlotSquared (runs async internally)
-			CompletableFuture<CompoundTag> tagFuture = schematicHandler.getCompoundTag(plot);
-			
-			// Chain save operation after tag is retrieved
-			tagFuture.whenComplete((tag, throwable) -> {
-				if (throwable != null) {
-					logger.log(Level.WARNING, String.format("[Backup] Failed to get schematic data for plot %s (owner: %s): %s",
-						plotId, firstOwner, throwable.getMessage()));
-					resultFuture.complete(false);
-					return;
-				}
+		// Get CompoundTag from PlotSquared - must run on main thread
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				CompletableFuture<CompoundTag> tagFuture = schematicHandler.getCompoundTag(plot);
 				
-				if (tag == null) {
-					logger.log(Level.WARNING, String.format("[Backup] Schematic data is null for plot %s (owner: %s)",
-						plotId, firstOwner));
-					resultFuture.complete(false);
-					return;
-				}
-				
-				// Save schematic (run on async thread)
-				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					boolean saved = saveSchematicWithRetry(schematicHandler, tag, targetFile, plotId, firstOwner);
-					resultFuture.complete(saved);
+				// Chain save operation after tag is retrieved
+				tagFuture.whenComplete((tag, throwable) -> {
+					if (throwable != null) {
+						logger.log(Level.WARNING, String.format("[Backup] Failed to get schematic data for plot %s (owner: %s): %s",
+							plotId, firstOwner, throwable.getMessage()));
+						resultFuture.complete(false);
+						return;
+					}
+					
+					if (tag == null) {
+						logger.log(Level.WARNING, String.format("[Backup] Schematic data is null for plot %s (owner: %s)",
+							plotId, firstOwner));
+						resultFuture.complete(false);
+						return;
+					}
+					
+					// Save schematic (run on async thread)
+					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+						boolean saved = saveSchematicWithRetry(schematicHandler, tag, targetFile, plotId, firstOwner);
+						resultFuture.complete(saved);
+					});
 				});
-			});
-			
-		} catch (Exception e) {
-			logger.log(Level.WARNING, String.format("[Backup] Error backing up plot %s (owner: %s): %s",
-				plotId, firstOwner, e.getMessage()));
-			resultFuture.complete(false);
-		}
+			} catch (Exception e) {
+				logger.log(Level.WARNING, String.format("[Backup] Error backing up plot %s (owner: %s): %s",
+					plotId, firstOwner, e.getMessage()));
+				resultFuture.complete(false);
+			}
+		});
 		
 		return resultFuture;
 	}

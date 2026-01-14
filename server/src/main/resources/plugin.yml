@@ -26,6 +26,8 @@ permissions:
     default: op
   comp.admin.tallyvotes:
     default: op
+  comp.admin.backup:
+    default: op
 
 commands:
   compadmin:

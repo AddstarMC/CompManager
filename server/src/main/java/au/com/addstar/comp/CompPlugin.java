@@ -141,7 +141,7 @@ public class CompPlugin extends JavaPlugin {
         compManager.setPlotBackupService(plotBackupService);
 
         // Register commands
-        new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager, plotBackupService).registerAs(getCommand("compadmin"));
+        new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager, plotBackupService, messages).registerAs(getCommand("compadmin"));
         new JoinCommand(compManager, confirmationManager, messages).registerAs(getCommand("compjoin"));
         new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
         new CompInfoCommand(compManager, messages).registerAs(getCommand("compinfo"));

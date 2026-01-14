@@ -45,3 +45,9 @@ sign.click-to-visit=&1&lClick to Visit
 # Broadcast
 broadcast.running=&6[&aComp&6] &bTime remaining to finish '&a{theme}&b'&e: {timeleft}
 broadcast.voting=&6[&aComp&6] &bVote for winners in '&a{theme}&b'; &e{timeleft} remaining
+
+# Backup messages
+backup.server-not-found=&cServer not found: &7{serverId}
+backup.server-offline=&cServer &7{serverId} &cis currently offline.
+backup.no-competition=&cServer &7{serverId} &cdoes not have an active competition.
+backup.command-sent=&6Backup command sent to server &e{serverId} &7for competition: &e{theme} &7(ID: &e{compId}&7)

@@ -8,10 +8,10 @@ import org.bukkit.command.CommandSender;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.CompServer;
 import au.com.addstar.comp.redis.RedisManager;
+import au.com.addstar.comp.util.Messages;
 import au.com.addstar.monolith.command.BadArgumentException;
 import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
-import net.md_5.bungee.api.ChatColor;
 
 /**
  * Command for triggering plot backups on remote competition servers via Redis.
@@ -19,10 +19,12 @@ import net.md_5.bungee.api.ChatColor;
 public class BackupCommand implements ICommand {
 	private final CompManager manager;
 	private final RedisManager redis;
+	private final Messages messages;
 	
-	public BackupCommand(CompManager manager, RedisManager redis) {
+	public BackupCommand(CompManager manager, RedisManager redis, Messages messages) {
 		this.manager = manager;
 		this.redis = redis;
+		this.messages = messages;
 	}
 	
 	@Override
@@ -64,26 +66,31 @@ public class BackupCommand implements ICommand {
 		// Resolve server by identifier (server ID or comp ID)
 		CompServer server = manager.findServerByIdentifier(args[0]);
 		if (server == null) {
-			sender.sendMessage(ChatColor.RED + "Server not found: " + args[0]);
+			sender.sendMessage(messages.get("backup.server-not-found")
+				.replace("{serverId}", args[0]));
 			return true;
 		}
 		
 		// Check if server is online
 		if (!server.isOnline()) {
-			sender.sendMessage(ChatColor.RED + "Server " + server.getId() + " is currently offline.");
+			sender.sendMessage(messages.get("backup.server-offline")
+				.replace("{serverId}", server.getId()));
 			return true;
 		}
 		
 		// Check if server has a competition
 		if (server.getCurrentComp() == null) {
-			sender.sendMessage(ChatColor.RED + "Server " + server.getId() + " does not have an active competition.");
+			sender.sendMessage(messages.get("backup.no-competition")
+				.replace("{serverId}", server.getId()));
 			return true;
 		}
 		
 		// Send backup command via Redis
 		redis.sendCommand(server.getId(), "backup");
-		sender.sendMessage(ChatColor.GOLD + "Backup command sent to server " + server.getId() + 
-			" for competition: " + server.getCurrentComp().getTheme() + " (ID: " + server.getCurrentComp().getCompId() + ")");
+		sender.sendMessage(messages.get("backup.command-sent")
+			.replace("{serverId}", server.getId())
+			.replace("{theme}", server.getCurrentComp().getTheme())
+			.replace("{compId}", String.valueOf(server.getCurrentComp().getCompId())));
 		
 		return true;
 	}
