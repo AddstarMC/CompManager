@@ -17,6 +17,14 @@ public class CompetitionViewService {
 	}
 	
 	/**
+	 * Gets the messages instance used by this service.
+	 * @return The messages instance
+	 */
+	public Messages getMessages() {
+		return messages;
+	}
+	
+	/**
 	 * Allows a player to view a competition by teleporting them to the competition server.
 	 * Validates that the server and competition exist and are accessible.
 	 * 

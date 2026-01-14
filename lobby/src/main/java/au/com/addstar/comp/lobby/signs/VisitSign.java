@@ -16,34 +16,27 @@ import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.CompServer;
+import au.com.addstar.comp.lobby.services.CompetitionViewService;
 import au.com.addstar.comp.util.Messages;
 
 public class VisitSign extends BaseSign {
 	private static final String BREAK_PERMISSION = "comp.signs.visit.break";
 	
 	private final CompManager manager;
+	private final CompetitionViewService viewService;
 	private final Messages messages;
 	
-	public VisitSign(String serverId, Block block, CompManager manager, Messages messages) {
+	public VisitSign(String serverId, Block block, CompManager manager, CompetitionViewService viewService) {
 		super(serverId, block, BREAK_PERMISSION);
 		this.manager = manager;
-		this.messages = messages;
+		this.viewService = viewService;
+		this.messages = viewService.getMessages();
 	}
 	
 	@Override
 	public void onRightClick(Player player) {
 		final CompServer server = manager.getServer(getServerId());
-		if (server == null || server.getCurrentComp() == null || !server.isOnline()) {
-			player.sendMessage(messages.get("visit.denied.closed"));
-			return;
-		}
-		
-		if (server.getCurrentComp().getState() == CompState.Closed) {
-			player.sendMessage(messages.get("visit.denied.closed"));
-			return;
-		}
-		
-		server.send(player);
+		viewService.viewCompetition(player, server);
 	}
 
 	@Override

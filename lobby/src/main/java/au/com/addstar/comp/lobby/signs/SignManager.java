@@ -22,6 +22,8 @@ import com.google.common.collect.Maps;
 
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.lobby.CompManager;
+import au.com.addstar.comp.lobby.services.CompetitionJoinService;
+import au.com.addstar.comp.lobby.services.CompetitionViewService;
 import au.com.addstar.comp.util.Messages;
 
 public class SignManager {
@@ -29,6 +31,8 @@ public class SignManager {
 	private final CompManager compManager;
 	private final Messages messages;
 	private final ConfirmationManager confirmationManager;
+	private final CompetitionJoinService joinService;
+	private final CompetitionViewService viewService;
 	
 	private final Map<Block, BaseSign> signs;
 	private final ListMultimap<String, BaseSign> serverSigns;
@@ -40,6 +44,8 @@ public class SignManager {
 		this.compManager = compManager;
 		this.messages = messages;
 		this.confirmationManager = confirmationManager;
+		this.joinService = new CompetitionJoinService(confirmationManager, messages);
+		this.viewService = new CompetitionViewService(messages);
 		
 		signs = Maps.newHashMap();
 		serverSigns = ArrayListMultimap.create();
@@ -187,10 +193,10 @@ public class SignManager {
 					sign = new InfoSign(serverId, block, compManager);
 					break;
 				case "join":
-					sign = new JoinSign(serverId, block, compManager, messages, confirmationManager);
+					sign = new JoinSign(serverId, block, compManager, joinService, messages);
 					break;
 				case "visit":
-					sign = new VisitSign(serverId, block, compManager, messages);
+					sign = new VisitSign(serverId, block, compManager, viewService);
 					break;
 				default:
 					// Ignore the sign
@@ -246,11 +252,11 @@ public class SignManager {
 	}
 	
 	public JoinSign makeJoinSign(String serverId, Block block) {
-		return new JoinSign(serverId, block, compManager, messages, confirmationManager);
+		return new JoinSign(serverId, block, compManager, joinService, messages);
 	}
 	
 	public VisitSign makeVisitSign(String serverId, Block block) {
-		return new VisitSign(serverId, block, compManager, messages);
+		return new VisitSign(serverId, block, compManager, viewService);
 	}
 
 	public InfoSign makeInfoSign(String serverId, InfoSign.InfoType type, Block block) {
