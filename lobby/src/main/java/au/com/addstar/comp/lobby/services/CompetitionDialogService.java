@@ -46,16 +46,6 @@ public class CompetitionDialogService {
         // Build dialog body with competition information
         List<DialogBody> bodyParts = new ArrayList<>();
 
-        // End date and time remaining
-        long timeRemaining = comp.getEndDate() - System.currentTimeMillis();
-        bodyParts.add(DialogBody.plainMessage(Component.empty()));
-        bodyParts.add(DialogBody.plainMessage(
-                Component.text("Ends: ", NamedTextColor.GRAY)
-                        .append(Component.text(CompUtils.formatDate(comp.getEndDate()), NamedTextColor.YELLOW))
-                        .append(Component.text("\nTime remaining: ", NamedTextColor.GRAY))
-                        .append(Component.text(CompUtils.formatTimeRemaining(timeRemaining), NamedTextColor.YELLOW))
-        ));
-
         // Prizes
         if (comp.getFirstPrize() != null) {
             String firstPrize = comp.getFirstPrize().toHumanReadable();
@@ -63,7 +53,7 @@ public class CompetitionDialogService {
 
             bodyParts.add(DialogBody.plainMessage(
                     Component.text("Prizes:", NamedTextColor.WHITE, TextDecoration.BOLD)
-                            .append(Component.text("First: ", NamedTextColor.GRAY))
+                            .append(Component.text("\nFirst: ", NamedTextColor.GRAY))
                             .append(Component.text(firstPrize, NamedTextColor.GOLD))
                             .append(Component.text("\nSecond: ", NamedTextColor.GRAY))
                             .append(Component.text(secondPrize, NamedTextColor.GOLD))
@@ -73,7 +63,6 @@ public class CompetitionDialogService {
 
         // Criteria
         if (!comp.getCriteria().isEmpty()) {
-            bodyParts.add(DialogBody.plainMessage(Component.empty()));
             bodyParts.add(DialogBody.plainMessage(
                     Component.text("Criteria:", NamedTextColor.WHITE, TextDecoration.BOLD)
             ));
@@ -85,12 +74,22 @@ public class CompetitionDialogService {
         }
 
         // Explanatory text
+//        bodyParts.add(DialogBody.plainMessage(
+//                Component.text("Join: ", NamedTextColor.GREEN)
+//                        .append(Component.text("Participate and get a plot", NamedTextColor.WHITE))
+//                        .append(Component.text("\nView: ", NamedTextColor.AQUA))
+//                        .append(Component.text("Explore without joining", NamedTextColor.WHITE))
+//        ));
+
+        // End date and time remaining
+        long timeRemaining = comp.getEndDate() - System.currentTimeMillis();
         bodyParts.add(DialogBody.plainMessage(
-                Component.text("Join: ", NamedTextColor.GREEN)
-                        .append(Component.text("Participate and get a plot", NamedTextColor.WHITE))
-                        .append(Component.text("\nView: ", NamedTextColor.AQUA))
-                        .append(Component.text("Explore without joining", NamedTextColor.WHITE))
+                Component.text("Ends: ", NamedTextColor.GRAY)
+                        .append(Component.text(CompUtils.formatDate(comp.getEndDate()), NamedTextColor.YELLOW))
+                        .append(Component.text("\nTime remaining: ", NamedTextColor.GRAY))
+                        .append(Component.text(CompUtils.formatTimeRemaining(timeRemaining), NamedTextColor.YELLOW))
         ));
+
 
         // Create callbacks for buttons
         DialogAction joinAction = DialogAction.customClick(
@@ -124,14 +123,14 @@ public class CompetitionDialogService {
         // Create buttons
         ActionButton joinButton = ActionButton.create(
                 Component.text("Join", NamedTextColor.GREEN, TextDecoration.BOLD),
-                Component.text("Join this competition and get a plot", NamedTextColor.WHITE),
+                Component.text("Participate in this competition and get a plot", NamedTextColor.WHITE),
                 100,
                 joinAction
         );
 
         ActionButton viewButton = ActionButton.create(
                 Component.text("View", NamedTextColor.AQUA, TextDecoration.BOLD),
-                Component.text("View this competition without joining", NamedTextColor.WHITE),
+                Component.text("Explore and view this competition without joining", NamedTextColor.WHITE),
                 100,
                 viewAction
         );
