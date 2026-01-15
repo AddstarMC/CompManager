@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.bukkit.Bukkit;
+
 import au.com.addstar.comp.Competition;
 import au.com.addstar.comp.CompState;
 
@@ -106,19 +108,23 @@ public class CompetitionChangeTracker {
 		
 		// Only reset if competition has changed
 		if (!hasCompetitionChanged(newComp)) {
+			Bukkit.getLogger().info("[CompetitionChangeTracker] Competition has not changed, plots will not be reset");
 			return false;
 		}
 		
 		// Only reset if there are existing plots to clear
 		if (!hasExistingPlots) {
+			Bukkit.getLogger().info("[CompetitionChangeTracker] No existing plots to clear, plots will not be reset");
 			return false;
 		}
 		
 		// Don't reset if competition is currently in a running state (shouldn't happen, but safety check)
 		if (currentState == CompState.Open || currentState == CompState.Voting) {
+			Bukkit.getLogger().info("[CompetitionChangeTracker] Competition is currently in a running state, plots will not be reset");
 			return false;
 		}
 		
+		Bukkit.getLogger().info("[CompetitionChangeTracker] Plots will be reset");
 		return true;
 	}
 	
