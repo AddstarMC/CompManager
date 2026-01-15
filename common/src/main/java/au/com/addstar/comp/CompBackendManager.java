@@ -54,6 +54,13 @@ public class CompBackendManager {
 	private static final StatementKey STATEMENT_RESULT_GETALL_WINNERS;
 	private static final StatementKey STATEMENT_RESULT_GET;
 
+	// Plot entries table
+	private static final String TABLE_PLOT_ENTRIES = "plot_entries";
+	private static final StatementKey STATEMENT_ENTRY_ADD;
+	private static final StatementKey STATEMENT_ENTRY_GETALL_COMP;
+	private static final StatementKey STATEMENT_ENTRY_GET;
+	private static final StatementKey STATEMENT_ENTRY_REMOVE;
+
 	
 	static {
 		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
@@ -74,6 +81,11 @@ public class CompBackendManager {
 		STATEMENT_RESULT_GETALL_COMP = new StatementKey("SELECT UUID, Name, Rank, PlotID, Prize, Claimed FROM " + TABLE_RESULTS + " WHERE CompID=?");
 		STATEMENT_RESULT_GETALL_WINNERS = new StatementKey("SELECT UUID, Name, Rank, PlotID, Prize, Claimed FROM " + TABLE_RESULTS + " WHERE CompID=? AND Rank IS NOT NULL");
 		STATEMENT_RESULT_GET = new StatementKey("SELECT Name, Rank, PlotID, Prize, Claimed FROM " + TABLE_RESULTS + "WHERE CompID=? AND UUID=?");
+
+		STATEMENT_ENTRY_ADD = new StatementKey("INSERT INTO " + TABLE_PLOT_ENTRIES + " (CompID, UUID, PlotID, EntryDate) VALUES (?, ?, ?, ?)");
+		STATEMENT_ENTRY_GETALL_COMP = new StatementKey("SELECT UUID, PlotID, EntryDate FROM " + TABLE_PLOT_ENTRIES + " WHERE CompID=?");
+		STATEMENT_ENTRY_GET = new StatementKey("SELECT PlotID, EntryDate FROM " + TABLE_PLOT_ENTRIES + " WHERE CompID=? AND UUID=?");
+		STATEMENT_ENTRY_REMOVE = new StatementKey("DELETE FROM " + TABLE_PLOT_ENTRIES + " WHERE CompID=? AND UUID=?");
 	}
 	
 	private final DatabaseManager manager;
@@ -382,6 +394,90 @@ public class CompBackendManager {
 				statement.addBatch();
 			}
 			statement.executeBatch();
+		}
+	}
+
+	/**
+	 * Adds a plot entry record for a player in a competition
+	 * @param comp The competition
+	 * @param playerId The UUID of the player
+	 * @param plotId The plot identifier (format: "x;z")
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public void addEntry(Competition comp, UUID playerId, String plotId) throws SQLException {
+		Preconditions.checkArgument(comp.getCompId() >= 0, "Competition must have a valid ID");
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_ENTRY_ADD.getSQL());
+			statement.setInt(1, comp.getCompId());
+			statement.setString(2, playerId.toString());
+			statement.setString(3, plotId);
+			statement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+			statement.executeUpdate();
+		}
+	}
+
+	/**
+	 * Gets all plot entries for a competition
+	 * @param comp The competition
+	 * @return A map of player UUID to plot ID
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public Map<UUID, String> getEntries(Competition comp) throws SQLException {
+		Preconditions.checkArgument(comp.getCompId() >= 0, "Competition must have a valid ID");
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_ENTRY_GETALL_COMP.getSQL());
+			statement.setInt(1, comp.getCompId());
+			Map<UUID, String> entries = Maps.newHashMap();
+			try (ResultSet rs = statement.executeQuery()) {
+				while (rs.next()) {
+					try {
+						UUID playerId = UUID.fromString(rs.getString("UUID"));
+						String plotId = rs.getString("PlotID");
+						entries.put(playerId, plotId);
+					} catch (IllegalArgumentException e) {
+						// Skip invalid UUID entries
+					}
+				}
+			}
+			return entries;
+		}
+	}
+
+	/**
+	 * Gets a specific player's plot entry for a competition
+	 * @param comp The competition
+	 * @param playerId The UUID of the player
+	 * @return The plot ID if the player has an entry, or null
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public String getEntry(Competition comp, UUID playerId) throws SQLException {
+		Preconditions.checkArgument(comp.getCompId() >= 0, "Competition must have a valid ID");
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_ENTRY_GET.getSQL());
+			statement.setInt(1, comp.getCompId());
+			statement.setString(2, playerId.toString());
+			try (ResultSet rs = statement.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("PlotID");
+				}
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * Removes a plot entry record for a player in a competition
+	 * @param comp The competition
+	 * @param playerId The UUID of the player
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public void removeEntry(Competition comp, UUID playerId) throws SQLException {
+		Preconditions.checkArgument(comp.getCompId() >= 0, "Competition must have a valid ID");
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_ENTRY_REMOVE.getSQL());
+			statement.setInt(1, comp.getCompId());
+			statement.setString(2, playerId.toString());
+			statement.executeUpdate();
 		}
 	}
 }

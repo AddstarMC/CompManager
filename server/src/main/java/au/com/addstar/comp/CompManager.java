@@ -547,6 +547,14 @@ public class CompManager {
             // Assign the plot
             bridge.claim(getPlot(), getPlayer(), true);
             reservedPlots.remove(getPlot());
+            
+            // Record entry in database for external web app access
+            try {
+                backend.addEntry(getComp(), getPlayer().getUniqueId(), getPlot().getId().toString());
+            } catch (SQLException e) {
+                // Log error but don't fail entry process - P2 is the source of truth
+                logger.log(Level.WARNING, "Failed to record plot entry in database for " + getPlayer().getName() + " in comp " + getComp().getCompId(), e);
+            }
         }
 
         @Override

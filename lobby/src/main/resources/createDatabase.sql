@@ -70,3 +70,15 @@ CREATE TABLE `whitelist`
   PRIMARY KEY (`UUID`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = latin1;
+DROP TABLE if exists `plot_entries`;
+CREATE TABLE `plot_entries`
+(
+  `CompID`    int(11)     NOT NULL,
+  `UUID`      char(36)    NOT NULL,
+  `PlotID`    varchar(10) NOT NULL,
+  `EntryDate` datetime    NOT NULL,
+  PRIMARY KEY (`CompID`, `UUID`),
+  KEY `CompID` (`CompID`),
+  CONSTRAINT `fk_plot_entries_comp` FOREIGN KEY (`CompID`) REFERENCES `comps` (`ID`) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = latin1;
