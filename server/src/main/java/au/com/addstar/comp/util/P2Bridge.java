@@ -111,10 +111,10 @@ public class P2Bridge {
 	/**
 	 * Gets the PlotSquared SchematicHandler instance.
 	 * This provides access to schematic export and import functionality.
-	 * @return The SchematicHandler manager instance
+	 * @return The SchematicHandler instance
 	 */
 	public SchematicHandler getSchematicHandler() {
-		return SchematicHandler.manager;
+		return api.getSchematicHandler();
 	}
 	
 	/**
