@@ -253,11 +253,28 @@ public class PlotBackupService {
 					backupFutures.toArray(new CompletableFuture[0])
 				);
 				
-				allBackups.whenComplete((result, throwable) -> {
-					logger.info(String.format("[Backup] Completed backup for competition %d: %d successful, %d failed out of %d total",
-						compId, successful.get(), failed.get(), plotDataList.size()));
+				allBackups.thenRun(() -> {
+					// Collect results directly from futures to avoid race condition
+					int actualSuccessful = 0;
+					int actualFailed = 0;
 					
-					resultFuture.set(new BackupResult(plotDataList.size(), successful.get(), failed.get(), archiveDir));
+					for (CompletableFuture<Boolean> future : backupFutures) {
+						try {
+							Boolean result = future.getNow(null); // Non-blocking get
+							if (result != null && result) {
+								actualSuccessful++;
+							} else {
+								actualFailed++;
+							}
+						} catch (Exception e) {
+							actualFailed++;
+						}
+					}
+					
+					logger.info(String.format("[Backup] Completed backup for competition %d: %d successful, %d failed out of %d total",
+						compId, actualSuccessful, actualFailed, plotDataList.size()));
+					
+					resultFuture.set(new BackupResult(plotDataList.size(), actualSuccessful, actualFailed, archiveDir));
 				});
 			});
 		});
