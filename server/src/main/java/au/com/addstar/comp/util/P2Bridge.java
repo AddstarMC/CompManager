@@ -7,6 +7,7 @@ import com.plotsquared.core.player.PlotPlayer;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotArea;
 import com.plotsquared.core.plot.PlotId;
+import com.plotsquared.core.plot.PlotModificationManager;
 import com.plotsquared.core.util.SchematicHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -163,12 +164,99 @@ public class P2Bridge {
 		plot.setOwner(player.getUniqueId());
 
 		if (player.isOnline() && teleport) {
-			PlotPlayer wrappedPlayer = api.wrapPlayer(player.getUniqueId());
+			PlotPlayer<?> wrappedPlayer = api.wrapPlayer(player.getUniqueId());
 			plot.teleportPlayer(wrappedPlayer, aBoolean -> {
 				if(aBoolean) {
 					plot.claim(wrappedPlayer, teleport, null, true, true);
 				}
 			});
+		}
+	}
+	
+	/**
+	 * Clears all owned plots by deleting them.
+	 * This operation must be run on the main thread.
+	 * @param callback Callback to run when clearing is complete
+	 */
+	public void clearAllPlots(Runnable callback) {
+		Preconditions.checkState(Bukkit.isPrimaryThread(), "This must be done on the server thread");
+		
+		List<Plot> plots = getUsedPlots();
+		if (plots.isEmpty()) {
+			if (callback != null) {
+				callback.run();
+			}
+			return;
+		}
+		
+		performPlotClearing(plots, callback);
+	}
+	
+	/**
+	 * Performs plot clearing using PlotSquared's PlotModificationManager.deletePlot() API.
+	 * @param plots The list of plots to clear
+	 * @param callback Callback to run when clearing is complete
+	 */
+	public void performPlotClearing(List<Plot> plots, Runnable callback) {
+		Preconditions.checkState(Bukkit.isPrimaryThread(), "This must be done on the server thread");
+		
+		if (plots.isEmpty()) {
+			if (callback != null) {
+				callback.run();
+			}
+			return;
+		}
+		
+		final java.util.concurrent.atomic.AtomicInteger completed = new java.util.concurrent.atomic.AtomicInteger(0);
+		final java.util.concurrent.atomic.AtomicInteger failed = new java.util.concurrent.atomic.AtomicInteger(0);
+		final int total = plots.size();
+		final java.util.concurrent.atomic.AtomicInteger callbackCalled = new java.util.concurrent.atomic.AtomicInteger(0);
+		
+		// Helper to check completion and call callback once
+		Runnable checkAndCall = () -> {
+			int currentCompleted = completed.get();
+			int currentFailed = failed.get();
+			
+			if (currentCompleted + currentFailed >= total) {
+				// Only one thread can successfully set this flag
+				if (callbackCalled.compareAndSet(0, 1)) {
+					Bukkit.getLogger().info("[Plot Clearing] Completed: " + currentCompleted + " successful, " + currentFailed + " failed out of " + total);
+					if (callback != null) {
+						callback.run();
+					}
+				}
+			}
+		};
+		
+		// Delete all plots using PlotSquared API
+		for (Plot plot : plots) {
+			try {
+				// Skip plots that are already unclaimed
+				if (!plot.hasOwner()) {
+					completed.incrementAndGet();
+					checkAndCall.run();
+					continue;
+				}
+				
+				PlotModificationManager manager = plot.getPlotModificationManager();
+				if (manager != null) {
+					// deletePlot clears the plot blocks and unclaims it
+					// Use null for actor since this is a system operation
+					manager.deletePlot(null, () -> {
+						completed.incrementAndGet();
+						checkAndCall.run();
+					});
+				} else {
+					Bukkit.getLogger().warning("[Plot Clearing] PlotModificationManager is null for plot " + plot.getId());
+					failed.incrementAndGet();
+					checkAndCall.run();
+				}
+			} catch (Exception e) {
+				Bukkit.getLogger().log(java.util.logging.Level.WARNING, 
+					"Failed to clear plot " + plot.getId() + ": " + e.getMessage(), e);
+				failed.incrementAndGet();
+				checkAndCall.run();
+			}
 		}
 	}
 	

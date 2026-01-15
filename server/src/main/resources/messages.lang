@@ -62,3 +62,17 @@ backup.success=&aBackup completed successfully! &e{count} &aplots backed up to: 
 backup.partial=&eBackup completed with some failures. &a{successful} &7successful, &c{failed} &7failed out of &e{total} &7total. Files saved to: &7{path}
 backup.failed=&cBackup failed: &7{error}
 backup.failed.unexpected=&cBackup failed due to an unexpected error. Check console for details.
+
+# Reset messages
+reset.starting=&e[CompManager] &7Starting plot reset for competition: {theme}
+reset.backup-phase=&e[CompManager] &7Backing up plots before reset...
+reset.transfer-phase=&e[CompManager] &7Transferring players to lobby...
+reset.clearing-phase=&e[CompManager] &7Clearing plots...
+reset.success=&e[CompManager] &7Plot reset completed successfully
+reset.failed=&e[CompManager] &cPlot reset failed: {error}
+reset.in-progress=&e[CompManager] &cPlot reset is already in progress
+reset.no-competition=&e[CompManager] &cNo competition is currently active
+reset.bypass.notify=&e[CompManager] &7Other players have been sent to the lobby due to competition reset. You remain here due to your bypass permission.
+reset.server-not-found=&cServer not found: {serverId}
+reset.server-offline=&cServer is offline: {serverId}
+reset.command-sent=&aReset command sent to server &e{serverId} &7(Competition: &e{theme} &7ID: &e{compId}&7)

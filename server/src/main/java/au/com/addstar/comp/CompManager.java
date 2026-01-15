@@ -58,13 +58,23 @@ public class CompManager {
     private Competition currentComp;
     private VoteStorage<? extends Vote> voteStorage;
     private au.com.addstar.comp.services.PlotBackupService plotBackupService;
+    private au.com.addstar.comp.services.PlotResetService plotResetService;
+    private au.com.addstar.comp.util.CompetitionChangeTracker changeTracker;
+    private final Object plotResetLock = new Object();
+    private volatile boolean isResettingPlots = false;
+    private final boolean autoResetPlots;
+    private final String lobbyId;
 
-    public CompManager(CompServerBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, RedisManager redis, Logger logger) {
+    public CompManager(CompServerBackendManager backend, WhitelistHandler whitelist, P2Bridge bridge, RedisManager redis, Logger logger, 
+            au.com.addstar.comp.util.CompetitionChangeTracker changeTracker, boolean autoResetPlots, String lobbyId) {
         this.backend = backend;
         this.whitelist = whitelist;
         this.bridge = bridge;
         this.logger = logger;
         this.redis = redis;
+        this.changeTracker = changeTracker;
+        this.autoResetPlots = autoResetPlots;
+        this.lobbyId = lobbyId;
 
         Entrant = player -> {
             if (currentComp != null && currentComp.getState() != CompState.Closed) {
@@ -131,17 +141,34 @@ public class CompManager {
     public void setPlotBackupService(au.com.addstar.comp.services.PlotBackupService backupService) {
         this.plotBackupService = backupService;
     }
+    
+    /**
+     * Sets the plot reset service.
+     * @param resetService The reset service instance
+     */
+    public void setPlotResetService(au.com.addstar.comp.services.PlotResetService resetService) {
+        this.plotResetService = resetService;
+    }
 
     /**
      * Loads the current comp from the database.
      * This method will block waiting for the result.
-     * Will not reload if a plot backup is currently in progress.
+     * Will not reload if a plot backup or reset is currently in progress.
+     * Automatically triggers plot reset if competition has changed and auto-reset is enabled.
      */
     public void reloadCurrentComp() {
         // Check if backup is in progress
         if (plotBackupService != null && plotBackupService.isBackupInProgress()) {
             logger.warning("[CompManager] Reload blocked: plot backup is currently in progress. Please wait for backup to complete.");
             return;
+        }
+        
+        // Check if reset is in progress
+        synchronized (plotResetLock) {
+            if (isResettingPlots) {
+                logger.warning("[CompManager] Reload blocked: plot reset is currently in progress. Please wait for reset to complete.");
+                return;
+            }
         }
         
         Bukkit.getScheduler().runTaskAsynchronously(CompPlugin.instance, () -> {
@@ -155,6 +182,48 @@ public class CompManager {
                     logger.log(Level.SEVERE, "Failed to load votes for the current competition", e);
                 }
             }
+            
+            // Check on main thread if reset is needed
+            Bukkit.getScheduler().runTask(CompPlugin.instance, () -> {
+                // Check if competition has changed and reset is needed
+                if (currentComp != null && changeTracker != null && plotResetService != null) {
+                    boolean hasExistingPlots = bridge.getUsedPlotCount() > 0;
+                    CompState currentState = getState();
+                    
+                    if (changeTracker.shouldResetPlots(currentComp, hasExistingPlots, currentState) && autoResetPlots) {
+                        logger.info("[CompManager] Competition changed detected. Auto-resetting plots for new competition: " + currentComp.getTheme());
+                        
+                        synchronized (plotResetLock) {
+                            isResettingPlots = true;
+                        }
+                        
+                        // Clear reserved plots before reset
+                        reservedPlots.clear();
+                        
+                        // Trigger reset
+                        plotResetService.resetPlots(currentComp, null, () -> {
+                            synchronized (plotResetLock) {
+                                isResettingPlots = false;
+                            }
+                        });
+                    } else if (changeTracker.hasCompetitionChanged(currentComp)) {
+                        // Competition changed but reset not needed (no plots or auto-reset disabled)
+                        // Still update tracker
+                        try {
+                            changeTracker.updateTrackedCompetition(currentComp);
+                        } catch (java.io.IOException e) {
+                            logger.log(Level.WARNING, "[CompManager] Failed to update competition tracker", e);
+                        }
+                    }
+                } else if (currentComp != null && changeTracker != null) {
+                    // Update tracker even if reset not needed
+                    try {
+                        changeTracker.updateTrackedCompetition(currentComp);
+                    } catch (java.io.IOException e) {
+                        logger.log(Level.WARNING, "[CompManager] Failed to update competition tracker", e);
+                    }
+                }
+            });
         });
     }
 
@@ -419,6 +488,13 @@ public class CompManager {
      * @throws EntryDeniedException Thrown if the player cannot enter the comp
      */
     public EnterHandler enterComp(OfflinePlayer player) throws EntryDeniedException {
+        // Block entries during plot reset
+        synchronized (plotResetLock) {
+            if (isResettingPlots) {
+                throw new EntryDeniedException(Reason.NotRunning, "Plot reset is in progress. Please wait.");
+            }
+        }
+        
         if (!isCompRunning()) {
             throw new EntryDeniedException(Reason.NotRunning, "No comp running");
         }

@@ -22,6 +22,7 @@ import au.com.addstar.comp.commands.CompInfoCommand;
 import au.com.addstar.comp.commands.JoinCommand;
 import au.com.addstar.comp.commands.VoteCommand;
 import au.com.addstar.comp.services.PlotBackupService;
+import au.com.addstar.comp.services.PlotResetService;
 import au.com.addstar.comp.confirmations.ConfirmationManager;
 import au.com.addstar.comp.database.DatabaseManager;
 import au.com.addstar.comp.notifications.NotificationManager;
@@ -31,6 +32,7 @@ import au.com.addstar.comp.placeholders.PlaceHolderHandler;
 import au.com.addstar.comp.query.*;
 import au.com.addstar.comp.redis.RedisManager;
 import au.com.addstar.comp.redis.RedisQueryTimeoutTask;
+import au.com.addstar.comp.util.CompetitionChangeTracker;
 import au.com.addstar.comp.util.Messages;
 import au.com.addstar.comp.util.P2Bridge;
 import au.com.addstar.comp.whitelist.WhitelistHandler;
@@ -47,6 +49,8 @@ public class CompPlugin extends JavaPlugin {
     public Messages messages;
     private RemoteJoinManager remoteJoinManager;
     private PlotBackupService plotBackupService;
+    private PlotResetService plotResetService;
+    private CompetitionChangeTracker changeTracker;
     private static final HashMap<Player, Hotbar> currentHotbars = new HashMap<>();
     private static String serverName;
 
@@ -116,7 +120,16 @@ public class CompPlugin extends JavaPlugin {
 //        if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
 //            new MVDWPlaceHolderExtension(this);
 //        }
-        compManager = new CompManager(new CompServerBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger());
+        
+        // Initialise competition change tracker
+        changeTracker = new CompetitionChangeTracker(getDataFolder());
+        
+        // Read config options
+        boolean autoResetPlots = getConfig().getBoolean("auto-reset-plots-on-comp-change", false);
+        String lobbyId = getConfig().getString("lobby-id", "complobby");
+        
+        compManager = new CompManager(new CompServerBackendManager(databaseManager), whitelistHandler, bridge, redisManager, getLogger(),
+                changeTracker, autoResetPlots, lobbyId);
         confirmationManager = new ConfirmationManager();
 
         File notificationsFile = new File(getDataFolder(), "notifications.yml");
@@ -137,11 +150,18 @@ public class CompPlugin extends JavaPlugin {
         int progressInterval = getConfig().getInt("backup.backup-progress-interval", 10);
         plotBackupService = new PlotBackupService(bridge, this, getLogger(), backupEmptyPlots, progressInterval);
         
-        // Set backup service in CompManager for reload blocking
+        // Create plot reset service
+        plotResetService = new PlotResetService(plotBackupService, bridge, this, getLogger(), changeTracker, lobbyId, messages);
+        
+        // Set services in CompManager
         compManager.setPlotBackupService(plotBackupService);
+        compManager.setPlotResetService(plotResetService);
+        
+        // Register BungeeCord plugin message channel
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         // Register commands
-        new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager, plotBackupService, messages).registerAs(getCommand("compadmin"));
+        new CompAdminCommand(whitelistHandler, compManager, notificationManager, confirmationManager, plotBackupService, plotResetService, messages).registerAs(getCommand("compadmin"));
         new JoinCommand(compManager, confirmationManager, messages).registerAs(getCommand("compjoin"));
         new AgreeCommand(confirmationManager, messages).registerAs(getCommand("compagree"));
         new CompInfoCommand(compManager, messages).registerAs(getCommand("compinfo"));
@@ -161,7 +181,7 @@ public class CompPlugin extends JavaPlugin {
         }, 20, 20);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new CompTimer(compManager, notificationManager), 10, 10);
         Bukkit.getScheduler().runTaskTimer(this, new RedisQueryTimeoutTask(redisManager), 20, 20);
-        redisManager.setCommandReceiver(new CommandHandler(compManager, plotBackupService));
+        redisManager.setCommandReceiver(new CommandHandler(compManager, plotBackupService, plotResetService));
 
         // Load the comp
         compManager.reloadCurrentComp();

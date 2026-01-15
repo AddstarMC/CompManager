@@ -21,3 +21,7 @@ backup:
   backup-empty-plots: true
   # Log progress every N plots (0 to disable progress logging)
   backup-progress-interval: 10
+
+# Plot reset settings
+# Whether to automatically reset plots when competition changes (default: false)
+auto-reset-plots-on-comp-change: false

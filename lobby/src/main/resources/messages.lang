@@ -51,3 +51,9 @@ backup.server-not-found=&cServer not found: &7{serverId}
 backup.server-offline=&cServer &7{serverId} &cis currently offline.
 backup.no-competition=&cServer &7{serverId} &cdoes not have an active competition.
 backup.command-sent=&6Backup command sent to server &e{serverId} &7for competition: &e{theme} &7(ID: &e{compId}&7)
+
+# Reset messages
+reset.server-not-found=&cServer not found: &7{serverId}
+reset.server-offline=&cServer &7{serverId} &cis currently offline.
+reset.no-competition=&cServer &7{serverId} &cdoes not have an active competition.
+reset.command-sent=&aReset command sent to server &e{serverId} &7(Competition: &e{theme} &7ID: &e{compId}&7)

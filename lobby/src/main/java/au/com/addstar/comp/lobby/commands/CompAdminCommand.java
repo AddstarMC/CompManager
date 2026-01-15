@@ -34,5 +34,6 @@ public final class CompAdminCommand extends RootCommandDispatcher {
 		registerCommand(new ViewCommand(manager, viewService, messages));
 		registerCommand(new DialogCommand(manager, dialogService, joinService, viewService, messages, plugin));
 		registerCommand(new BackupCommand(manager, redis, messages));
+		registerCommand(new ResetCommand(manager, redis, messages));
 	}
 }

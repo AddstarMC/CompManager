@@ -28,6 +28,10 @@ permissions:
     default: op
   comp.admin.backup:
     default: op
+  comp.admin.reset:
+    default: op
+  comp.reset.bypass:
+    default: op
 
 commands:
   compadmin:
