@@ -153,16 +153,6 @@ public class PlotBackupService {
 	}
 	
 	private void performBackup(Competition competition, int compId, BackupProgressCallback progressCallback, SettableFuture<BackupResult> resultFuture) {
-		// Get all owned plots
-		List<Plot> plots = bridge.getAllOwnedPlots();
-		
-		if (plots.isEmpty()) {
-			logger.info("[Backup] No plots to backup for competition " + compId);
-			File archiveDir = new File(plugin.getDataFolder(), "archives/" + compId);
-			resultFuture.set(new BackupResult(0, 0, 0, archiveDir));
-			return;
-		}
-		
 		// Create archive directory
 		File archiveDir = new File(plugin.getDataFolder(), "archives/" + compId);
 		if (!archiveDir.exists()) {
@@ -174,72 +164,118 @@ public class PlotBackupService {
 			}
 		}
 		
-		logger.info("[Backup] Starting backup of " + plots.size() + " plots for competition " + compId);
-		
-		AtomicInteger successful = new AtomicInteger(0);
-		AtomicInteger failed = new AtomicInteger(0);
-		
-		SchematicHandler schematicHandler = bridge.getSchematicHandler();
-		
-		// Filter plots if needed
-		List<Plot> plotsToBackup = new ArrayList<>();
-		for (Plot plot : plots) {
-			if (backupEmptyPlots || !isPlotEmpty(plot)) {
-				plotsToBackup.add(plot);
+		// Get plots and SchematicHandler on main thread
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			// Get all owned plots on main thread
+			List<Plot> plots = bridge.getAllOwnedPlots();
+			
+			if (plots.isEmpty()) {
+				logger.info("[Backup] No plots to backup for competition " + compId);
+				resultFuture.set(new BackupResult(0, 0, 0, archiveDir));
+				return;
 			}
-		}
-		
-		if (plotsToBackup.isEmpty()) {
-			logger.info("[Backup] No plots to backup after filtering");
-			resultFuture.set(new BackupResult(plots.size(), 0, 0, archiveDir));
-			return;
-		}
-		
-		// Collect all backup futures
-		List<CompletableFuture<Boolean>> backupFutures = new ArrayList<>();
-		
-		for (Plot plot : plotsToBackup) {
-			CompletableFuture<Boolean> plotFuture = backupPlotAsync(plot, archiveDir, schematicHandler);
-			backupFutures.add(plotFuture);
 			
-			// Progress updates as futures complete
-			plotFuture.whenComplete((success, throwable) -> {
-				if (success != null && success) {
-					successful.incrementAndGet();
-				} else {
-					failed.incrementAndGet();
+			logger.info("[Backup] Starting backup of " + plots.size() + " plots for competition " + compId);
+			
+			// Get SchematicHandler on main thread
+			SchematicHandler schematicHandler = bridge.getSchematicHandler();
+			if (schematicHandler == null) {
+				String error = "SchematicHandler is not available. PlotSquared may not be fully initialized.";
+				logger.log(Level.SEVERE, "[Backup] " + error);
+				resultFuture.setException(new IllegalStateException(error));
+				return;
+			}
+			
+			// Filter plots if needed and extract plot data
+			List<PlotData> plotDataList = new ArrayList<>();
+			for (Plot plot : plots) {
+				if (backupEmptyPlots || !isPlotEmpty(plot)) {
+					// Extract plot data
+					String plotId = plot.getId().toString();
+					UUID firstOwner = plot.getOwners().iterator().next();
+					plotDataList.add(new PlotData(plotId, firstOwner, plot));
 				}
+			}
+			
+			if (plotDataList.isEmpty()) {
+				logger.info("[Backup] No plots to backup after filtering");
+				resultFuture.set(new BackupResult(plots.size(), 0, 0, archiveDir));
+				return;
+			}
+			
+			// Backup operations
+			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+				AtomicInteger successful = new AtomicInteger(0);
+				AtomicInteger failed = new AtomicInteger(0);
 				
-				int completed = successful.get() + failed.get();
+				// Collect all backup futures
+				List<CompletableFuture<Boolean>> backupFutures = new ArrayList<>();
 				
-				// Progress updates
-				if (completed % progressInterval == 0 || completed == plotsToBackup.size()) {
-					logger.info(String.format("[Backup] Progress: %d/%d plots processed (%d successful, %d failed)",
-						completed, plotsToBackup.size(), successful.get(), failed.get()));
+				for (PlotData plotData : plotDataList) {
+					CompletableFuture<Boolean> plotFuture = backupPlotAsync(
+						plotData.plot, 
+						archiveDir, 
+						schematicHandler, 
+						plotData.plotId, 
+						plotData.firstOwner
+					);
+					backupFutures.add(plotFuture);
 					
-					if (progressCallback != null) {
-						final int finalCompleted = completed;
-						final int finalSuccessful = successful.get();
-						final int finalFailed = failed.get();
-						Bukkit.getScheduler().runTask(plugin, () -> {
-							progressCallback.onProgress(finalCompleted, plotsToBackup.size(), finalSuccessful, finalFailed);
-						});
-					}
+					// Progress updates as futures complete
+					plotFuture.whenComplete((success, throwable) -> {
+						if (success != null && success) {
+							successful.incrementAndGet();
+						} else {
+							failed.incrementAndGet();
+						}
+						
+						int completed = successful.get() + failed.get();
+						
+						// Progress updates
+						if (completed % progressInterval == 0 || completed == plotDataList.size()) {
+							logger.info(String.format("[Backup] Progress: %d/%d plots processed (%d successful, %d failed)",
+								completed, plotDataList.size(), successful.get(), failed.get()));
+							
+							if (progressCallback != null) {
+								final int finalCompleted = completed;
+								final int finalSuccessful = successful.get();
+								final int finalFailed = failed.get();
+								Bukkit.getScheduler().runTask(plugin, () -> {
+									progressCallback.onProgress(finalCompleted, plotDataList.size(), finalSuccessful, finalFailed);
+								});
+							}
+						}
+					});
 				}
+				
+				// Wait for all backups to complete
+				CompletableFuture<Void> allBackups = CompletableFuture.allOf(
+					backupFutures.toArray(new CompletableFuture[0])
+				);
+				
+				allBackups.whenComplete((result, throwable) -> {
+					logger.info(String.format("[Backup] Completed backup for competition %d: %d successful, %d failed out of %d total",
+						compId, successful.get(), failed.get(), plotDataList.size()));
+					
+					resultFuture.set(new BackupResult(plotDataList.size(), successful.get(), failed.get(), archiveDir));
+				});
 			});
-		}
-		
-		// Wait for all backups to complete
-		CompletableFuture<Void> allBackups = CompletableFuture.allOf(
-			backupFutures.toArray(new CompletableFuture[0])
-		);
-		
-		allBackups.whenComplete((result, throwable) -> {
-			logger.info(String.format("[Backup] Completed backup for competition %d: %d successful, %d failed out of %d total",
-				compId, successful.get(), failed.get(), plotsToBackup.size()));
-			
-			resultFuture.set(new BackupResult(plotsToBackup.size(), successful.get(), failed.get(), archiveDir));
 		});
+	}
+	
+	/**
+	 * Helper class to store plot data extracted on the main thread.
+	 */
+	private static class PlotData {
+		final String plotId;
+		final UUID firstOwner;
+		final Plot plot;
+		
+		PlotData(String plotId, UUID firstOwner, Plot plot) {
+			this.plotId = plotId;
+			this.firstOwner = firstOwner;
+			this.plot = plot;
+		}
 	}
 	
 	private boolean isPlotEmpty(Plot plot) {
@@ -247,11 +283,8 @@ public class PlotBackupService {
 		return false;
 	}
 	
-	private CompletableFuture<Boolean> backupPlotAsync(Plot plot, File archiveDir, SchematicHandler schematicHandler) {
+	private CompletableFuture<Boolean> backupPlotAsync(Plot plot, File archiveDir, SchematicHandler schematicHandler, String plotId, UUID firstOwner) {
 		CompletableFuture<Boolean> resultFuture = new CompletableFuture<>();
-		
-		String plotId = plot.getId().toString();
-		UUID firstOwner = plot.getOwners().iterator().next();
 		
 		// Generate base filename
 		String baseFilename = plotId + "-" + firstOwner.toString() + ".schem";
@@ -262,6 +295,14 @@ public class PlotBackupService {
 		// Get CompoundTag from PlotSquared - must run on main thread
 		Bukkit.getScheduler().runTask(plugin, () -> {
 			try {
+				// Double-check schematicHandler is not null
+				if (schematicHandler == null) {
+					logger.log(Level.SEVERE, String.format("[Backup] SchematicHandler is null for plot %s (owner: %s)",
+						plotId, firstOwner));
+					resultFuture.complete(false);
+					return;
+				}
+				
 				CompletableFuture<CompoundTag> tagFuture = schematicHandler.getCompoundTag(plot);
 				
 				// Chain save operation after tag is retrieved
