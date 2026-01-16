@@ -32,6 +32,8 @@ public class CompBackendManager {
 	private static final StatementKey STATEMENT_LOAD;
 	private static final StatementKey STATEMENT_ADD;
 	private static final StatementKey STATEMENT_UPDATE;
+	private static final StatementKey STATEMENT_GETALL;
+	private static final StatementKey STATEMENT_DELETE;
 	
 	// Criteria table
 	private static final String TABLE_CRITERIA = "criteria";
@@ -66,11 +68,13 @@ public class CompBackendManager {
 		STATEMENT_LOAD = new StatementKey("SELECT Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize FROM " + TABLE_COMP + " WHERE ID=?");
 		STATEMENT_ADD = new StatementKey("INSERT INTO " + TABLE_COMP + " (Theme, State, StartDate, EndDate, VoteEnd, VoteType, MaxEntrants, FirstPrize, SecondPrize, DefaultPrize) VALUES (?,?,?,?,?,?,?,?,?,?)", true);
 		STATEMENT_UPDATE = new StatementKey("UPDATE " + TABLE_COMP + " SET Theme=?, State=?, StartDate=?, EndDate=?, VoteEnd=?, VoteType=?, MaxEntrants=?, FirstPrize=?, SecondPrize=?, DefaultPrize=? WHERE ID=?");
+		STATEMENT_GETALL = new StatementKey("SELECT ID, Theme, State FROM " + TABLE_COMP + " ORDER BY ID");
+		STATEMENT_DELETE = new StatementKey("DELETE FROM " + TABLE_COMP + " WHERE ID=?");
 		
 		STATEMENT_CRITERIA_LOAD = new StatementKey("SELECT CriteriaID, Name, Description, Type, Data FROM " + TABLE_CRITERIA + " WHERE CompID=?");
 		STATEMENT_CRITERIA_ADD = new StatementKey("INSERT INTO " + TABLE_CRITERIA + " (CompID, Name, Description, Type, Data) VALUES (?,?,?,?,?)", true);
 		STATEMENT_CRITERIA_REMOVE = new StatementKey("DELETE FROM " + TABLE_CRITERIA + " WHERE CriteriaID=?");
-		STATEMENT_CRITERIA_UPDATE = new StatementKey("UPDATE " + TABLE_CRITERIA + "SET Name=?, Description=?, Type=?, Data=?");
+		STATEMENT_CRITERIA_UPDATE = new StatementKey("UPDATE " + TABLE_CRITERIA + " SET Name=?, Description=?, Type=?, Data=? WHERE CriteriaID=?");
 		
 		STATEMENT_SERVER_GET = new StatementKey("SELECT CompID FROM " + TABLE_SERVER + " WHERE ServerID=?");
 		STATEMENT_SERVER_GETALL = new StatementKey("SELECT ServerID, CompID FROM " + TABLE_SERVER + " WHERE CompID IS NOT NULL");
@@ -193,7 +197,115 @@ public class CompBackendManager {
 	 * @throws SQLException Thrown if an SQLException occurs in the database
 	 */
 	public void add(Competition competition) throws SQLException {
-		throw new UnsupportedOperationException("Not yet implemented");
+		try (Connection handler = manager.getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_ADD.getSQL(), STATEMENT_ADD.returnsGeneratedKeysInt());
+			statement.setString(1, competition.getTheme());
+			statement.setString(2, (competition.isAutomatic() ? "Auto" : competition.getState().name()));
+			statement.setTimestamp(3, competition.getStartDate() > 0 ? new Timestamp(competition.getStartDate()) : null);
+			statement.setTimestamp(4, competition.getEndDate() > 0 ? new Timestamp(competition.getEndDate()) : null);
+			statement.setTimestamp(5, competition.getVoteEndDate() > 0 ? new Timestamp(competition.getVoteEndDate()) : null);
+			statement.setString(6, competition.getVotingStrategy());
+			statement.setInt(7, competition.getMaxEntrants());
+			statement.setString(8, competition.getFirstPrize() != null ? competition.getFirstPrize().toDatabase() : null);
+			statement.setString(9, competition.getSecondPrize() != null ? competition.getSecondPrize().toDatabase() : null);
+			statement.setString(10, competition.getParticipationPrize() != null ? competition.getParticipationPrize().toDatabase() : null);
+			statement.executeUpdate();
+			
+			// Get the generated ID
+			ResultSet generatedKeys = statement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				int compId = generatedKeys.getInt(1);
+				competition.setCompId(compId);
+				
+				// Save all criteria
+				for (BaseCriterion criterion : competition.getCriteria()) {
+					PreparedStatement criteriaStatement = handler.prepareStatement(STATEMENT_CRITERIA_ADD.getSQL(), STATEMENT_CRITERIA_ADD.returnsGeneratedKeysInt());
+					criteriaStatement.setInt(1, compId);
+					criteriaStatement.setString(2, criterion.getName());
+					criteriaStatement.setString(3, criterion.getDescription());
+					criteriaStatement.setString(4, getCriterionType(criterion));
+					criteriaStatement.setString(5, getCriterionData(criterion));
+					criteriaStatement.executeUpdate();
+					criteriaStatement.close();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gets the type string for a criterion
+	 */
+	private String getCriterionType(BaseCriterion criterion) {
+		// Determine type based on class name
+		String className = criterion.getClass().getSimpleName();
+		if (className.contains("BlockInclude")) {
+			return "block";
+		} else if (className.contains("Text")) {
+			return "text";
+		}
+		return "text"; // Default
+	}
+	
+	/**
+	 * Gets the data string for a criterion
+	 */
+	private String getCriterionData(BaseCriterion criterion) {
+		// TextCriterion doesn't need data
+		if (criterion instanceof au.com.addstar.comp.criterions.TextCriterion) {
+			return null;
+		}
+		
+		// BlockIncludeCriterion uses Gson to serialize BlockCriteria
+		if (criterion instanceof au.com.addstar.comp.criterions.BlockIncludeCriterion) {
+			try {
+				// Use reflection to access the blockCriteria field
+				java.lang.reflect.Field field = criterion.getClass().getDeclaredField("blockCriteria");
+				field.setAccessible(true);
+				Object blockCriteria = field.get(criterion);
+				if (blockCriteria != null) {
+					com.google.gson.Gson gson = new com.google.gson.Gson();
+					return gson.toJson(blockCriteria);
+				}
+			} catch (Exception e) {
+				Logger.getLogger("CompManager").log(Level.WARNING, "Failed to serialize criterion data", e);
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets all competitions from the database
+	 * @return A list of competitions with their IDs, themes, and states
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public List<Competition> getAll() throws SQLException {
+		List<Competition> competitions = Lists.newArrayList();
+		try (Connection handler = manager.getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_GETALL.getSQL());
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				int id = rs.getInt("ID");
+				Competition comp = load(id);
+				if (comp != null) {
+					competitions.add(comp);
+				}
+			}
+		}
+		return competitions;
+	}
+	
+	/**
+	 * Deletes a competition from the database
+	 * @param compId The ID of the competition to delete
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public void delete(int compId) throws SQLException {
+		try (Connection handler = manager.getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_DELETE.getSQL());
+			statement.setInt(1, compId);
+			statement.executeUpdate();
+		}
 	}
 	
 	/**

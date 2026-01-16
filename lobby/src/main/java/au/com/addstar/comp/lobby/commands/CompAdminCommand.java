@@ -24,7 +24,7 @@ public final class CompAdminCommand extends RootCommandDispatcher {
 		CompetitionDialogService dialogService = new CompetitionDialogService();
 		
 		registerCommand(new WhitelistCommand(whitelist));
-		registerCommand(new ListCommand(manager));
+		registerCommand(new CompCommand(manager, manager.getBackend(), redis));
 		registerCommand(new ReloadCommand(manager));
 		registerCommand(new ReloadServersCommand(manager, redis));
 		registerCommand(new CompDebugCommand(redis));
