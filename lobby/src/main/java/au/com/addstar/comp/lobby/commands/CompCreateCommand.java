@@ -30,6 +30,8 @@ import net.md_5.bungee.api.ChatColor;
  * Usage: /compadmin comp create <theme> [--startdate <date>] [--enddate <date>] [--voteend <date>] 
  *        [--maxentrants <number>] [--votetype <type>] [--state <state>] 
  *        [--firstprize <prize>] [--secondprize <prize>] [--participationprize <prize>]
+ * Note: String values with spaces can be quoted using single (') or double (") quotes.
+ * Example: "My Competition Theme" or --firstprize "1000 coins"
  */
 public class CompCreateCommand implements ICommand {
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -66,7 +68,7 @@ public class CompCreateCommand implements ICommand {
 
 	@Override
 	public String getDescription() {
-		return "Creates a new competition";
+		return "Creates a new competition. String values with spaces can be quoted using single (') or double (\") quotes.";
 	}
 
 	@Override

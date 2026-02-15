@@ -25,6 +25,7 @@ import net.md_5.bungee.api.ChatColor;
 /**
  * Command to add a criterion to a competition
  * Usage: /compadmin criteria add <compid> <name> <type> [--description <desc>] [--data <data>]
+ * Note: String values with spaces can be quoted using single (') or double (") quotes.
  */
 public class CriteriaAddCommand implements ICommand {
 	private final CompManager manager;
@@ -59,7 +60,7 @@ public class CriteriaAddCommand implements ICommand {
 
 	@Override
 	public String getDescription() {
-		return "Adds a criterion to a competition";
+		return "Adds a criterion to a competition. String values with spaces can be quoted using single (') or double (\") quotes.";
 	}
 
 	@Override

@@ -24,6 +24,8 @@ import net.md_5.bungee.api.ChatColor;
 /**
  * Command to edit an existing criterion
  * Usage: /compadmin criteria edit <criteriaid> [--name <name>] [--description <desc>] [--type <type>] [--data <data>]
+ * Note: String values with spaces can be quoted using single (') or double (") quotes.
+ * Example: --name "Details & Polish"
  */
 public class CriteriaEditCommand implements ICommand {
 	private final CompManager manager;
@@ -58,7 +60,7 @@ public class CriteriaEditCommand implements ICommand {
 
 	@Override
 	public String getDescription() {
-		return "Edits an existing criterion";
+		return "Edits an existing criterion. String values with spaces can be quoted using single (') or double (\") quotes.";
 	}
 
 	@Override
