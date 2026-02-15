@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -590,6 +591,143 @@ public class CompBackendManager {
 			statement.setInt(1, comp.getCompId());
 			statement.setString(2, playerId.toString());
 			statement.executeUpdate();
+		}
+	}
+	
+	/**
+	 * Adds a criterion to a competition
+	 * @param comp The competition
+	 * @param criterion The criterion to add
+	 * @return The generated criteria ID
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public int addCriterion(Competition comp, BaseCriterion criterion) throws SQLException {
+		Preconditions.checkArgument(comp.getCompId() >= 0, "Competition must have a valid ID");
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_CRITERIA_ADD.getSQL(), STATEMENT_CRITERIA_ADD.returnsGeneratedKeysInt());
+			statement.setInt(1, comp.getCompId());
+			statement.setString(2, criterion.getName());
+			statement.setString(3, criterion.getDescription());
+			statement.setString(4, getCriterionType(criterion));
+			statement.setString(5, getCriterionData(criterion));
+			statement.executeUpdate();
+			
+			ResultSet generatedKeys = statement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				return generatedKeys.getInt(1);
+			}
+			throw new SQLException("Failed to get generated criteria ID");
+		}
+	}
+	
+	/**
+	 * Updates an existing criterion
+	 * @param criteriaId The ID of the criterion to update
+	 * @param criterion The updated criterion data
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public void updateCriterion(int criteriaId, BaseCriterion criterion) throws SQLException {
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_CRITERIA_UPDATE.getSQL());
+			statement.setString(1, criterion.getName());
+			statement.setString(2, criterion.getDescription());
+			statement.setString(3, getCriterionType(criterion));
+			statement.setString(4, getCriterionData(criterion));
+			statement.setInt(5, criteriaId);
+			statement.executeUpdate();
+		}
+	}
+	
+	/**
+	 * Loads a criterion by ID
+	 * @param criteriaId The ID of the criterion
+	 * @return A pair containing the CompID and the loaded criterion, or null if not found
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public java.util.Map.Entry<Integer, BaseCriterion> getCriterion(int criteriaId) throws SQLException {
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement("SELECT CompID, Name, Description, Type, Data FROM " + TABLE_CRITERIA + " WHERE CriteriaID=?");
+			statement.setInt(1, criteriaId);
+			ResultSet rs = statement.executeQuery();
+			if (rs.next()) {
+				int compId = rs.getInt("CompID");
+				BaseCriterion criterion = BaseCriterion.create(rs.getString("Type"));
+				criterion.setName(rs.getString("Name"));
+				criterion.setDescription(rs.getString("Description"));
+				
+				String data = rs.getString("Data");
+				if (data != null) {
+					criterion.load(data);
+				}
+				
+				return new AbstractMap.SimpleEntry<>(compId, criterion);
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * Deletes a criterion
+	 * @param criteriaId The ID of the criterion to delete
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public void deleteCriterion(int criteriaId) throws SQLException {
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(STATEMENT_CRITERIA_REMOVE.getSQL());
+			statement.setInt(1, criteriaId);
+			statement.executeUpdate();
+		}
+	}
+	
+	/**
+	 * Gets all criteria for a competition with their IDs
+	 * @param compId The competition ID
+	 * @return A list of entries containing CriteriaID, Name, Description, and Type
+	 * @throws SQLException Thrown if an SQLException occurs in the database
+	 */
+	public List<Map.Entry<Integer, CriterionInfo>> getCriteriaWithIds(int compId) throws SQLException {
+		List<Map.Entry<Integer, CriterionInfo>> criteria = Lists.newArrayList();
+		try (Connection handler = getPool().getConnection()) {
+			PreparedStatement statement = handler.prepareStatement(
+				"SELECT CriteriaID, Name, Description, Type FROM " + TABLE_CRITERIA + " WHERE CompID=? ORDER BY CriteriaID");
+			statement.setInt(1, compId);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				int criteriaId = rs.getInt("CriteriaID");
+				String name = rs.getString("Name");
+				String description = rs.getString("Description");
+				String type = rs.getString("Type");
+				CriterionInfo info = new CriterionInfo(name, description, type);
+				criteria.add(new AbstractMap.SimpleEntry<>(criteriaId, info));
+			}
+		}
+		return criteria;
+	}
+	
+	/**
+	 * Simple data class for criterion information
+	 */
+	public static class CriterionInfo {
+		private final String name;
+		private final String description;
+		private final String type;
+		
+		public CriterionInfo(String name, String description, String type) {
+			this.name = name;
+			this.description = description;
+			this.type = type;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+		
+		public String getType() {
+			return type;
 		}
 	}
 }

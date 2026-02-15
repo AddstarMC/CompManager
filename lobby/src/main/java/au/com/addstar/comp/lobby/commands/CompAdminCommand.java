@@ -25,6 +25,7 @@ public final class CompAdminCommand extends RootCommandDispatcher {
 		
 		registerCommand(new WhitelistCommand(whitelist));
 		registerCommand(new CompCommand(manager, manager.getBackend(), redis));
+		registerCommand(new CriteriaCommand(manager, manager.getBackend(), redis));
 		registerCommand(new ReloadCommand(manager));
 		registerCommand(new ReloadServersCommand(manager, redis));
 		registerCommand(new CompDebugCommand(redis));
