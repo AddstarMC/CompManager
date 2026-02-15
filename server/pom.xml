@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>au.com.addstar</groupId>
 		<artifactId>CompManager-parent</artifactId>
-		<version>0.0.7</version>
+		<version>0.1.1</version>
 	</parent>
 	<artifactId>CompManager-server</artifactId>
 
@@ -11,7 +11,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>CompManager-common</artifactId>
-			<version>0.0.7</version>
+			<version>0.1.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- PlotSquared API -->
