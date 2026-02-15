@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Preconditions;
 
+import au.com.addstar.comp.Competition;
+
 public final class CompUtils {
 	private CompUtils() {}
 	
@@ -115,6 +117,29 @@ public final class CompUtils {
 			}
 		} else {
 			return seconds + "s";
+		}
+	}
+	
+	/**
+	 * Ensures competition start, end, and vote end dates are set correctly
+	 * @param comp The competition to validate
+	 * @throws IllegalArgumentException If date ordering is invalid
+	 */
+	public static void validateCompetitionDates(Competition comp) throws IllegalArgumentException {
+		long startDate = comp.getStartDate();
+		long endDate = comp.getEndDate();
+		long voteEndDate = comp.getVoteEndDate();
+		
+		if (startDate > 0 && endDate > 0 && endDate <= startDate) {
+			throw new IllegalArgumentException("End date must be after start date");
+		}
+		
+		if (endDate > 0 && voteEndDate > 0 && voteEndDate <= endDate) {
+			throw new IllegalArgumentException("Vote end date must be after end date");
+		}
+		
+		if (startDate > 0 && voteEndDate > 0 && endDate <= 0 && voteEndDate <= startDate) {
+			throw new IllegalArgumentException("Vote end date must be after start date");
 		}
 	}
 }

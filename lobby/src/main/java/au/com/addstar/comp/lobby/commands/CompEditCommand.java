@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import au.com.addstar.comp.CompBackendManager;
 import au.com.addstar.comp.CompState;
 import au.com.addstar.comp.Competition;
+import au.com.addstar.comp.util.CompUtils;
 import au.com.addstar.comp.lobby.CompManager;
 import au.com.addstar.comp.lobby.CompServer;
 import au.com.addstar.comp.lobby.LobbyPlugin;
@@ -208,6 +209,8 @@ public class CompEditCommand implements ICommand {
 		if (participationPrizeStr != null) {
 			comp.setParticipationPrize(parsePrize(participationPrizeStr));
 		}
+		
+		CompUtils.validateCompetitionDates(comp);
 	}
 	
 	private long parseDate(String dateStr) throws IllegalArgumentException {
