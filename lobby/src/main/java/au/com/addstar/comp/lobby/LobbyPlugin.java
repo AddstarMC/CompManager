@@ -137,7 +137,13 @@ public class LobbyPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		databaseManager.shutdown();
+		if (redisManager != null) {
+			redisManager.shutdown();
+		}
+		
+		if (databaseManager != null) {
+			databaseManager.shutdown();
+		}
 	}
 
 	/**

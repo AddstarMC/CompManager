@@ -220,6 +220,27 @@ public class RedisManager {
 	}
 	
 	/**
+	 * Shuts down Redis connections and cleans up resources.
+	 */
+	public void shutdown() {
+		if (client != null) {
+			client.shutdown();
+		}
+		
+		if (executors != null) {
+			executors.shutdown();
+			try {
+				if (!executors.awaitTermination(5, TimeUnit.SECONDS)) {
+					executors.shutdownNow();
+				}
+			} catch (InterruptedException e) {
+				executors.shutdownNow();
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
+	
+	/**
 	 * A Pub-Sub handler
 	 */
 	private class RedisHandler implements RedisPubSubListener<String, String> {

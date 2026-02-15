@@ -208,7 +208,13 @@ public class CompPlugin extends JavaPlugin {
             getLogger().log(Level.SEVERE, "========================================");
         }
         
-        databaseManager.shutdown();
+        if (redisManager != null) {
+            redisManager.shutdown();
+        }
+        
+        if (databaseManager != null) {
+            databaseManager.shutdown();
+        }
     }
 
     public CompManager getCompManager() {
